@@ -1,3 +1,4 @@
+from distutils.command.clean import clean
 from lib2to3.pgen2 import driver
 import jieba.posseg as pg
 import jieba
@@ -64,22 +65,23 @@ for i in range(scroll_time):
     chrome.execute_script(click_more)
 
 
+
 soup = BeautifulSoup(chrome.page_source, 'html.parser')
 
 
-posts = chrome.find_elements(By.XPATH, "//div[@class='ecm0bbzt hv4rvrfc ihqw7lf3 dati1w0a']")
+posts = soup.find_all('div', {'class': 'ecm0bbzt hv4rvrfc ihqw7lf3 dati1w0a'})
 postContents = []
 postNumber = 0
 for post in posts:
     # print("-------------postNumber-------------", postNumber)
     # 把內文的每一行都找出來，並印出來
-    contents = chrome.find_elements(By.XPATH, "//div[@class='ecm0bbzt hv4rvrfc ihqw7lf3 dati1w0a']/div")
+    contents = post.find_all('div', {'dir': 'auto'}, {'style': "text-align: start"})
     content_texts = ""
     for content in contents:
         # words = pg.cut(post)
         # print(words)
         # print(content.getText())
-        content_texts += content.text
+        content_texts += content.text + "\n"
         
     postContents.append(content_texts)
     postNumber += 1
@@ -100,9 +102,9 @@ linkNumber = -1
 
 urls = []
 for link in links:
-    if(linkNumber == -1):  # 跳過第一則置頂貼文
-        linkNumber += 1
-        continue
+    # if(linkNumber == -1):  # 跳過第一則置頂貼文
+    #     linkNumber += 1
+    #     continue
 
     # created_time = created_times_labels[created_time_index].text #可憐、被加密過的日期
     try:
@@ -110,11 +112,13 @@ for link in links:
         hover_link.move_to_element(link)
         hover_link.perform()
         url = link.get_attribute("href")  # 連結
-        urls.append(url)
+        clean_url = url.split("?")[0]
+        urls.append(clean_url)
         # print(created_time, "created_time")
         time.sleep(0.5)
     except:
         pass
+
 
     # if("分" in created_time  or "鐘" in created_time or "小" in created_time or "時" in created_time):
     #     print("今天：000")
@@ -132,9 +136,9 @@ for link in links:
 
 # 使用 jieba 套件，準備開始斷詞
 
-for i in range(len(postContents)):
-    print("===========================")
-    print(postContents[i], end="\n")
-    print(urls[i], end="\n")
+
+print("===========================")
+print(postContents[0], end="\n")
+print(urls[1], end="\n")
 
 chrome.close()
