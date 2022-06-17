@@ -1,21 +1,14 @@
 from textwrap import indent
 from turtle import title
-import jieba.posseg as pg
-import jieba
 from distutils.command.config import config
 from xml.etree.ElementPath import prepare_child
 from selenium.webdriver.chrome.options import Options
 import time
 from bs4 import BeautifulSoup
-from email.headerregistry import Group
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.ui import WebDriverWait
 from dotenv import dotenv_values, load_dotenv
 import pymongo
 import json
@@ -76,6 +69,7 @@ while(has_next_page):
             " ")[0].replace("<li>", "").replace("</li>", "")
         size = post.find("ul", {"class": "item-style"}).decode_contents().split(" ")[
             2].replace("<li>", "").replace("</li>", "")
+        # ============= clean Data =============
         content.update({"id_591": id_591})
         content.update({"title": title})
         content.update({"link": link})
@@ -93,7 +87,7 @@ while(has_next_page):
     else:
         firstRow += 30
 
-# 連 mongoDB 
+# ============= 連 mongoDB =============
 client = pymongo.MongoClient(MONGO_CONNECTION)
 db = client.test
 collection = db.try_591
