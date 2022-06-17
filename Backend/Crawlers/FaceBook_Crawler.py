@@ -20,7 +20,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
 from webdriver_manager.chrome import ChromeDriverManager
 from dotenv import dotenv_values, load_dotenv
-
+import pymongo
 
 load_dotenv()
 # 記得改 PATH 
@@ -28,7 +28,7 @@ ENV_PATH = "../../.env"
 FB_ACCOUNT = dotenv_values(ENV_PATH)["FB_ACCOUNT"]
 FB_PWD = dotenv_values(ENV_PATH)['FB_PWD']
 CHROME_PATH = dotenv_values(ENV_PATH)["CHROME_PATH"]
-
+MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 # -------- 路徑、帳密 --------
 options = Options()
 options.add_argument("--disable-notifications")
@@ -50,9 +50,9 @@ chrome.get(
 
 
 # 把頁面滑到最下面並按下所有的顯示更多
-scroll_time = 1
+scroll_time = 2
 for i in range(scroll_time):
-    chrome.execute_script("window.scrollTo(100,document.body.scrollHeight)")
+    chrome.execute_script("window.scrollTo(0,document.body.scrollHeight)")
     time.sleep(1.5)
     click_more = """
             var div_tags = document.getElementsByTagName("div"); 
@@ -144,3 +144,23 @@ print(postContents[0], end="\n")
 print(urls[1], end="\n")
 
 chrome.close()
+
+post = {
+    "postContent": postContents[0],
+    "url": urls[1]
+}
+
+client = pymongo.MongoClient(MONGO_CONNECTION)
+db = client.test
+collection = db.try_fb
+
+
+try: 
+    if(collection.find_one({"url": urls[1]}) == None):
+        collection.insert_one(post)
+    else:
+        print("post already exist")
+except Exception as e:
+    print(e)
+    pass
+
