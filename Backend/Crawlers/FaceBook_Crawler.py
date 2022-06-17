@@ -32,8 +32,10 @@ MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 # -------- 路徑、帳密 --------
 options = Options()
 options.add_argument("--disable-notifications")
+options.add_argument("--headless")
+options.add_argument("--disable-gpu")
 
-chrome = webdriver.Chrome(service=Service(CHROME_PATH))
+chrome = webdriver.Chrome(service=Service(CHROME_PATH), options=options)
 chrome.get("https://www.facebook.com/")
 
 email = chrome.find_element(By.ID, "email")

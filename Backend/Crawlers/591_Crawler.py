@@ -20,10 +20,10 @@ MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 CHROME_PATH = dotenv_values(ENV_PATH)["CHROME_PATH"]
 options = Options()
 options.add_argument("--disable-notifications")
-
-
+options.add_argument("--headless")
+options.add_argument("--disable-gpu")
 firstRow = 0
-chrome = webdriver.Chrome(service=Service(CHROME_PATH))
+chrome = webdriver.Chrome(service=Service(CHROME_PATH), options=options)
 
 
 
