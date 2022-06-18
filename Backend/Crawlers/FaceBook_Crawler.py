@@ -24,7 +24,7 @@ import pymongo
 
 load_dotenv()
 # 記得改 PATH 
-ENV_PATH = "../../.env" 
+ENV_PATH = "../.env" 
 FB_ACCOUNT = dotenv_values(ENV_PATH)["FB_ACCOUNT"]
 FB_PWD = dotenv_values(ENV_PATH)['FB_PWD']
 CHROME_PATH = dotenv_values(ENV_PATH)["CHROME_PATH"]
