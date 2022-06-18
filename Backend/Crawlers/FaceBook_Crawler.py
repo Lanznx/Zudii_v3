@@ -23,8 +23,8 @@ from dotenv import dotenv_values, load_dotenv
 import pymongo
 
 load_dotenv()
-# 記得改 PATH 
-ENV_PATH = "../.env" 
+# 記得改 PATH
+ENV_PATH = "../.env"
 FB_ACCOUNT = dotenv_values(ENV_PATH)["FB_ACCOUNT"]
 FB_PWD = dotenv_values(ENV_PATH)['FB_PWD']
 CHROME_PATH = dotenv_values(ENV_PATH)["CHROME_PATH"]
@@ -69,7 +69,6 @@ for i in range(scroll_time):
     chrome.execute_script(click_more)
 
 
-
 soup = BeautifulSoup(chrome.page_source, 'html.parser')
 
 
@@ -79,21 +78,17 @@ postNumber = 0
 for post in posts:
     # print("-------------postNumber-------------", postNumber)
     # 把內文的每一行都找出來，並印出來
-    contents = post.find_all('div', {'dir': 'auto'}, {'style': "text-align: start"})
+    contents = post.find_all('div', {'dir': 'auto'}, {
+                             'style': "text-align: start"})
     content_texts = ""
     for content in contents:
         # words = pg.cut(post)
         # print(words)
         # print(content.getText())
         content_texts += content.text + "\n"
-        
+
     postContents.append(content_texts)
     postNumber += 1
-
-
-
-
-
 
 
 links = chrome.find_elements(
@@ -123,7 +118,6 @@ for link in links:
     except:
         pass
 
-
     # if("分" in created_time  or "鐘" in created_time or "小" in created_time or "時" in created_time):
     #     print("今天：000")
     # elif ("昨天" in created_time):
@@ -144,12 +138,14 @@ for link in links:
 print("===========================")
 print(postContents[0], end="\n")
 print(urls[1], end="\n")
+print(datetime.date.today())
 
 chrome.close()
 
 post = {
     "postContent": postContents[0],
-    "url": urls[1]
+    "url": urls[1],
+    "time": datetime.date.today()
 }
 
 client = pymongo.MongoClient(MONGO_CONNECTION)
@@ -157,7 +153,7 @@ db = client.test
 collection = db.try_fb
 
 
-try: 
+try:
     if(collection.find_one({"url": urls[1]}) == None):
         collection.insert_one(post)
     else:
@@ -165,4 +161,3 @@ try:
 except Exception as e:
     print(e)
     pass
-
