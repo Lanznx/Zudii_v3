@@ -21,7 +21,10 @@ ENV_PATH = "../.env"
 MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 CHROME_PATH = dotenv_values(ENV_PATH)["CHROME_PATH"]
 options = Options()
+options.add_argument("--disable-extensions")
+options.add_argument("--disable-alerts")
 options.add_argument("--disable-notifications")
+options.add_argument("--disable-popups")
 options.add_argument("--headless")
 options.add_argument("--disable-gpu")
 chrome = webdriver.Chrome(service=Service(CHROME_PATH), options=options)
@@ -48,67 +51,79 @@ for section in range(1, 13):
     has_next_page = True
     firstRow = 0
 
-    while(has_next_page):
-        chrome.get(
-            "https://rent.591.com.tw/?region=1&section={}&order=posttime&orderType=desc&firstRow={}".format(section, str(firstRow)))
-        WebDriverWait(chrome, 1000).until(EC.presence_of_element_located((By.CLASS_NAME, "R")))
-        soup = BeautifulSoup(chrome.page_source, 'html.parser')
+    try: 
+        while(has_next_page):
+            chrome.get(
+                "https://rent.591.com.tw/?region=1&section={}&order=posttime&orderType=desc&firstRow={}".format(section, str(firstRow)))
+            WebDriverWait(chrome, 10000).until(EC.presence_of_element_located((By.CLASS_NAME, "R")))
+            soup = BeautifulSoup(chrome.page_source, 'html.parser')
 
-        posts = soup.find_all('section', {'class': 'vue-list-rent-item'})
-        total_rows = soup.find("span", {"class": "R"})
-        print(total_rows)
-        total_rows = total_rows.text
-        print(total_rows)
+            posts = soup.find_all('section', {'class': 'vue-list-rent-item'})
+            total_rows = soup.find("span", {"class": "R"})
+            print(total_rows)
+            total_rows = total_rows.text
+            print(total_rows)
 
-        for post in posts:
-            print("-------------postNumber-------------", postNumber)
-            content = {
-                "id_591": "",
-                "title": "",
-                "link": "",
-                "section": section,
-                "location": "",
-                "price": "",
-                "type": "",
-                "size": ""
-            }
-            # 把內文的每一行都找出來，並印出來
+            for post in posts:
+                print("-------------postNumber-------------", postNumber)
+                content = {
+                    "id_591": "",
+                    "imgLink":"",
+                    "title": "",
+                    "link": "",
+                    "section": section,
+                    "location": "",
+                    "price": "",
+                    "type": "",
+                    "size": ""
+                }
+                # 把內文的每一行都找出來，並印出來
 
-            id_591 = post['data-bind']
-            title = post.find('div', {'class': "item-title"}
-                            ).text.replace(" ", "").replace("\n", "")
-            link = post.find("a", {'target': "_blank"})['href']
-            location = post.find('div', {'class': "item-area"}
+                id_591 = post['data-bind']
+                try:
+                    imgLink = post.find_all("img", {"class": "obsever-lazyimg"})[0]['data-original']
+                except:
+                    imgLink = ""
+                title = post.find('div', {'class': "item-title"}
                                 ).text.replace(" ", "").replace("\n", "")
-            price = post.find(
-                'div', {'class': "item-price-text"}).text.replace("元/月", "").replace("\n", "").replace(" ", "")
-            type = (post.find("ul", {"class": "item-style"})).decode_contents().split(
-                " ")[0].replace("<li>", "").replace("</li>", "")
-            size = post.find("ul", {"class": "item-style"}).decode_contents().split(" ")[
-                2].replace("<li>", "").replace("</li>", "")
-            if(size == "-->"):
-                size = "Nan"
-            # ============= clean Data =============
-            content.update({"id_591": id_591})
-            content.update({"title": title})
-            content.update({"link": link})
-            content.update({"location": location})
-            content.update({"price": price})
-            content.update({"type": type})
-            content.update({"size": size})
-            contents.append(content)
+                link = post.find("a", {'target': "_blank"})['href']
+                location = post.find('div', {'class': "item-area"}
+                                    ).text.replace(" ", "").replace("\n", "")
+                price = post.find(
+                    'div', {'class': "item-price-text"}).text.replace("元/月", "").replace("\n", "").replace(" ", "").replace(",", "")
+                type = (post.find("ul", {"class": "item-style"})).decode_contents().split(
+                    " ")[0].replace("<li>", "").replace("</li>", "")
+                size = post.find("ul", {"class": "item-style"}).decode_contents().split(" ")[
+                    2].replace("<li>", "").replace("</li>", "").replace("坪", "")
+                if(size == "-->"):
+                    size = "Nan"
+                else:
+                    size = float(size)
+                # ============= clean Data =============
+                content.update({"id_591": int(id_591)})
+                content.update({"title": title})
+                content.update({"imgLink": imgLink})
+                content.update({"link": link})
+                content.update({"location": location})
+                content.update({"price": int(price)})
+                content.update({"type": type})
+                content.update({"size": size})
+                contents.append(content)
 
-            postNumber += 1
+                postNumber += 1
 
-        if(firstRow >= int(total_rows)):
-            has_next_page = False
-        else:
-            firstRow += 30
+            if(firstRow >= int(total_rows)):
+                has_next_page = False
+            else:
+                firstRow += 30
+    except:
+        print("error in section {}, row {}".format(section, firstRow))
+        pass
 
 # ============= 連 mongoDB =============
 client = pymongo.MongoClient(MONGO_CONNECTION)
 db = client.test
-collection = db.try_591
+collection = db.test_591
 
 try:
     for content in contents:
