@@ -18,8 +18,38 @@ export default function Page591() {
   const [minRent, setMinRent] = React.useState(0);
   const [maxRent, setMaxRent] = React.useState(0);
   const [type, setType] = React.useState([]);
-  const [location, setLocation] = React.useState([]);
+  const [location, setLocation] = React.useState([]); // this the array of location name
+  const [locationCode, setLocationCode] = React.useState([]); // this is the array of location code
   const [search, setSearch] = React.useState("");
+
+  const codes = { // this is the dictionary of location code
+    1: "中正區",
+    2: "大同區",
+    3: "中山區",
+    4: "松山區",
+    5: "大安區",
+    6: "萬華區",
+    7: "信義區",
+    8: "士林區",
+    9: "北投區",
+    10: "內湖區",
+    11: "南港區",
+    12: "文山區",
+  };
+
+  React.useEffect(() => {
+    // get key of locationCode by matching codes and location
+    for (let i = 0; i < location.length; i++) {
+      for (let key in codes) {
+        if (codes[key] === location[i]) {
+          setLocationCode([...locationCode, key]);
+        }
+      }
+    }
+
+
+    console.log(locationCode, "locationCode");
+  }, [location]);
 
   const [rentOpen, setRentOpen] = React.useState(false);
   const handleRentOpen = () => {
@@ -71,7 +101,7 @@ export default function Page591() {
 
   return (
     <Grid container>
-      <Grid item xs={1} md={4.5}/>
+      <Grid item xs={1} md={4.5} />
       <Grid item xs={10} md={3}>
         <Stack sx={{ mt: 3 }} spacing={1}>
           <Typography variant="h5">租迪 Zudii</Typography>
@@ -199,27 +229,28 @@ export default function Page591() {
           </Card>
         </Stack>
       </Grid>
-      <Grid item xs={1} md={4.5}/>
-      <Grid item xs={1} md={4.5}/>
+      <Grid item xs={1} md={4.5} />
+      <Grid item xs={1} md={4.5} />
       <Grid item xs={10} md={3}>
         <Button
           variant="contained"
-              sx={{
-                width: "100%",
-                height: "50px",
-                borderRadius: "3px",
-                backgroundColor: "#CB4E4E",
-                color: "white",
-                fontSize: "20px",
-                fontWeight: "bold",
-                marginTop: "20px",
-              }}
+          sx={{
+            width: "100%",
+            height: "50px",
+            borderRadius: "3px",
+            backgroundColor: "#CB4E4E",
+            color: "white",
+            fontSize: "20px",
+            fontWeight: "bold",
+            marginTop: "20px",
+          }}
           onClick={() => {
             setMinRent(0);
             setMaxRent(0);
             setLocation([]);
             setType([]);
             setSearch("");
+            setLocationCode([]);
           }}
         >
           清除條件
@@ -243,7 +274,7 @@ export default function Page591() {
           送出查詢條件
         </Button>
       </Grid>
-      <Grid item xs={1} md={4.5}/>
+      <Grid item xs={1} md={4.5} />
     </Grid>
   );
 }

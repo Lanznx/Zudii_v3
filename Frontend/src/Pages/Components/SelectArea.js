@@ -28,6 +28,8 @@ const names = [
   '士林區',
   '北投區',
   '內湖區',
+  '南港區',
+  '文山區',
 ];
 
 function getStyles(name, location, theme) {
