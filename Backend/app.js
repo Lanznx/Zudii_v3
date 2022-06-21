@@ -25,7 +25,7 @@ const bot = linebot({
 });
 
 
-serverPort = 4000
+serverPort = 4500
 app.listen(serverPort, () => {
   console.log(`🔥🔥🔥 hi, your server is running on port ${serverPort} 🔥🔥🔥`);
 });
