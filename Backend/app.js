@@ -35,12 +35,12 @@ bot.on("message", async (event) => {
   try {
     const msg = event.message.contentProvider.originalContentUrl;
     const content = msg.split("?");
-    const userInfo = content[3]
-    console.log(msg)
-    console.log(content)
+    const userInfo = content[3];
+    console.log(msg);
+    console.log(content);
     if (content[1] === "search") {
       const cleanData = content[2].split("&");
-      const request = {
+      let request = {
         body: {
           text: cleanData[0],
           price1: parseInt(cleanData[1]),
@@ -49,9 +49,19 @@ bot.on("message", async (event) => {
           types: cleanData[4].split(","),
           firstRow: parseInt(cleanData[5]),
           userId: userInfo.split("&")[0],
-          displayName: userInfo.split("&")[1]
+          displayName: userInfo.split("&")[1],
         },
       };
+
+      if (cleanData[4] === "")
+        request.body.types = [
+          "整層住家",
+          "獨立套房",
+          "分租套房",
+          "雅房",
+          "其他",
+          "車位",
+        ];
       const replyMessage = await search(request, null);
       event.reply(replyMessage).then((data) => {
         console.log(data, "=== data ===");

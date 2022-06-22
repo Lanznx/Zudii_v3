@@ -8,14 +8,7 @@ async function search(req, res) {
     locaitonCodes: req.body.locaitonCodes || [
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
     ],
-    types: req.body.types || [
-      "整層住家",
-      "獨立套房",
-      "分租套房",
-      "雅房",
-      "其他",
-      "車位",
-    ],
+    types: req.body.types ,
     firstRow: req.body.firstRow || 0,
   };
   console.log(conditions,"============ conditions ===============")
