@@ -24,7 +24,7 @@ async function search(req, res) {
     displayName: req.body.displayName,
   };
 
-  houses = await searcher(conditions, userInfo);
+  const houses = await searcher(conditions, userInfo);
 
 
   console.log(houses, "================ houses ====================");
@@ -33,7 +33,7 @@ async function search(req, res) {
   } else {
     let replyMessages = {
       type: "flex",
-      altText: `${text} 的結果`,
+      altText: `${conditions.text} 的結果`,
       contents: {
         type: "carousel",
         contents: [],
