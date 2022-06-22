@@ -26,7 +26,6 @@ async function search(req, res) {
 
   houses = await searcher(conditions, userInfo);
 
-  res.status(200).send({ success: true, status: 200, houses: houses });
 
   console.log(houses, "================ houses ====================");
   if (houses[0].id_591 === null) {
