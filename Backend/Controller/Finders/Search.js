@@ -2,13 +2,13 @@ const { searcher } = require("../../Model/FinderModel");
 
 async function search(req, res) {
   const conditions = {
-    text: req.body.search || "",
-    price1: req.body.minRent || 0,
-    price2: req.body.maxRent || 100000000,
-    locaitonCodes: req.body.locaitonCode || [
+    text: req.body.text || "",
+    price1: req.body.price1 || 0,
+    price2: req.body.price2 || 100000000,
+    locaitonCodes: req.body.locaitonCodes || [
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
     ],
-    types: req.body.type || [
+    types: req.body.types || [
       "整層住家",
       "獨立套房",
       "分租套房",
