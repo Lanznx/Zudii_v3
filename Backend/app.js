@@ -26,7 +26,7 @@ const bot = linebot({
   channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
 });
 
-// https://i.imgur.com/MwS42AE.png?search?木柵&5000&10000&['1','2']&['整層住家','獨立套房']&0
+// https://i.imgur.com/MwS42AE.png?search?木柵&5000&10000&['1','2']&['整層住家','獨立套房']&0?userIDIDIDIDI&displayNAME
 
 // 當有人傳送訊息給 line Bot:
 bot.on("message", async (event) => {
@@ -35,6 +35,7 @@ bot.on("message", async (event) => {
   try {
     const msg = event.message.contentProvider.originalContentUrl;
     const content = msg.split("?");
+    const userInfo = content[3]
     if (content[1] === "search") {
       const cleanData = content[2].split("&");
       const request = {
@@ -45,6 +46,8 @@ bot.on("message", async (event) => {
           locaitonCodes: parseInt(cleanData[3].split(",")),
           types: cleanData[4].split(","),
           firstRow: parseInt(cleanData[5]),
+          userId: userInfo.split("&")[0],
+          displayName: userInfo.split("&")[1]
         },
       };
       const replyMessage = await search(request, null);
