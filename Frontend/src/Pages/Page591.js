@@ -13,8 +13,28 @@ import RentDialog from "./Components/RentDialog";
 import LocationDialog from "./Components/LocationDialog";
 import TypeDialog from "./Components/TypeDialog";
 import SearchDialog from "./Components/SearchDialog";
+import liff from "@line/liff";
+const REACT_APP_LIFF_ID = process.env.REACT_APP_LIFF_ID;
+
+async function initializeLIFF() {
+  await liff.init({
+    liffId: REACT_APP_LIFF_ID, // Use own liffId
+    withLoginOnExternalBrowser: true, // Enable automatic login process
+  });
+
+  // Start to use liff's api
+  console.log("liff initialized");
+  if (!liff.isLoggedIn() && !liff.isInClient()) {
+    window.alert("麻煩登入再來，掰掰！");
+  } else {
+    const profile = await liff.getProfile();
+    console.log(profile, " profile"); // print raw profile object
+  }
+}
 
 export default function Page591() {
+  initializeLIFF();
+
   const [minRent, setMinRent] = React.useState(0);
   const [maxRent, setMaxRent] = React.useState(0);
   const [type, setType] = React.useState([]);
@@ -22,7 +42,8 @@ export default function Page591() {
   const [locationCode, setLocationCode] = React.useState([]); // this is the array of location code
   const [search, setSearch] = React.useState("");
 
-  const codes = { // this is the dictionary of location code
+  const codes = {
+    // this is the dictionary of location code
     1: "中正區",
     2: "大同區",
     3: "中山區",
@@ -46,7 +67,6 @@ export default function Page591() {
         }
       }
     }
-
 
     console.log(locationCode, "locationCode");
   }, [location]);
@@ -104,10 +124,9 @@ export default function Page591() {
       <Grid item xs={1} md={4.5} />
       <Grid item xs={10} md={3}>
         <Stack sx={{ mt: 3 }} spacing={1}>
-          <Typography variant="h5">租迪 Zudii</Typography>
-          <Typography variant="h7">591 條件篩選</Typography>
+          <Typography variant="h5">591 條件篩選</Typography>
         </Stack>
-        <Stack spacing={4} sx={{ mt: 10 }}>
+        <Stack spacing={4} sx={{ mt: 2 }}>
           <Card sx={{ width: "100%", display: "flex" }}>
             <CardMedia
               sx={{
@@ -232,7 +251,56 @@ export default function Page591() {
       <Grid item xs={1} md={4.5} />
       <Grid item xs={1} md={4.5} />
       <Grid item xs={10} md={3}>
-        <Button
+        <Grid container>
+          <Grid item xs={5} md={5}>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{
+                width: "100%",
+                height: "50px",
+                borderRadius: "3px",
+                backgroundColor: "#4EADCB",
+                color: "white",
+                fontSize: "20px",
+                fontWeight: "bold",
+                marginTop: "20px",
+                marginBottom: "20px",
+              }}
+              onClick={async ()=>{
+                await liff.sendMessages([{
+                  type: 'image',
+                  originalContentUrl: `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0`,
+                  previewImageUrl: 'https://i.imgur.com/MwS42AE.png'
+                }])
+                console.log(`https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0`)
+              }}
+            >
+              送出查詢
+            </Button>
+          </Grid>
+          <Grid item xs={2} md={2} />
+          <Grid item xs={5} md={5}>
+            <Button
+              variant="contained"
+              color="primary"
+              sx={{
+                width: "100%",
+                height: "50px",
+                borderRadius: "3px",
+                backgroundColor: "#4EADCB",
+                color: "white",
+                fontSize: "20px",
+                fontWeight: "bold",
+                marginTop: "20px",
+                marginBottom: "20px",
+              }}
+            >
+              設定爬蟲
+            </Button>
+          </Grid>
+        </Grid>
+      <Button
           variant="contained"
           sx={{
             width: "100%",
@@ -242,7 +310,6 @@ export default function Page591() {
             color: "white",
             fontSize: "20px",
             fontWeight: "bold",
-            marginTop: "20px",
           }}
           onClick={() => {
             setMinRent(0);
@@ -252,28 +319,10 @@ export default function Page591() {
             setSearch("");
             setLocationCode([]);
           }}
-        >
+          >
           清除條件
         </Button>
-
-        <Button
-          variant="contained"
-          color="primary"
-          sx={{
-            width: "100%",
-            height: "50px",
-            borderRadius: "3px",
-            backgroundColor: "#4EADCB",
-            color: "white",
-            fontSize: "20px",
-            fontWeight: "bold",
-            marginTop: "20px",
-            marginBottom: "20px",
-          }}
-        >
-          送出查詢條件
-        </Button>
-      </Grid>
+          </Grid>
       <Grid item xs={1} md={4.5} />
     </Grid>
   );

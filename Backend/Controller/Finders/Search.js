@@ -1,7 +1,33 @@
 const { searcher } = require("../../Model/FinderModel");
 
-async function search(text) {
-  houses = await searcher(text);
+async function search(req, res) {
+  const conditions = {
+    text: req.body.search || "",
+    price1: req.body.minRent || 0,
+    price2: req.body.maxRent || 100000000,
+    locaitonCodes: req.body.locaitonCode || [
+      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+    ],
+    types: req.body.type || [
+      "整層住家",
+      "獨立套房",
+      "分租套房",
+      "雅房",
+      "其他",
+      "車位",
+    ],
+    firstRow: req.body.firstRow || 0,
+  };
+
+  userInfo = {
+    userId: req.body.userId,
+    displayName: req.body.displayName,
+  };
+
+  houses = await searcher(conditions, userInfo);
+
+  res.status(200).send({ success: true, status: 200, houses: houses });
+
   console.log(houses, "================ houses ====================");
   if (houses[0].id_591 === null) {
     return "查無資料";
@@ -25,9 +51,13 @@ async function search(text) {
           aspectMode: "cover",
           action: {
             type: "uri",
-            uri: house.link || "https://img1.591.com.tw/house/2022/06/13/165510489014780205.jpg!510x400.jpg",
+            uri:
+              house.link ||
+              "https://img1.591.com.tw/house/2022/06/13/165510489014780205.jpg!510x400.jpg",
           },
-          url: house.imgLink || "https://img1.591.com.tw/house/2022/06/13/165510489014780205.jpg!510x400.jpg",
+          url:
+            house.imgLink ||
+            "https://img1.591.com.tw/house/2022/06/13/165510489014780205.jpg!510x400.jpg",
           animated: true,
         },
         body: {

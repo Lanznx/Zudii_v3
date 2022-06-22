@@ -4,6 +4,7 @@ const {search} = require("../Controller/Finders/Search");
 
 
 
-find.post("/search", search)
+find.post("/", search)
 
-find.post("/find")
+
+module.exports = find

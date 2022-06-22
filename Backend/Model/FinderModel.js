@@ -1,15 +1,65 @@
-const { collection } = require("../util/MongoDB");
-async function searcher(text) {
-  let query = {
+const { collection, user } = require("../util/MongoDB");
+async function searcher(conditions, userInfo) {
+  const { text, price1, price2, locaitonCodes, types, firstRow } = conditions;
+  const { userId, displayName } = userInfo;
+
+  let minRent = 0;
+  let maxRent = 0;
+  if (price1 <= price2) {
+    minRent = price1;
+    maxRent = price2;
+  } else {
+    minRent = price2;
+    maxRent = price1;
+  }
+
+  let findHouse = {
     title: {
       $regex: text,
-      $options: "i",
     },
+    price: { $gte: minRent, $lte: maxRent },
+    section: { $in: locaitonCodes },
+    type: { $in: types },
   };
-  const result = await collection.find(query).skip(0).limit(10).toArray();
+
+  let findUser = {
+    userId: userId,
+  };
+
+  let searchRecord = {
+    title: text,
+    minRent: minRent,
+    maxRent: maxRent,
+    sections: locaitonCodes,
+    types: types,
+    firstRow: firstRow,
+  };
+
+  const userResult = await user.find(findUser).toArray();
+  console.log(userResult, "============ user Result ===============");
+  console.log(userResult.length, "============ length ===============");
+  if (userResult.length === 0) {
+    user.insertOne({
+      userId: userId,
+      userName: displayName,
+      searchHistory: [conditions],
+    });
+  } else {
+    console.log("insert at existed user");
+    user.updateOne(
+      { userId: userId },
+      { $push: { searchHistory: searchRecord } }
+    );
+  }
+
+  const result = await collection 
+    .find(findHouse)
+    .sort({ id_591: -1 })
+    .skip(firstRow)
+    .limit(10)
+    .toArray();
   if (result.length === 0) {
     result.push({ id_591: null });
-    console.log(result);
   }
   return result;
 }
