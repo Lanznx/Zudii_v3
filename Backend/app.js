@@ -36,6 +36,8 @@ bot.on("message", async (event) => {
     const msg = event.message.contentProvider.originalContentUrl;
     const content = msg.split("?");
     const userInfo = content[3]
+    console.log(msg)
+    console.log(content)
     if (content[1] === "search") {
       const cleanData = content[2].split("&");
       const request = {
