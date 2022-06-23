@@ -93,14 +93,14 @@ bot.on("postback", async (event) => {
     const cleanData = content[2].split("&");
     const nextMsg =
       "https://i.imgur.com/MwS42AE.png?search?" +
-      cleanData[0].toString() +
-      cleanData[1].toString() +
-      cleanData[2].toString() +
-      cleanData[3].toString() +
-      cleanData[4].toString() +
+      cleanData[0] +
+      cleanData[1] +
+      cleanData[2] +
+      cleanData[3] +
+      cleanData[4] +
       (parseInt(cleanData[5]) + 10).toString() +
-      userInfo.split("&")[0].toString() +
-      userInfo.split("&")[1].toString();
+      userInfo.split("&")[0] +
+      userInfo.split("&")[1];
     console.log(nextMsg, "=========== nextnsg ===========");
     let request = {
       body: {
