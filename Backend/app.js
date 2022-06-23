@@ -87,14 +87,14 @@ bot.on("message", async (event) => {
 bot.on("postback", async (event) => {
   console.log(event, " ========.  EVENT.  =============");
   const request = {
-    text: event.data[0].text,
-    price1: event.data[0].price1,
-    price2: event.data[0].price2,
-    locaitonCodes: event.data[0].locaitonCodes,
-    types: event.data[0].types,
-    firstRow: event.data[0].firstRow + 10,
-    userId: event.data[1].userId,
-    displayName: event.data[1].displayName,
+    text: event.postback.data[0].text,
+    price1: event.postback.data[0].price1,
+    price2: event.postback.data[0].price2,
+    locaitonCodes: event.postback.data[0].locaitonCodes,
+    types: event.postback.data[0].types,
+    firstRow: event.postback.data[0].firstRow + 10,
+    userId: event.postback.data[1].userId,
+    displayName: event.postback.data[1].displayName,
     msg: null,
   };
   console.log(request, "========   postback ==========")
