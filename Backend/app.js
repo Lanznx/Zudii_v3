@@ -100,7 +100,7 @@ bot.on("postback", async (event) => {
         price2: parseInt(cleanData[2]),
         locaitonCodes: parseInt(cleanData[3].split(",")),
         types: cleanData[4].split(","),
-        firstRow: parseInt(cleanData[5]),
+        firstRow: parseInt(cleanData[5]) + 10,
         userId: userInfo.split("&")[0],
         displayName: userInfo.split("&")[1],
         msg: msg,
