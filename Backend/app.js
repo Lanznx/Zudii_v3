@@ -91,6 +91,7 @@ bot.on("postback", async (event) => {
   if (content[1] === "search") {
     const userInfo = content[3];
     const cleanData = content[2].split("&");
+    console.log(cleanData, "cleandata")
     const nextMsg =
       cleanData[0].toString() +
       cleanData[1].toString() +
