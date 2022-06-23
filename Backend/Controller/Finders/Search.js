@@ -12,7 +12,7 @@ async function search(req, res) {
     firstRow: req.body.firstRow || 0,
   };
   console.log(conditions, "============ conditions ===============");
-  userInfo = {
+  const userInfo = {
     userId: req.body.userId,
     displayName: req.body.displayName,
   };
@@ -37,7 +37,7 @@ async function search(req, res) {
             action: {
               type: "postback",
               label: "下一頁",
-              data: req.body.msg,
+              data: [conditions, userInfo],
             },
           },
           {

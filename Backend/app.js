@@ -33,8 +33,8 @@ bot.on("message", async (event) => {
   // event.message.text：使用者傳給 linebot 的訊息
   // event.reply(msg) 可以將回傳 msg 給使用者
   try {
-    console.log(event, " ========.  EVENT.  =============")
-    const msg = event.message.contentProvider.originalContentUrl || event.postback.data;
+    console.log(event, " ========.  EVENT.  =============");
+    const msg = event.message.contentProvider.originalContentUrl;
     const content = msg.split("?");
     const userInfo = content[3];
     console.log(msg);
@@ -82,6 +82,26 @@ bot.on("message", async (event) => {
     console.log(err, "=== err ===");
     event.reply("不知道你在說什麼");
   }
+});
+
+bot.on("postback", async (event) => {
+  console.log(event, " ========.  EVENT.  =============");
+  const request = {
+    text: event.data[0].text,
+    price1: event.data[0].price1,
+    price2: event.data[0].price2,
+    locaitonCodes: event.data[0].locaitonCodes,
+    types: event.data[0].types,
+    firstRow: event.data[0].firstRow + 10,
+    userId: event.data[1].userId,
+    displayName: event.data[1].displayName,
+    msg: null,
+  };
+  console.log(request, "========   postback ==========")
+  const replyMessage = await search(request, null);
+  event.reply(replyMessage).then((data) => {
+    console.log(data, "=== data ===");
+  });
 });
 
 serverPort = 4500;
