@@ -19,7 +19,6 @@ async function search(req, res) {
 
   const houses = await searcher(conditions, userInfo);
 
-  console.log(houses, "================ houses ====================");
   if (houses[0].id_591 === null) {
     return "查無資料";
   } else {
