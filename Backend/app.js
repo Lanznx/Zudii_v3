@@ -93,6 +93,14 @@ bot.on("postback", async (event) => {
   if (content[1] === "search") {
     const userInfo = content[3];
     const cleanData = content[2].split("&");
+    const nextMsg =
+      cleanData[0] +
+      cleanData[1] +
+      cleanData[2] +
+      cleanData[3] +
+      cleanData[4] +
+      (parseInt(cleanData[5]) + 10).toString() +
+      userInfo.join("");
     let request = {
       body: {
         text: cleanData[0],
@@ -103,7 +111,7 @@ bot.on("postback", async (event) => {
         firstRow: parseInt(cleanData[5]) + 10,
         userId: userInfo.split("&")[0],
         displayName: userInfo.split("&")[1],
-        msg: msg,
+        msg: nextMsg,
       },
     };
 
