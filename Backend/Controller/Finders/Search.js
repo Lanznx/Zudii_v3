@@ -45,7 +45,7 @@ async function search(req, res) {
             action: {
               type: "message",
               label: "抖內",
-              displayText: "我要抖內！",
+              text: "我要抖內！",
             },
           },
         ],
