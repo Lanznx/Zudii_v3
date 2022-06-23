@@ -157,15 +157,16 @@ async function search(req, res) {
                       flex: 5,
                       margin: "none",
                     },
+                    {
+                      type: "image",
+                      url: req.body.msg,
+                      size: "5px",
+                    },
                   ],
                 },
               ],
             },
-            {
-              type: "image",
-              url: req.body.msg,
-              size: "5px",
-            },
+
           ],
         },
         footer: {
