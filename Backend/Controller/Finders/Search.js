@@ -67,6 +67,9 @@ async function search(req, res) {
               type: "image",
               url: req.body.msg,
               size: "5px",
+              weight: "bold",
+              margin: "none",
+              wrap: false,
             },
             {
               type: "box",
