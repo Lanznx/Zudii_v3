@@ -56,7 +56,10 @@ bot.on("message", async (event) => {
             text: cleanData[0],
             price1: parseInt(cleanData[1]),
             price2: parseInt(cleanData[2]),
-            locaitonCodes: parseInt(cleanData[3].split(",") || cleanData[3]),
+            locaitonCodes:
+              cleanData[3].split(",").map((item) => {
+                return parseInt(item);
+              }) || parseInt(cleanData[3]),
             types: cleanData[4].split(","),
             firstRow: parseInt(cleanData[5]),
             userId: userInfo[0],
@@ -120,7 +123,10 @@ bot.on("postback", async (event) => {
         text: cleanData[0],
         price1: parseInt(cleanData[1]),
         price2: parseInt(cleanData[2]),
-        locaitonCodes: parseInt(cleanData[3].split(",") || cleanData[3]),
+        locaitonCodes:
+          cleanData[3].split(",").map((item) => {
+            return parseInt(item);
+          }) || parseInt(cleanData[3]),
         types: cleanData[4].split(","),
         firstRow: parseInt(cleanData[5]) + 10,
         userId: userInfo[0],
