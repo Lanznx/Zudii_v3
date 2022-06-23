@@ -37,14 +37,15 @@ async function search(req, res) {
             action: {
               type: "postback",
               label: "下一頁",
-              data: req.body.msg
+              data: req.body.msg,
             },
           },
           {
             type: "action",
             action: {
-              type: "camera",
-              label: "Open camera",
+              type: "message",
+              label: "抖內",
+              displayText: "我要抖內！",
             },
           },
         ],
