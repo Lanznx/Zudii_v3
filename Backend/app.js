@@ -47,8 +47,8 @@ bot.on("message", async (event) => {
       const content = msg.split("?");
 
       if (content[1] === "search") {
-        const userInfo = content[3];
         const cleanData = content[2].split("&");
+        const userInfo = content[3].split("&");
         let request = {
           body: {
             text: cleanData[0],
@@ -57,8 +57,8 @@ bot.on("message", async (event) => {
             locaitonCodes: parseInt(cleanData[3].split(",")),
             types: cleanData[4].split(","),
             firstRow: parseInt(cleanData[5]),
-            userId: userInfo.split("&")[0],
-            displayName: userInfo.split("&")[1],
+            userId: userInfo[0],
+            displayName: userInfo[1],
             msg: msg,
           },
         };
@@ -89,8 +89,8 @@ bot.on("postback", async (event) => {
   const content = msg.split("?");
 
   if (content[1] === "search") {
-    const userInfo = content[3];
     const cleanData = content[2].split("&");
+    const userInfo = content[3].split("&");
     const nextMsg =
       "https://i.imgur.com/MwS42AE.png?search?" + cleanData[0] + "&";
     cleanData[1] + "&";
@@ -100,9 +100,9 @@ bot.on("postback", async (event) => {
       "&" +
       (parseInt(cleanData[5]) + 10).toString() +
       "?" +
-      userInfo.split("&")[0] +
+      userInfo[0] +
       "&";
-    userInfo.split("&")[1];
+    userInfo[1];
     console.log(nextMsg, "=========== nextnsg ===========");
     let request = {
       body: {
@@ -112,8 +112,8 @@ bot.on("postback", async (event) => {
         locaitonCodes: parseInt(cleanData[3].split(",")),
         types: cleanData[4].split(","),
         firstRow: parseInt(cleanData[5]) + 10,
-        userId: userInfo.split("&")[0],
-        displayName: userInfo.split("&")[1],
+        userId: userInfo[0],
+        displayName: userInfo[1],
         msg: nextMsg,
       },
     };
