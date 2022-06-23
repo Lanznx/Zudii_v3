@@ -136,6 +136,8 @@ bot.on("postback", async (event) => {
         msg: nextMsg,
       },
     };
+    if (cleanData[3] === "" || cleanData[3] === "Nan")
+      request.body.locaitonCodes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
     if (cleanData[4] === "")
       request.body.types = [
