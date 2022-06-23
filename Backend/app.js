@@ -88,9 +88,11 @@ bot.on("postback", async (event) => {
   const msg = event.postback.data;
   console.log(msg, "original MSG")
   const content = msg.split("?");
+  console.log(content, "content")
 
   if (content[1] === "search") {
     const cleanData = content[2].split("&");
+    console.log(cleanData, " cleanData")
     const userInfo = content[3].split("&");
     const nextMsg =
       "https://i.imgur.com/MwS42AE.png?search?" + cleanData[0] + "&";
