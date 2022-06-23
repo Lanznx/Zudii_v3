@@ -96,8 +96,12 @@ bot.on("postback", async (event) => {
     cleanData[1] + "&";
     cleanData[2] + "&";
     cleanData[3] + "&";
-    cleanData[4] + "&"(parseInt(cleanData[5]) + 10).toString() + "&";
-    userInfo.split("&")[0] + "&";
+    cleanData[4] +
+      "&" +
+      (parseInt(cleanData[5]) + 10).toString() +
+      "&" +
+      userInfo.split("&")[0] +
+      "&";
     userInfo.split("&")[1];
     console.log(nextMsg, "=========== nextnsg ===========");
     let request = {
