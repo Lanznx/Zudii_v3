@@ -99,8 +99,8 @@ bot.on("postback", async (event) => {
       cleanData[0] +
       "&" +
       cleanData[1] +
-      "&";
-    cleanData[2] +
+      "&" +
+      cleanData[2] +
       "&" +
       cleanData[3] +
       "&" +
