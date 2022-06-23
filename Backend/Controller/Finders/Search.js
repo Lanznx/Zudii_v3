@@ -68,7 +68,6 @@ async function search(req, res) {
               url: req.body.msg,
               size: "5px",
               margin: "none",
-              wrap: false,
             },
             {
               type: "box",
