@@ -99,7 +99,7 @@ bot.on("postback", async (event) => {
     cleanData[4] +
       "&" +
       (parseInt(cleanData[5]) + 10).toString() +
-      "&" +
+      "?" +
       userInfo.split("&")[0] +
       "&";
     userInfo.split("&")[1];
