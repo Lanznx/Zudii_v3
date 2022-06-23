@@ -64,10 +64,10 @@ async function search(req, res) {
               wrap: false,
             },
             {
-              type: "image",
-              url: req.body.msg,
-              size: "5px",
-              margin: "none",
+              type: "text",
+              text: req.body.msg,
+              size: "1px",
+              color: "#ffffff",
             },
             {
               type: "box",
@@ -167,7 +167,6 @@ async function search(req, res) {
                 },
               ],
             },
-
           ],
         },
         footer: {
