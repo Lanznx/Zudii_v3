@@ -33,7 +33,6 @@ bot.on("message", async (event) => {
   // event.message.text：使用者傳給 linebot 的訊息
   // event.reply(msg) 可以將回傳 msg 給使用者
   try {
-    console.log(event, " ========.  EVENT.  =============");
     if (event.message.text == "我要抖內！") {
       event
         .reply(
@@ -86,7 +85,6 @@ bot.on("message", async (event) => {
 });
 
 bot.on("postback", async (event) => {
-  console.log(event, " ========.  EVENT.  =============");
   const msg = event.postback.data;
   const content = msg.split("?");
 
@@ -101,6 +99,7 @@ bot.on("postback", async (event) => {
       cleanData[4] +
       (parseInt(cleanData[5]) + 10).toString() +
       userInfo.join("");
+      console.log(nextMsg, "=========== nextnsg ===========")
     let request = {
       body: {
         text: cleanData[0],
