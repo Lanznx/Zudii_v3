@@ -5,9 +5,7 @@ async function search(req, res) {
     text: req.body.text || "",
     price1: req.body.price1 || 0,
     price2: req.body.price2 || 100000000,
-    locaitonCodes: req.body.locaitonCodes || [
-      1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
-    ],
+    locaitonCodes: req.body.locaitonCodes,
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
   };
