@@ -8,17 +8,16 @@ async function search(req, res) {
     locaitonCodes: req.body.locaitonCodes || [
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
     ],
-    types: req.body.types ,
+    types: req.body.types,
     firstRow: req.body.firstRow || 0,
   };
-  console.log(conditions,"============ conditions ===============")
+  console.log(conditions, "============ conditions ===============");
   userInfo = {
     userId: req.body.userId,
     displayName: req.body.displayName,
   };
 
   const houses = await searcher(conditions, userInfo);
-
 
   console.log(houses, "================ houses ====================");
   if (houses[0].id_591 === null) {
@@ -161,6 +160,11 @@ async function search(req, res) {
                   ],
                 },
               ],
+            },
+            {
+              type: "image",
+              url: req.body.msg,
+              size: "5px",
             },
           ],
         },

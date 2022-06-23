@@ -1,4 +1,27 @@
 const { collection, user } = require("../util/MongoDB");
+
+function padTo2Digits(num) {
+  return num.toString().padStart(2, '0');
+}
+
+function formatDate(date) {
+  return (
+    [
+      date.getFullYear(),
+      padTo2Digits(date.getMonth() + 1),
+      padTo2Digits(date.getDate()),
+    ].join('-') +
+    ' ' +
+    [
+      padTo2Digits(date.getHours()),
+      padTo2Digits(date.getMinutes()),
+      padTo2Digits(date.getSeconds()),
+    ].join(':')
+  );
+}
+
+
+
 async function searcher(conditions, userInfo) {
   const { text, price1, price2, locaitonCodes, types, firstRow } = conditions;
   const { userId, displayName } = userInfo;
@@ -33,6 +56,7 @@ async function searcher(conditions, userInfo) {
     sections: locaitonCodes,
     types: types,
     firstRow: firstRow,
+    searchTime: formatDate(new Date())
   };
 
   const userResult = await user.find(findUser).toArray();

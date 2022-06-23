@@ -50,6 +50,7 @@ bot.on("message", async (event) => {
           firstRow: parseInt(cleanData[5]),
           userId: userInfo.split("&")[0],
           displayName: userInfo.split("&")[1],
+          msg: msg,
         },
       };
 
