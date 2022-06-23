@@ -37,10 +37,7 @@ async function search(req, res) {
             action: {
               type: "postback",
               label: "下一頁",
-              data: {
-                conditions: conditions,
-                userInfo: userInfo,
-              },
+              data: req.body.msg
             },
           },
           {

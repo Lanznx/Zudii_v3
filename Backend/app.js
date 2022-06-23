@@ -34,12 +34,7 @@ bot.on("message", async (event) => {
   // event.reply(msg) 可以將回傳 msg 給使用者
   try {
     console.log(event, " ========.  EVENT.  =============");
-    const msg = event.message.contentProvider.originalContentUrl;
-    const content = msg.split("?");
-    const userInfo = content[3];
-    console.log(msg);
-    console.log(content);
-    if (event.message.text === "我要抖內！") {
+    if (event.message.text == "我要抖內！") {
       event
         .reply(
           "可以點擊下方連結轉帳給我呦！\nhttps://www.jkopay.com/transfer?j=Transfer:906614325"
@@ -48,35 +43,41 @@ bot.on("message", async (event) => {
           console.log(data, "=== data ===");
         });
     }
-    if (content[1] === "search") {
-      const cleanData = content[2].split("&");
-      let request = {
-        body: {
-          text: cleanData[0],
-          price1: parseInt(cleanData[1]),
-          price2: parseInt(cleanData[2]),
-          locaitonCodes: parseInt(cleanData[3].split(",")),
-          types: cleanData[4].split(","),
-          firstRow: parseInt(cleanData[5]),
-          userId: userInfo.split("&")[0],
-          displayName: userInfo.split("&")[1],
-          msg: msg,
-        },
-      };
+    if (event.message.contentProvider.originalContentUrl) {
+      const msg = event.message.contentProvider.originalContentUrl;
+      const content = msg.split("?");
 
-      if (cleanData[4] === "")
-        request.body.types = [
-          "整層住家",
-          "獨立套房",
-          "分租套房",
-          "雅房",
-          "其他",
-          "車位",
-        ];
-      const replyMessage = await search(request, null);
-      event.reply(replyMessage).then((data) => {
-        console.log(data, "=== data ===");
-      });
+      if (content[1] === "search") {
+        const userInfo = content[3];
+        const cleanData = content[2].split("&");
+        let request = {
+          body: {
+            text: cleanData[0],
+            price1: parseInt(cleanData[1]),
+            price2: parseInt(cleanData[2]),
+            locaitonCodes: parseInt(cleanData[3].split(",")),
+            types: cleanData[4].split(","),
+            firstRow: parseInt(cleanData[5]),
+            userId: userInfo.split("&")[0],
+            displayName: userInfo.split("&")[1],
+            msg: msg,
+          },
+        };
+
+        if (cleanData[4] === "")
+          request.body.types = [
+            "整層住家",
+            "獨立套房",
+            "分租套房",
+            "雅房",
+            "其他",
+            "車位",
+          ];
+        const replyMessage = await search(request, null);
+        event.reply(replyMessage).then((data) => {
+          console.log(data, "=== data ===");
+        });
+      }
     }
   } catch (err) {
     console.log(err, "=== err ===");
@@ -86,20 +87,32 @@ bot.on("message", async (event) => {
 
 bot.on("postback", async (event) => {
   console.log(event, " ========.  EVENT.  =============");
-  const { conditions, userInfo } = event.postback.data;
-  const request = {
+  const msg = event.postback.data;
+  const content = msg.split("?");
+  let request = {
     body: {
-      text: conditions.text,
-      price1: conditions.price1,
-      price2: conditions.price2,
-      locaitonCodes: conditions.locaitonCodes,
-      types: conditions.types,
-      firstRow: conditions.firstRow + 10,
-      userId: userInfo.userId,
-      displayName: userInfo.displayName,
-      msg: null,
+      text: cleanData[0],
+      price1: parseInt(cleanData[1]),
+      price2: parseInt(cleanData[2]),
+      locaitonCodes: parseInt(cleanData[3].split(",")),
+      types: cleanData[4].split(","),
+      firstRow: parseInt(cleanData[5]),
+      userId: userInfo.split("&")[0],
+      displayName: userInfo.split("&")[1],
+      msg: msg,
     },
   };
+
+  if (cleanData[4] === "")
+    request.body.types = [
+      "整層住家",
+      "獨立套房",
+      "分租套房",
+      "雅房",
+      "其他",
+      "車位",
+    ];
+
   console.log(request, "========   postback ==========");
   const replyMessage = await search(request, null);
   event.reply(replyMessage).then((data) => {
