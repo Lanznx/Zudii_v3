@@ -49,12 +49,14 @@ bot.on("message", async (event) => {
       if (content[1] === "search") {
         const cleanData = content[2].split("&");
         const userInfo = content[3].split("&");
+        console.log(cleanData, " cleanData");
+        console.log(cleanData[3], "locationcodes!!!");
         let request = {
           body: {
             text: cleanData[0],
             price1: parseInt(cleanData[1]),
             price2: parseInt(cleanData[2]),
-            locaitonCodes: parseInt(cleanData[3].split(",")),
+            locaitonCodes: parseInt(cleanData[3].split(",") || cleanData[3]),
             types: cleanData[4].split(","),
             firstRow: parseInt(cleanData[5]),
             userId: userInfo[0],
@@ -93,7 +95,7 @@ bot.on("postback", async (event) => {
   if (content[1] === "search") {
     const cleanData = content[2].split("&");
     console.log(cleanData, " cleanData");
-    console.log(cleanData[3], "locationcodes!!!")
+    console.log(cleanData[3], "locationcodes!!!");
     const userInfo = content[3].split("&");
     const nextMsg =
       "https://i.imgur.com/MwS42AE.png?search?" +
@@ -118,7 +120,7 @@ bot.on("postback", async (event) => {
         text: cleanData[0],
         price1: parseInt(cleanData[1]),
         price2: parseInt(cleanData[2]),
-        locaitonCodes: parseInt(cleanData[3].split(",")),
+        locaitonCodes: parseInt(cleanData[3].split(",") || cleanData[3]),
         types: cleanData[4].split(","),
         firstRow: parseInt(cleanData[5]) + 10,
         userId: userInfo[0],
