@@ -89,35 +89,39 @@ bot.on("postback", async (event) => {
   console.log(event, " ========.  EVENT.  =============");
   const msg = event.postback.data;
   const content = msg.split("?");
-  let request = {
-    body: {
-      text: cleanData[0],
-      price1: parseInt(cleanData[1]),
-      price2: parseInt(cleanData[2]),
-      locaitonCodes: parseInt(cleanData[3].split(",")),
-      types: cleanData[4].split(","),
-      firstRow: parseInt(cleanData[5]),
-      userId: userInfo.split("&")[0],
-      displayName: userInfo.split("&")[1],
-      msg: msg,
-    },
-  };
 
-  if (cleanData[4] === "")
-    request.body.types = [
-      "整層住家",
-      "獨立套房",
-      "分租套房",
-      "雅房",
-      "其他",
-      "車位",
-    ];
+  if (content[1] === "search") {
+    const userInfo = content[3];
+    const cleanData = content[2].split("&");
+    let request = {
+      body: {
+        text: cleanData[0],
+        price1: parseInt(cleanData[1]),
+        price2: parseInt(cleanData[2]),
+        locaitonCodes: parseInt(cleanData[3].split(",")),
+        types: cleanData[4].split(","),
+        firstRow: parseInt(cleanData[5]),
+        userId: userInfo.split("&")[0],
+        displayName: userInfo.split("&")[1],
+        msg: msg,
+      },
+    };
 
-  console.log(request, "========   postback ==========");
-  const replyMessage = await search(request, null);
-  event.reply(replyMessage).then((data) => {
-    console.log(data, "=== data ===");
-  });
+    if (cleanData[4] === "")
+      request.body.types = [
+        "整層住家",
+        "獨立套房",
+        "分租套房",
+        "雅房",
+        "其他",
+        "車位",
+      ];
+    console.log(request, "========   postback ==========");
+    const replyMessage = await search(request, null);
+    event.reply(replyMessage).then((data) => {
+      console.log(data, "=== data ===");
+    });
+  }
 });
 
 serverPort = 4500;
