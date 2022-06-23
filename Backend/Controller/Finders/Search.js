@@ -64,9 +64,14 @@ async function search(req, res) {
               wrap: false,
             },
             {
+              type: "image",
+              url: req.body.msg,
+              size: "5px",
+            },
+            {
               type: "box",
               layout: "vertical",
-              margin: "lg",
+              margin: "none",
               spacing: "sm",
               contents: [
                 {
@@ -156,11 +161,6 @@ async function search(req, res) {
                       size: "sm",
                       flex: 5,
                       margin: "none",
-                    },
-                    {
-                      type: "image",
-                      url: req.body.msg,
-                      size: "5px",
                     },
                   ],
                 },
