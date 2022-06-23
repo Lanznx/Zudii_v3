@@ -42,7 +42,7 @@ bot.on("message", async (event) => {
           console.log(data, "=== data ===");
         });
     }
-    if (event.message.contentProvider.originalContentUrl) {
+    if (event.message.contentProvider !== undefined) {
       const msg = event.message.contentProvider.originalContentUrl;
       const content = msg.split("?");
 
@@ -86,24 +86,24 @@ bot.on("message", async (event) => {
 
 bot.on("postback", async (event) => {
   const msg = event.postback.data;
-  console.log(msg, "original MSG");
+  console.log(msg, "original MSG")
   const content = msg.split("?");
 
   if (content[1] === "search") {
     const cleanData = content[2].split("&");
     const userInfo = content[3].split("&");
     const nextMsg =
-      "https://i.imgur.com/MwS42AE.png?search?" + cleanData[0].toString() + "&";
-    cleanData[1].toString() + "&";
-    cleanData[2].toString() + "&";
-    cleanData[3].toString() + "&";
-    cleanData[4].toString() +
+      "https://i.imgur.com/MwS42AE.png?search?" + cleanData[0] + "&";
+    cleanData[1] + "&";
+    cleanData[2] + "&";
+    cleanData[3] + "&";
+    cleanData[4] +
       "&" +
       (parseInt(cleanData[5]) + 10).toString() +
       "?" +
-      userInfo[0].toString() +
+      userInfo[0] +
       "&";
-    userInfo[1].toString();
+    userInfo[1];
     console.log(nextMsg, "=========== nextnsg ===========");
     let request = {
       body: {
