@@ -33,7 +33,7 @@ bot.on("message", async (event) => {
   // event.message.text：使用者傳給 linebot 的訊息
   // event.reply(msg) 可以將回傳 msg 給使用者
   try {
-    const msg = event.message.contentProvider.originalContentUrl;
+    const msg = event.message.contentProvider.originalContentUrl || event.postback.data;
     const content = msg.split("?");
     const userInfo = content[3];
     console.log(msg);

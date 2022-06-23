@@ -38,8 +38,6 @@ async function search(req, res) {
               type: "postback",
               label: "下一頁",
               data: req.body.msg,
-              displayText: "Buy",
-              fillInText: "---\nName: \nPhone: \nBirthday: \n---",
             },
           },
           {
