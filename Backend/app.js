@@ -38,6 +38,15 @@ bot.on("message", async (event) => {
     const userInfo = content[3];
     console.log(msg);
     console.log(content);
+    if (event.message.text === "我要抖內！") {
+      event
+        .reply(
+          "可以點擊下方連結轉帳給我呦！\nhttps://www.jkopay.com/transfer?j=Transfer:906614325"
+        )
+        .then((data) => {
+          console.log(data, "=== data ===");
+        });
+    }
     if (content[1] === "search") {
       const cleanData = content[2].split("&");
       let request = {
