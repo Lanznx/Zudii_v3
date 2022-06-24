@@ -1,4 +1,4 @@
-const { search } = require("./Controller/Finders/Search");
+const { search } = require("./Controller/Finder");
 const linebot = require("linebot");
 const express = require("express");
 const app = express();
@@ -28,10 +28,7 @@ const bot = linebot({
 
 // https://i.imgur.com/MwS42AE.png?search?木柵&5000&10000&['1','2']&['整層住家','獨立套房']&0?userIDIDIDIDI&displayNAME
 
-// 當有人傳送訊息給 line Bot:
 bot.on("message", async (event) => {
-  // event.message.text：使用者傳給 linebot 的訊息
-  // event.reply(msg) 可以將回傳 msg 給使用者
   try {
     if (event.message.text == "我要抖內！") {
       event
