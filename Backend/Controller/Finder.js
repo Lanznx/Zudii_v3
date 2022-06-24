@@ -1,4 +1,4 @@
-const { searcher } = require("../../Model/FinderModel");
+const { searcher } = require("../Model/FinderModel");
 
 async function search(req, res) {
   const conditions = {
