@@ -7,19 +7,10 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import {
-  Grid,
-  TextField,
-} from "@mui/material";
+import { Grid, TextField } from "@mui/material";
 
 export default function RentDialog(props) {
-  const {
-    rentOpen,
-    handleRentClose,
-    minRent,
-    setMinRent,
-    setMaxRent,
-  } = props;
+  const { rentOpen, handleRentClose, minRent, setMinRent, setMaxRent } = props;
   return (
     <Dialog open={rentOpen} onClose={handleRentClose} fullWidth>
       <DialogTitle variant="primary" color="primary">
@@ -36,7 +27,7 @@ export default function RentDialog(props) {
             marginTop: "10px",
           }}
         >
-          <Grid item xs={5} >
+          <Grid item xs={5}>
             <TextField
               autoFocus
               sx={{
@@ -45,7 +36,7 @@ export default function RentDialog(props) {
               id="minRent"
               onChange={(e) => {
                 setMinRent(e.target.value);
-                if (minRent === undefined || minRent === null || minRent <= 0) setMinRent(0);
+                if (minRent <= 0) setMinRent(0);
               }}
               label="最低"
               type="number"
@@ -64,9 +55,7 @@ export default function RentDialog(props) {
               }}
               id="maxRent"
               onChange={(e) => {
-                if (e.target.value > minRent) {
-                  setMaxRent(e.target.value);
-                }
+                setMaxRent(e.target.value);
               }}
               label="最高"
               type="number"

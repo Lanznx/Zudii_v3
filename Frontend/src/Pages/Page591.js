@@ -16,31 +16,35 @@ import SearchDialog from "./Components/SearchDialog";
 import liff from "@line/liff";
 const REACT_APP_LIFF_ID = process.env.REACT_APP_LIFF_ID;
 
-async function initializeLIFF() {
-  await liff.init({
-    liffId: REACT_APP_LIFF_ID, // Use own liffId
-    withLoginOnExternalBrowser: true, // Enable automatic login process
-  });
-
-  // Start to use liff's api
-  console.log("liff initialized");
-  if (!liff.isLoggedIn() && !liff.isInClient()) {
-    window.alert("麻煩登入再來，掰掰！");
-  } else {
-    const profile = await liff.getProfile();
-    console.log(profile, " profile"); // print raw profile object
-  }
-}
-
 export default function Page591() {
-  initializeLIFF();
-
   const [minRent, setMinRent] = React.useState(0);
   const [maxRent, setMaxRent] = React.useState(0);
   const [type, setType] = React.useState([]);
   const [location, setLocation] = React.useState([]); // this the array of location name
   const [locationCode, setLocationCode] = React.useState([]); // this is the array of location code
   const [search, setSearch] = React.useState("");
+  const [userId, setUserId] = React.useState("");
+  const [displayName, setDisplayName] = React.useState("");
+
+  async function initializeLIFF() {
+    await liff.init({
+      liffId: REACT_APP_LIFF_ID, // Use own liffId
+      withLoginOnExternalBrowser: true, // Enable automatic login process
+    });
+
+    // Start to use liff's api
+    console.log("liff initialized");
+    if (!liff.isLoggedIn() && !liff.isInClient()) {
+      window.alert("麻煩登入再來，掰掰！");
+    } else {
+      const profile = await liff.getProfile();
+      setUserId(profile.userId);
+      setDisplayName(profile.displayName);
+
+      console.log(profile, " profile"); // print raw profile object
+    }
+  }
+  initializeLIFF();
 
   const codes = {
     // this is the dictionary of location code
@@ -267,13 +271,22 @@ export default function Page591() {
                 marginTop: "20px",
                 marginBottom: "20px",
               }}
-              onClick={async ()=>{
-                await liff.sendMessages([{
-                  type: 'image',
-                  originalContentUrl: `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0`,
-                  previewImageUrl: 'https://i.imgur.com/MwS42AE.png'
-                }])
-                console.log(`https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0`)
+              onClick={() => {
+                liff
+                  .sendMessages([
+                    {
+                      type: "image",
+                      originalContentUrl: `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}`,
+                      previewImageUrl: "https://i.imgur.com/MwS42AE.png",
+                    },
+                  ])
+                  .catch((error) => {
+                    window.alert("Error sending message: " + error);
+                  });
+                liff.closeWindow();
+                console.log(
+                  `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}`
+                );
               }}
             >
               送出查詢
@@ -300,7 +313,7 @@ export default function Page591() {
             </Button>
           </Grid>
         </Grid>
-      <Button
+        <Button
           variant="contained"
           sx={{
             width: "100%",
@@ -319,10 +332,10 @@ export default function Page591() {
             setSearch("");
             setLocationCode([]);
           }}
-          >
+        >
           清除條件
         </Button>
-          </Grid>
+      </Grid>
       <Grid item xs={1} md={4.5} />
     </Grid>
   );
