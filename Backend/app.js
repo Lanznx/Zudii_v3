@@ -1,4 +1,5 @@
 const { search } = require("./Controller/Finder");
+const { track } = require("./Controller/Tracker");
 const linebot = require("linebot");
 const express = require("express");
 const app = express();
@@ -77,6 +78,40 @@ bot.on("message", async (event) => {
             "車位",
           ];
         const replyMessage = await search(request, null);
+        event.reply(replyMessage).then((data) => {
+          console.log(data, "=== data ===");
+        });
+      } else if (content[1] === "track") {
+        const cleanData = content[2].split("&");
+        const userInfo = content[3].split("&");
+        let request = {
+          body: {
+            text: cleanData[0],
+            price1: parseInt(cleanData[1]),
+            price2: parseInt(cleanData[2]),
+            locaitonCodes:
+              cleanData[3].split(",").map((item) => {
+                return parseInt(item);
+              }) || parseInt(cleanData[3]),
+            types: cleanData[4].split(","),
+            firstRow: parseInt(cleanData[5]),
+            userId: userInfo[0],
+            displayName: userInfo[1],
+          },
+        };
+        if (cleanData[3] === "" || cleanData[3] === "Nan")
+          request.body.locaitonCodes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+        if (cleanData[4] === "")
+          request.body.types = [
+            "整層住家",
+            "獨立套房",
+            "分租套房",
+            "雅房",
+            "其他",
+            "車位",
+          ];
+        const replyMessage = await track(request, null);
         event.reply(replyMessage).then((data) => {
           console.log(data, "=== data ===");
         });
