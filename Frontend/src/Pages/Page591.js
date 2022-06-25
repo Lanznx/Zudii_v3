@@ -308,6 +308,23 @@ export default function Page591() {
                 marginTop: "20px",
                 marginBottom: "20px",
               }}
+              onClick={() => {
+                liff
+                  .sendMessages([
+                    {
+                      type: "image",
+                      originalContentUrl: `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}`,
+                      previewImageUrl: "https://i.imgur.com/MwS42AE.png",
+                    },
+                  ])
+                  .catch((error) => {
+                    window.alert("Error sending message: " + error);
+                  });
+                liff.closeWindow();
+                console.log(
+                  `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}`
+                );
+              }}
             >
               設定爬蟲
             </Button>
