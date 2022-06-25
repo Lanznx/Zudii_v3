@@ -1,6 +1,9 @@
-const { tracker, checkNewHouses } = require("../Model/TrackerModel");
-const cron = require("node-cron")
-
+const {
+  tracker,
+  checkNewHouses,
+  getAllTrackerConditions,
+} = require("../Model/TrackerModel");
+const cron = require("node-cron");
 
 async function track(req, res) {
   const conditions = {
@@ -26,17 +29,29 @@ async function track(req, res) {
   return replyMessages;
 }
 
+async function check() {}
 
-async function check(){
-
-}
-
-
-
-
-cron.schedule("* * * * *", ()=>{
-    console.log("cron is working")
-})
-
+cron.schedule("* * * * *", async () => {
+  console.log("cron is working");
+  const latestTrackConditions = await getAllTrackerConditions();
+  try {
+    const cleanTrackConditions = latestTrackConditions.map((c) => {
+      console.log(c);
+      return {
+        userId: c.userId,
+        title: c.latestTrackCondition.title ,
+        minRent: c.latestTrackCondition.minRent,
+        maxRent: c.latestTrackCondition.maxRent,
+        sections: c.latestTrackCondition.sections,
+        types: c.latestTrackCondition.types,
+        firstRow: 0,
+        max_id_591: c.latestTrackCondition.max_id_591,
+      };
+    });
+    console.log(cleanTrackConditions, " hey hey");
+  } catch (err) {
+    console.log(err);
+  }
+});
 
 module.exports = { track };

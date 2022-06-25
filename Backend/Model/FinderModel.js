@@ -66,7 +66,7 @@ async function searcher(conditions, userInfo) {
     user.insertOne({
       userId: userId,
       userName: displayName,
-      searchHistory: [conditions],
+      searchHistory: [searchRecord],
     });
   } else {
     console.log("insert at existed user");

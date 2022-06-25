@@ -38,6 +38,17 @@ async function tracker(conditions, userInfo) {
     userId: userId,
   };
 
+  const max_id_591 = await collection
+    .aggregate([
+      {
+        $project: {
+          id_591: -1,
+        },
+      },
+    ])
+    .limit(1)
+    .toArray();
+
   let trackRecord = {
     title: text,
     minRent: minRent,
@@ -46,15 +57,17 @@ async function tracker(conditions, userInfo) {
     types: types,
     firstRow: firstRow,
     trackTime: formatDate(new Date()),
+    max_id_591: max_id_591[0].id_591,
   };
 
   const userResult = await user.find(findUser).toArray();
   console.log(userResult, "============ user Result ===============");
   if (userResult.length === 0) {
+    console.log("insert at new user");
     user.insertOne({
       userId: userId,
       userName: displayName,
-      trackHistory: [conditions],
+      trackHistory: [trackRecord],
     });
   } else {
     console.log("insert at existed user");
@@ -62,7 +75,7 @@ async function tracker(conditions, userInfo) {
       { userId: userId },
       { $push: { trackHistory: trackRecord } }
     );
-  }  
+  }
 }
 
 async function getAllTrackerConditions() {
@@ -71,12 +84,11 @@ async function getAllTrackerConditions() {
       latestTrackCondition: {
         $last: "$trackHistory",
       },
-      userId: true
+      userId: true,
     },
   };
-  const latestTrackConditions = user.aggregate(getConditions)
-  console.log(latestTrackConditions, "============= latestTrackHistory ==========")
-  
+  const latestTrackConditions = await user.aggregate([getConditions]).toArray();
+  return latestTrackConditions;
 }
 
 async function checkNewHouses() {
@@ -104,4 +116,5 @@ async function checkNewHouses() {
 module.exports = {
   tracker,
   checkNewHouses,
+  getAllTrackerConditions,
 };
