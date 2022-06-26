@@ -39,7 +39,7 @@ async function check() {
     if (unitResults[0].id_591 === null) {
       let replyMessages = null;
       crawlerResults.push({ replyMessages, userId: unitResults.userId });
-      continue
+      continue;
     }
     console.log(unitResults, "04 unit");
     console.log(
@@ -244,7 +244,9 @@ async function check() {
   }
 
   console.log(crawlerResults, "05 after map ");
-  console.log(replyMessages.contents.contents, "05.5 contents.contents ");
+  crawlerResults.map((r) => {
+    console.log(r.replyMessages.contents.contents, "05.5 contents.contents ");
+  });
 
   return crawlerResults;
 }
