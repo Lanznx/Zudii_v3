@@ -245,7 +245,8 @@ async function check() {
 
   console.log(crawlerResults, "05 after map ");
   crawlerResults.map((r) => {
-    console.log(r.replyMessages.contents.contents, "05.5 contents.contents ");
+    if (r.replyMessages.contents.contents !== null)
+      console.log(r.replyMessages.contents.contents, "05.5 contents.contents ");
   });
 
   return crawlerResults;
