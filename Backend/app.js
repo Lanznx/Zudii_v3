@@ -185,7 +185,7 @@ bot.on("postback", async (event) => {
     console.log(cleanData[3], "locationcodes!!!");
     const userInfo = content[3].split("&");
     const nextMsg =
-      "https://i.imgur.com/MwS42AE.png?search?" +
+      "https://i.imgur.com/MwS42AE.png?search/track?" +
       cleanData[0] +
       "&" +
       cleanData[1] +
@@ -241,7 +241,7 @@ bot.on("postback", async (event) => {
   }
 });
 
-// TO_DO:
+
 
 async function autoCheck() {
   console.log("cron is working");
