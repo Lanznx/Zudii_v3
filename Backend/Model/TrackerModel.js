@@ -52,7 +52,8 @@ async function tracker(conditions, userInfo) {
   const find_existed_id_591 = [
     {
       $project: {
-        id_591: true,
+        id_591: 1,
+        _id: 0,
       },
     },
   ];
