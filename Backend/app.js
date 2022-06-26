@@ -193,10 +193,12 @@ async function autoCheck() {
   try {
     const crawlerResults = await check();
     crawlerResults.map((r) => {
-      lineClient
-        .pushMessage(r.userId, r.replyMessages)
-        .then((data) => console.log(data))
-        .catch((err) => console.log(err));
+      if (r.replyMessages !== null) {
+        lineClient
+          .pushMessage(r.userId, r.replyMessages)
+          .then((data) => console.log(data))
+          .catch((err) => console.log(err));
+      } else console.log("這人的爬蟲條件沒被滿足！");
     });
   } catch (err) {
     console.log(err);

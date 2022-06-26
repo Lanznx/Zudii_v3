@@ -34,18 +34,23 @@ async function check() {
   console.log(latestTrackConditions, " 01 latestTrackConditions");
 
   const crawlerResults = [];
-  for (let index = 0; index < latestTrackConditions.length; index++) {
-    let unitResults = await checkNewHouses(latestTrackConditions[index]);
+  for (let index_1 = 0; index_1 < latestTrackConditions.length; index_1++) {
+    let unitResults = await checkNewHouses(latestTrackConditions[index_1]);
+    if (unitResults[0].id_591 === null) {
+      let replyMessages = null;
+      crawlerResults.push({ replyMessages, userId: unitResults.userId });
+      continue
+    }
     console.log(unitResults, "04 unit");
     console.log(
-      latestTrackConditions[index].latestTrackCondition.title,
+      latestTrackConditions[index_1].latestTrackCondition.title,
       "title"
     );
-    console.log(latestTrackConditions[index].latestTrackCondition.msg, "msg");
+    console.log(latestTrackConditions[index_1].latestTrackCondition.msg, "msg");
 
     let replyMessages = {
       type: "flex",
-      altText: `${latestTrackConditions[index].latestTrackCondition.title} 的結果`,
+      altText: `${latestTrackConditions[index_1].latestTrackCondition.title} 的結果`,
       contents: {
         type: "carousel",
         contents: [],
@@ -57,7 +62,7 @@ async function check() {
             action: {
               type: "postback",
               label: "下一頁",
-              data: latestTrackConditions[index].latestTrackCondition.msg,
+              data: latestTrackConditions[index_1].latestTrackCondition.msg,
             },
           },
           {
@@ -72,9 +77,8 @@ async function check() {
       },
     };
 
-
-    for (let index = 0; index < unitResults.length - 1; index++) {
-      const house = unitResults[index];
+    for (let index_2 = 0; index_2 < unitResults.length - 1; index_2++) {
+      const house = unitResults[index_2];
 
       replyMessages.contents.contents.push({
         type: "bubble",
@@ -108,7 +112,7 @@ async function check() {
             },
             {
               type: "text",
-              text: latestTrackConditions[index].latestTrackCondition.msg,
+              text: latestTrackConditions[index_1].latestTrackCondition.msg,
               size: "1px",
               color: "#ffffff",
             },

@@ -58,7 +58,7 @@ async function tracker(conditions, userInfo) {
     firstRow: firstRow,
     trackTime: formatDate(new Date()),
     max_id_591: max_id_591[0].id_591,
-    msg: `https://i.imgur.com/MwS42AE.png?track?${text}&${minRent}&${maxRent}&${locaitonCodes}&${firstRow}?${userId}&${displayName}`
+    msg: `https://i.imgur.com/MwS42AE.png?search?${text}&${minRent}&${maxRent}&${locaitonCodes}&${firstRow}?${userId}&${displayName}`
   };
 
   const userResult = await user.find(findUser).toArray();
@@ -113,7 +113,7 @@ async function checkNewHouses(c) {
     .find(findHouse)
     .sort({ id_591: -1 })
     .skip(0)
-    .limit(5)
+    .limit(10)
     .toArray();
   if (result.length === 0) {
     result.push({ id_591: null });
