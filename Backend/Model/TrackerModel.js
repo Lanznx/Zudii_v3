@@ -49,19 +49,6 @@ async function tracker(conditions, userInfo) {
     msg: `https://i.imgur.com/MwS42AE.png?search?${text}&${minRent}&${maxRent}&${locaitonCodes}&${types}&0?${userId}&${displayName}`,
   };
 
-  const find_existed_id_591 = [
-    {
-      $project: {
-        id_591: 1,
-        _id: 0,
-      },
-    },
-  ];
-  const existed_id_591 = await collection
-    .aggregate(find_existed_id_591)
-    .limit(10000)
-    .toArray();
-  console.log(existed_id_591, "existed_id_591");
 
   const userResult = await user.find(findUser).toArray();
   console.log(userResult, "============ user Result ===============");
@@ -71,14 +58,12 @@ async function tracker(conditions, userInfo) {
       userId: userId,
       userName: displayName,
       trackHistory: [trackRecord],
-      checked_id_591: existed_id_591,
     });
   } else {
     console.log("insert at existed user");
     user.updateOne(
       { userId: userId },
       { $push: { trackHistory: trackRecord } },
-      { $set: { checked_id_591: existed_id_591 } }
     );
   }
 }
@@ -90,7 +75,6 @@ async function getAllTrackerConditions() {
         $last: "$trackHistory",
       },
       userId: true,
-      checked_id_591: true,
     },
   };
   const latestTrackConditions = await user.aggregate([getConditions]).toArray();
@@ -99,8 +83,11 @@ async function getAllTrackerConditions() {
 
 async function checkNewHouses(c) {
   const { title, minRent, maxRent, sections, types } = c.latestTrackCondition;
-  const { userId, checked_id_591 } = c;
+  const { userId } = c;
 
+
+  const batch = await collection.find().sort({batch: -1}).limit(1).toArray()
+  console.log(batch, "bbbbbbbb")
   let findHouse = {
     title: {
       $regex: title,
@@ -108,7 +95,7 @@ async function checkNewHouses(c) {
     price: { $gte: minRent, $lte: maxRent },
     section: { $in: sections },
     type: { $in: types },
-    id_591: { $nin: checked_id_591 },
+    batch: batch[0].batch
   };
   console.log(findHouse, "02 findHouse");
 
@@ -121,17 +108,6 @@ async function checkNewHouses(c) {
   if (result.length === 0) {
     result.push({ id_591: null });
   }
-
-  user.updateOne(
-    { userId: userId },
-    {
-      $push: {
-        checked_id_591: result.map((r) => {
-          return r.id_591;
-        }),
-      },
-    }
-  );
 
   result.userId = userId;
 

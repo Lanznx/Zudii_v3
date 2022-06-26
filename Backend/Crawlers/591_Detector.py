@@ -34,10 +34,8 @@ client = pymongo.MongoClient(MONGO_CONNECTION)
 db = client.test
 collection = db.test_591
 
-batch_num = collection.find().sort("batch", pymongo.DESCENDING)
-print(batch_num, "before")
-batch_num = batch_num.batch
-print(batch_num, "after")
+batch_num = collection.find().sort("batch", pymongo.DESCENDING)[0]
+batch_num = batch_num['batch'] + 1
 
 contents = []
 postNumber = 0
@@ -85,7 +83,7 @@ for section in range(1, 13):
                     "price": "",
                     "type": "",
                     "size": "",
-                    "batch": 0
+                    "batch": batch_num
                 }
                 # 把內文的每一行都找出來，並印出來
 
