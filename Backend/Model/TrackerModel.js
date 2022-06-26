@@ -58,8 +58,9 @@ async function tracker(conditions, userInfo) {
   ];
   const existed_id_591 = await collection
     .aggregate(find_existed_id_591)
-    .toArray().noCursorTimeout();
-  console.log(existed_id_591, "existed_id_591")
+    .limit(10000)
+    .toArray();
+  console.log(existed_id_591, "existed_id_591");
 
   const userResult = await user.find(findUser).toArray();
   console.log(userResult, "============ user Result ===============");
