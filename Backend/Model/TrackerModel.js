@@ -69,14 +69,14 @@ async function tracker(conditions, userInfo) {
       userId: userId,
       userName: displayName,
       trackHistory: [trackRecord],
-      checked_id_591: [existed_id_591],
+      checked_id_591: existed_id_591,
     });
   } else {
     console.log("insert at existed user");
     user.updateOne(
       { userId: userId },
       { $push: { trackHistory: trackRecord } },
-      { $set: { checked_id_591: [existed_id_591] } }
+      { $set: { checked_id_591: existed_id_591 } }
     );
   }
 }

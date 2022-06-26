@@ -19,7 +19,7 @@ async function track(req, res) {
     displayName: req.body.displayName,
   };
 
-  await tracker(conditions, userInfo);
+  tracker(conditions, userInfo);
 
   let replyMessages = {
     type: "text",
