@@ -1,12 +1,12 @@
 const { search } = require("./Controller/Finder");
-const { track } = require("./Controller/Tracker");
-const linebot = require("linebot");
+const { track, check } = require("./Controller/Tracker");
+const { bot, lineClient } = require("./util/linebot");
 const express = require("express");
 const app = express();
 const finderRoutes = require("./Routes/Find.js");
 const path = require("path");
 const cors = require("cors");
-require("dotenv").config();
+const cron = require("node-cron");
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
@@ -18,13 +18,6 @@ let visitor_number = 0;
 app.get("/", (req, res) => {
   visitor_number++;
   res.send(`Wazzzaaapppp \nYou are visitor no.${visitor_number}`);
-});
-
-// 用於辨識 Line Channel 的資訊
-const bot = linebot({
-  channelId: process.env.CHANNEL_ID,
-  channelSecret: process.env.CHANNEL_SECRET,
-  channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
 });
 
 // https://i.imgur.com/MwS42AE.png?search?木柵&5000&10000&['1','2']&['整層住家','獨立套房']&0?userIDIDIDIDI&displayNAME
@@ -187,6 +180,30 @@ bot.on("postback", async (event) => {
     });
   }
 });
+
+// TO_DO:
+
+const message = {
+  type: "text",
+  text: "Hello World!",
+};
+
+async function autoCheck() {
+  console.log("cron is working");
+  try {
+    const crawlerResults = await check();
+    crawlerResults.map((r) => {
+      // lineClient
+      //   .pushMessage(r.userId, r.replyMessages)
+      //   .then((data) => console.log(data))
+      //   .catch((err) => console.log(err));
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+cron.schedule("* * * * *", autoCheck);
 
 serverPort = 4500;
 app.listen(serverPort, () => {

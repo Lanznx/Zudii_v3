@@ -58,6 +58,7 @@ async function tracker(conditions, userInfo) {
     firstRow: firstRow,
     trackTime: formatDate(new Date()),
     max_id_591: max_id_591[0].id_591,
+    msg: `https://i.imgur.com/MwS42AE.png?track?${text}&${minRent}&${maxRent}&${locaitonCodes}&${firstRow}?${userId}&${displayName}`
   };
 
   const userResult = await user.find(findUser).toArray();
@@ -91,25 +92,36 @@ async function getAllTrackerConditions() {
   return latestTrackConditions;
 }
 
-async function checkNewHouses() {
+async function checkNewHouses(c) {
+
+  const { title, minRent, maxRent, sections, types, max_id_591 } =
+    c.latestTrackCondition;
+  const { userId } = c;
+
   let findHouse = {
     title: {
-      $regex: text,
+      $regex: title,
     },
     price: { $gte: minRent, $lte: maxRent },
-    section: { $in: locaitonCodes },
+    section: { $in: sections },
     type: { $in: types },
+    id_591: { $gt: max_id_591 },
   };
+  console.log(findHouse, "02 findHouse")
 
   const result = await collection
     .find(findHouse)
     .sort({ id_591: -1 })
-    .skip(firstRow)
-    .limit(10)
+    .skip(0)
+    .limit(5)
     .toArray();
   if (result.length === 0) {
     result.push({ id_591: null });
   }
+
+  result.userId = userId;
+
+  console.log(result, "03 res")
   return result;
 }
 

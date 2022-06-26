@@ -3,7 +3,6 @@ const {
   checkNewHouses,
   getAllTrackerConditions,
 } = require("../Model/TrackerModel");
-const cron = require("node-cron");
 
 async function track(req, res) {
   const conditions = {
@@ -29,29 +28,222 @@ async function track(req, res) {
   return replyMessages;
 }
 
-async function check() {}
-
-cron.schedule("* * * * *", async () => {
-  console.log("cron is working");
+async function check() {
   const latestTrackConditions = await getAllTrackerConditions();
-  try {
-    const cleanTrackConditions = latestTrackConditions.map((c) => {
-      console.log(c);
-      return {
-        userId: c.userId,
-        title: c.latestTrackCondition.title ,
-        minRent: c.latestTrackCondition.minRent,
-        maxRent: c.latestTrackCondition.maxRent,
-        sections: c.latestTrackCondition.sections,
-        types: c.latestTrackCondition.types,
-        firstRow: 0,
-        max_id_591: c.latestTrackCondition.max_id_591,
-      };
-    });
-    console.log(cleanTrackConditions, " hey hey");
-  } catch (err) {
-    console.log(err);
-  }
-});
 
-module.exports = { track };
+  console.log(latestTrackConditions, " 01 latestTrackConditions");
+
+  const crawlerResults = [];
+  for (let index = 0; index < latestTrackConditions.length; index++) {
+    let unitResults = await checkNewHouses(latestTrackConditions[index]);
+    console.log(unitResults, "04 unit");
+    console.log(
+      latestTrackConditions[index].latestTrackCondition.title,
+      "title"
+    );
+    console.log(latestTrackConditions[index].latestTrackCondition.msg, "msg");
+
+    let replyMessages = {
+      type: "flex",
+      altText: `${latestTrackConditions[index].latestTrackCondition.title} 的結果`,
+      contents: {
+        type: "carousel",
+        contents: [],
+      },
+      quickReply: {
+        items: [
+          {
+            type: "action",
+            action: {
+              type: "postback",
+              label: "下一頁",
+              data: latestTrackConditions[index].latestTrackCondition.msg,
+            },
+          },
+          {
+            type: "action",
+            action: {
+              type: "message",
+              label: "抖內",
+              text: "我要抖內！",
+            },
+          },
+        ],
+      },
+    };
+
+    // unitResults.map((house) => {
+    // console.log(house)
+
+    for (let index = 0; index < unitResults.length - 1; index++) {
+      const house = unitResults[index];
+
+      replyMessages.contents.contents.push({
+        type: "bubble",
+        hero: {
+          type: "image",
+          size: "full",
+          aspectRatio: "20:13",
+          aspectMode: "cover",
+          action: {
+            type: "uri",
+            uri:
+              house.link ||
+              "https://img1.591.com.tw/house/2022/06/13/165510489014780205.jpg!510x400.jpg",
+          },
+          url:
+            house.imgLink ||
+            "https://img1.591.com.tw/house/2022/06/13/165510489014780205.jpg!510x400.jpg",
+          animated: true,
+        },
+        body: {
+          type: "box",
+          layout: "vertical",
+          contents: [
+            {
+              type: "text",
+              text: house.title,
+              weight: "bold",
+              size: "lg",
+              margin: "none",
+              wrap: false,
+            },
+            {
+              type: "text",
+              text: latestTrackConditions[index].latestTrackCondition.msg,
+              size: "1px",
+              color: "#ffffff",
+            },
+            {
+              type: "box",
+              layout: "vertical",
+              margin: "none",
+              spacing: "sm",
+              contents: [
+                {
+                  type: "box",
+                  layout: "baseline",
+                  margin: "md",
+                  contents: [
+                    {
+                      type: "text",
+                      text: "租金",
+                      color: "#999999",
+                      flex: 1,
+                      size: "md",
+                    },
+                    {
+                      type: "text",
+                      text: house.price.toString() + " 元",
+                      margin: "none",
+                      size: "sm",
+                      flex: 5,
+                    },
+                  ],
+                },
+                {
+                  type: "box",
+                  layout: "baseline",
+                  spacing: "sm",
+                  contents: [
+                    {
+                      type: "text",
+                      text: "地址",
+                      color: "#999999",
+                      size: "md",
+                      flex: 1,
+                    },
+                    {
+                      type: "text",
+                      text: house.location,
+                      wrap: true,
+                      color: "#666666",
+                      size: "sm",
+                      flex: 5,
+                      margin: "none",
+                    },
+                  ],
+                },
+                {
+                  type: "box",
+                  layout: "baseline",
+                  spacing: "sm",
+                  contents: [
+                    {
+                      type: "text",
+                      text: "房型",
+                      color: "#999999",
+                      size: "md",
+                      flex: 1,
+                    },
+                    {
+                      type: "text",
+                      text: house.type,
+                      wrap: true,
+                      color: "#666666",
+                      size: "sm",
+                      flex: 5,
+                      margin: "none",
+                    },
+                  ],
+                },
+                {
+                  type: "box",
+                  layout: "baseline",
+                  spacing: "sm",
+                  contents: [
+                    {
+                      type: "text",
+                      text: "坪數",
+                      color: "#999999",
+                      size: "md",
+                      flex: 1,
+                    },
+                    {
+                      type: "text",
+                      text: house.size.toString() + " 坪",
+                      wrap: true,
+                      color: "#666666",
+                      size: "sm",
+                      flex: 5,
+                      margin: "none",
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        footer: {
+          type: "box",
+          layout: "vertical",
+          spacing: "sm",
+          contents: [
+            {
+              type: "button",
+              style: "link",
+              height: "sm",
+              action: {
+                type: "uri",
+                label: "詳細資訊",
+                uri: house.link,
+                altUri: {
+                  desktop: house.link,
+                },
+              },
+            },
+          ],
+          flex: 0,
+        },
+      });
+    }
+
+    crawlerResults.push({ replyMessages, userId: unitResults.userId });
+  }
+
+  console.log(crawlerResults, "05 after map ");
+
+  return crawlerResults;
+}
+
+module.exports = { track, check };
