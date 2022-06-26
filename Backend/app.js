@@ -21,6 +21,7 @@ app.get("/", (req, res) => {
 });
 
 // https://i.imgur.com/MwS42AE.png?search?木柵&5000&10000&['1','2']&['整層住家','獨立套房']&0?userIDIDIDIDI&displayNAME
+// https://i.imgur.com/MwS42AE.png?search? title & minRent & maxRent & locationCodes & types & firstRow ? userID & displayNAME
 
 bot.on("message", async (event) => {
   try {

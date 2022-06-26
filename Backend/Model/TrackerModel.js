@@ -58,7 +58,7 @@ async function tracker(conditions, userInfo) {
     firstRow: firstRow,
     trackTime: formatDate(new Date()),
     max_id_591: max_id_591[0].id_591,
-    msg: `https://i.imgur.com/MwS42AE.png?search?${text}&${minRent}&${maxRent}&${locaitonCodes}&${firstRow}?${userId}&${displayName}`
+    msg: `https://i.imgur.com/MwS42AE.png?search?${text}&${minRent}&${maxRent}&${locaitonCodes}&${types}&0?${userId}&${displayName}`
   };
 
   const userResult = await user.find(findUser).toArray();
