@@ -244,6 +244,7 @@ async function check() {
   }
 
   console.log(crawlerResults, "05 after map ");
+  console.log(replyMessages.contents.contents, "05.5 contents.contents ");
 
   return crawlerResults;
 }
