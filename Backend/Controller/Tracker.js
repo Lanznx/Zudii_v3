@@ -72,8 +72,6 @@ async function check() {
       },
     };
 
-    // unitResults.map((house) => {
-    // console.log(house)
 
     for (let index = 0; index < unitResults.length - 1; index++) {
       const house = unitResults[index];

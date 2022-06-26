@@ -193,10 +193,10 @@ async function autoCheck() {
   try {
     const crawlerResults = await check();
     crawlerResults.map((r) => {
-      // lineClient
-      //   .pushMessage(r.userId, r.replyMessages)
-      //   .then((data) => console.log(data))
-      //   .catch((err) => console.log(err));
+      lineClient
+        .pushMessage(r.userId, r.replyMessages)
+        .then((data) => console.log(data))
+        .catch((err) => console.log(err));
     });
   } catch (err) {
     console.log(err);
