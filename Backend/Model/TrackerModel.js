@@ -38,17 +38,6 @@ async function tracker(conditions, userInfo) {
     userId: userId,
   };
 
-  const max_id_591 = await collection
-    .aggregate([
-      {
-        $project: {
-          id_591: -1,
-        },
-      },
-    ])
-    .limit(1)
-    .toArray();
-
   let trackRecord = {
     title: text,
     minRent: minRent,
@@ -57,9 +46,19 @@ async function tracker(conditions, userInfo) {
     types: types,
     firstRow: firstRow,
     trackTime: formatDate(new Date()),
-    max_id_591: max_id_591[0].id_591,
-    msg: `https://i.imgur.com/MwS42AE.png?search?${text}&${minRent}&${maxRent}&${locaitonCodes}&${types}&0?${userId}&${displayName}`
+    msg: `https://i.imgur.com/MwS42AE.png?search?${text}&${minRent}&${maxRent}&${locaitonCodes}&${types}&0?${userId}&${displayName}`,
   };
+
+  const find_existed_id_591 = [
+    {
+      $project: {
+        id_591: true,
+      },
+    },
+  ];
+  const existed_id_591 = await collection
+    .aggregate([find_existed_id_591])
+    .toArray();
 
   const userResult = await user.find(findUser).toArray();
   console.log(userResult, "============ user Result ===============");
@@ -69,12 +68,14 @@ async function tracker(conditions, userInfo) {
       userId: userId,
       userName: displayName,
       trackHistory: [trackRecord],
+      checked_id_591: [existed_id_591],
     });
   } else {
     console.log("insert at existed user");
     user.updateOne(
       { userId: userId },
-      { $push: { trackHistory: trackRecord } }
+      { $push: { trackHistory: trackRecord } },
+      { $set: { checked_id_591: [existed_id_591] } }
     );
   }
 }
@@ -86,6 +87,7 @@ async function getAllTrackerConditions() {
         $last: "$trackHistory",
       },
       userId: true,
+      checked_id_591: true,
     },
   };
   const latestTrackConditions = await user.aggregate([getConditions]).toArray();
@@ -93,10 +95,8 @@ async function getAllTrackerConditions() {
 }
 
 async function checkNewHouses(c) {
-
-  const { title, minRent, maxRent, sections, types, max_id_591 } =
-    c.latestTrackCondition;
-  const { userId } = c;
+  const { title, minRent, maxRent, sections, types } = c.latestTrackCondition;
+  const { userId, checked_id_591 } = c;
 
   let findHouse = {
     title: {
@@ -105,9 +105,9 @@ async function checkNewHouses(c) {
     price: { $gte: minRent, $lte: maxRent },
     section: { $in: sections },
     type: { $in: types },
-    id_591: { $gt: max_id_591 },
+    id_591: { $nin: checked_id_591 },
   };
-  console.log(findHouse, "02 findHouse")
+  console.log(findHouse, "02 findHouse");
 
   const result = await collection
     .find(findHouse)
@@ -119,9 +119,20 @@ async function checkNewHouses(c) {
     result.push({ id_591: null });
   }
 
+  user.updateOne(
+    { userId: userId },
+    {
+      $push: {
+        checked_id_591: result.map((r) => {
+          return r.id_591;
+        }),
+      },
+    }
+  );
+
   result.userId = userId;
 
-  console.log(result, "03 res")
+  console.log(result, "03 res");
   return result;
 }
 
