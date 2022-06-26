@@ -23,7 +23,7 @@ function formatDate(date) {
 
 
 async function searcher(conditions, userInfo) {
-  const { text, price1, price2, locaitonCodes, types, firstRow } = conditions;
+  const { text, price1, price2, locaitonCodes, types, firstRow, batch } = conditions;
   const { userId, displayName } = userInfo;
 
   let minRent = 0;
@@ -43,6 +43,7 @@ async function searcher(conditions, userInfo) {
     price: { $gte: minRent, $lte: maxRent },
     section: { $in: locaitonCodes },
     type: { $in: types },
+    batch: batch
   };
 
   let findUser = {

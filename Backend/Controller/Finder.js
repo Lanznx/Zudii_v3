@@ -8,6 +8,7 @@ async function search(req, res) {
     locaitonCodes: req.body.locaitonCodes,
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
+    batch: req.body.batch || null
   };
   console.log(conditions, "============ conditions ===============");
   const userInfo = {

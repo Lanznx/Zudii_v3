@@ -179,15 +179,69 @@ bot.on("postback", async (event) => {
     event.reply(replyMessage).then((data) => {
       console.log(data, "=== data ===");
     });
+  } else if (content[1] === "search/track") {
+    const cleanData = content[2].split("&");
+    console.log(cleanData, " cleanData");
+    console.log(cleanData[3], "locationcodes!!!");
+    const userInfo = content[3].split("&");
+    const nextMsg =
+      "https://i.imgur.com/MwS42AE.png?search?" +
+      cleanData[0] +
+      "&" +
+      cleanData[1] +
+      "&" +
+      cleanData[2] +
+      "&" +
+      cleanData[3] +
+      "&" +
+      cleanData[4] +
+      "&" +
+      (parseInt(cleanData[5]) + 10).toString() +
+      "&" +
+      cleanData[6] +
+      "?" +
+      userInfo[0] +
+      "&";
+    userInfo[1];
+    console.log(nextMsg, "=========== nextnsg ===========");
+    let request = {
+      body: {
+        text: cleanData[0],
+        price1: parseInt(cleanData[1]),
+        price2: parseInt(cleanData[2]),
+        locaitonCodes:
+          cleanData[3].split(",").map((item) => {
+            return parseInt(item);
+          }) || parseInt(cleanData[3]),
+        types: cleanData[4].split(","),
+        firstRow: parseInt(cleanData[5]) + 10,
+        batch: parseInt(cleanData[6]),
+        userId: userInfo[0],
+        displayName: userInfo[1],
+        msg: nextMsg,
+      },
+    };
+    if (cleanData[3] === "" || cleanData[3] === "Nan")
+      request.body.locaitonCodes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
+
+    if (cleanData[4] === "")
+      request.body.types = [
+        "整層住家",
+        "獨立套房",
+        "分租套房",
+        "雅房",
+        "其他",
+        "車位",
+      ];
+    console.log(request, "========   postback ==========");
+    const replyMessage = await search(request, null);
+    event.reply(replyMessage).then((data) => {
+      console.log(data, "=== data ===");
+    });
   }
 });
 
 // TO_DO:
-
-const message = {
-  type: "text",
-  text: "Hello World!",
-};
 
 async function autoCheck() {
   console.log("cron is working");

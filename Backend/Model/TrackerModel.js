@@ -46,7 +46,6 @@ async function tracker(conditions, userInfo) {
     types: types,
     firstRow: firstRow,
     trackTime: formatDate(new Date()),
-    msg: `https://i.imgur.com/MwS42AE.png?search?${text}&${minRent}&${maxRent}&${locaitonCodes}&${types}&0?${userId}&${displayName}`,
   };
 
 
@@ -110,6 +109,8 @@ async function checkNewHouses(c) {
   }
 
   result.userId = userId;
+  result.msg = `https://i.imgur.com/MwS42AE.png?search/track?${text}&${minRent}&${maxRent}&${locaitonCodes}&${types}&0&${batch[0].batch}?${userId}&${displayName}`,
+
 
   console.log(result, "03 res");
   return result;

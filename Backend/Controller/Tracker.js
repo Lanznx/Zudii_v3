@@ -46,7 +46,7 @@ async function check() {
       latestTrackConditions[index_1].latestTrackCondition.title,
       "title"
     );
-    console.log(latestTrackConditions[index_1].latestTrackCondition.msg, "msg");
+    console.log(latestTrackConditions[index_1].msg, "msg");
 
     let replyMessages = {
       type: "flex",
@@ -62,7 +62,7 @@ async function check() {
             action: {
               type: "postback",
               label: "下一頁",
-              data: latestTrackConditions[index_1].latestTrackCondition.msg,
+              data: latestTrackConditions[index_1].msg,
             },
           },
           {
@@ -112,7 +112,7 @@ async function check() {
             },
             {
               type: "text",
-              text: latestTrackConditions[index_1].latestTrackCondition.msg,
+              text: latestTrackConditions[index_1].msg,
               size: "1px",
               color: "#ffffff",
             },
