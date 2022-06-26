@@ -77,7 +77,7 @@ async function check() {
       },
     };
 
-    for (let index_2 = 0; index_2 < unitResults.length - 1; index_2++) {
+    for (let index_2 = 0; index_2 < unitResults.length - 2; index_2++) {
       const house = unitResults[index_2];
 
       replyMessages.contents.contents.push({
