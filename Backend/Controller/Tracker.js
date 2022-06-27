@@ -82,7 +82,7 @@ async function check() {
     for (let index_2 = 0; index_2 < unitResults.length; index_2++) {
       const house = unitResults[index_2];
 
-      reply_MESSAGE +
+      reply_MESSAGE +=
         `
       ${index_2 + 1}.\n${house.title}\n租金：${house.price} 元\n地址：${
           house.location
