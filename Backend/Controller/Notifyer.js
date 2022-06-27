@@ -27,7 +27,7 @@ async function setUserAccessToken(req, res) {
       }
     )
     .then((data) => {
-      console.log(data, "DATA");
+      console.log(data.access_token, "DATA_ACCCC");
       setUserAccessTokenModel(data.access_token, state);
     })
     .catch((err) => {
