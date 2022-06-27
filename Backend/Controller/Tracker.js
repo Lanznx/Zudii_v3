@@ -83,16 +83,13 @@ async function check() {
       const house = unitResults[index_2];
 
       reply_MESSAGE +
-        ```
-      ${index_2 + 1}.\n
-      ${house.title}\n
-      租金：${house.price} 元\n
-      地址：${house.location}\n
-      房型：${house.type}\n
-      坪數：${house.size} 坪\n
-      連結：${house.link}\n
-      ====================
-      ```;
+        `
+      ${index_2 + 1}.\n${house.title}\n租金：${house.price} 元\n地址：${
+          house.location
+        }\n房型：${house.type}\n坪數：${house.size} 坪\n連結：${
+          house.link
+        }\n====================
+      `;
 
       // replyMessages.contents.contents.push({
       //   type: "bubble",
