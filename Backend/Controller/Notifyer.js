@@ -13,7 +13,7 @@ async function setUserAccessToken(req, res) {
   const result = await axios.post(
     "https://notify-bot.line.me/oauth/token",
     {
-      grant_type: authorization_code,
+      grant_type: "authorization_code",
       code: code,
       redirect_uri: "https://zudii.tk/api/notify",
       client_id: process.env.NOTIFY_ID,
