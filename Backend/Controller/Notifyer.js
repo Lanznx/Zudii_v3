@@ -3,7 +3,7 @@ const {
   getUserAccessTokenModel,
 } = require("../Model/NotifyerModel");
 const axios = require("axios");
-require("dotenv").config("../.env");
+require("dotenv").config("/Users/lanz/Zudii_v3/Backend/.env");
 
 async function setUserAccessToken(req, res) {
   const { code, state } = req.body;
