@@ -88,7 +88,7 @@ async function check() {
           house.location
         }\n房型：${house.type}\n坪數：${house.size} 坪\n連結：${
           house.link
-        }\n====================
+        }\n====================\n
       `;
 
       // replyMessages.contents.contents.push({
