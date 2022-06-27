@@ -2,9 +2,9 @@ const { setUserAccessTokenModel, getUserAccessTokenModel } = require("../Model/N
 
 async function setUserAccessToken(req, res) {
     const {code, state} = req.body
-
     setUserAccessTokenModel(code, state)
-    return 
+    console.log(code, "setUserAccessTokenModel: CODE")
+    console.log(state, "setUserAccessTokenModel: userID")
 }
 
 

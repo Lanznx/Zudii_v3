@@ -252,25 +252,25 @@ async function autoCheck() {
     for (let index = 0; index < crawlerResults.length; index++) {
       const r = crawlerResults[index];
       if (r.replyMessages !== null) {
-        // const token = await getUserAccessToken(r.userId);
-        // console.log(token, "ACCESS");
-        // axios
-        //   .post("https://notify-api.line.me/api/notify", r.replyMessages, {
-        //     headers: {
-        //       "Content-Type": "application/x-www-form-urlencoded",
-        //       Authorization: `Bearer ${token}`, // TODO: access token
-        //     },
-        //   })
-        //   .then((data) => {
-        //     console.log(data, "data");
-        //   })
-        //   .catch((err) => {
-        //     console.log(err, "err");
-        //   });
-        lineClient
-          .pushMessage(r.userId, r.replyMessages)
-          .then((data) => console.log(data))
-          .catch((err) => console.log(err));
+        const token = await getUserAccessToken(r.userId);
+        console.log(token, "ACCESS");
+        axios
+          .post("https://notify-api.line.me/api/notify", r.replyMessages, {
+            headers: {
+              "Content-Type": "application/x-www-form-urlencoded",
+              Authorization: `Bearer ${token}`, // TODO: access token
+            },
+          })
+          .then((data) => {
+            console.log(data, "data");
+          })
+          .catch((err) => {
+            console.log(err, "err");
+          });
+        // lineClient
+        //   .pushMessage(r.userId, r.replyMessages)
+        //   .then((data) => console.log(data))
+        //   .catch((err) => console.log(err));
       } else console.log("這人的爬蟲條件沒被滿足！");
     }
   } catch (err) {
