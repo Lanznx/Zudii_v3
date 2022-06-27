@@ -255,12 +255,16 @@ async function autoCheck() {
         const token = await getUserAccessToken(r.userId);
         console.log(token, "ACCESS");
         axios
-          .post("https://notify-api.line.me/api/notify", r.reply_MESSAGE, {
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded",
-              Authorization: `Bearer ${token}`, // TODO: access token
-            },
-          })
+          .post(
+            "https://notify-api.line.me/api/notify",
+            { message: r.reply_MESSAGE },
+            {
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                Authorization: `Bearer ${token}`, // TODO: access token
+              },
+            }
+          )
           .then((data) => {
             console.log(data, "data");
           })
