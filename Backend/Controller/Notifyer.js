@@ -7,6 +7,8 @@ require("dotenv").config();
 
 async function setUserAccessToken(req, res) {
   const { code, state } = req.body;
+  console.log(process.env.NOTIFY_ID, "process.env.NOTIFY_ID")
+  console.log(process.env.NOTIFY_SECRET, "process.env.NOTIFY_SECRET")
   console.log(req, "REQUEST");
   console.log(code, "setUserAccessTokenModel: CODE");
   console.log(state, "setUserAccessTokenModel: userID");
