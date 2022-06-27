@@ -1,18 +1,22 @@
 const { search } = require("./Controller/Finder");
 const { track, check } = require("./Controller/Tracker");
+const { getUserAccessToken } = require("./Controller/Notifyer");
 const { bot, lineClient } = require("./util/linebot");
 const express = require("express");
 const app = express();
 const finderRoutes = require("./Routes/Find.js");
+const notifyRoutes = require("./Routes/Notify");
 const path = require("path");
 const cors = require("cors");
 const cron = require("node-cron");
+const axios = require("axios")
 
 app.use(cors());
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/find", finderRoutes);
+app.use("/notify", notifyRoutes);
 
 let visitor_number = 0;
 app.get("/", (req, res) => {
@@ -241,18 +245,31 @@ bot.on("postback", async (event) => {
   }
 });
 
-
-
 async function autoCheck() {
   console.log("cron is working");
   try {
     const crawlerResults = await check();
     crawlerResults.map((r) => {
       if (r.replyMessages !== null) {
-        lineClient
-          .pushMessage(r.userId, r.replyMessages)
-          .then((data) => console.log(data))
-          .catch((err) => console.log(err));
+        const token = getUserAccessToken(r.userId);
+        axios("https://notify-api.line.me/api/notify", {
+          method: "POST",
+          body: r.replyMessages,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Bearer ${token}`,
+          },
+        })
+          .then((data) => {
+            console.log(data, "data");
+          })
+          .catch((err) => {
+            console.log(err, "err");
+          });
+        // lineClient
+        //   .pushMessage(r.userId, r.replyMessages)
+        //   .then((data) => console.log(data))
+        //   .catch((err) => console.log(err));
       } else console.log("這人的爬蟲條件沒被滿足！");
     });
   } catch (err) {
