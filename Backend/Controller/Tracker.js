@@ -48,6 +48,11 @@ async function check() {
     );
     console.log(unitResults.msg, "msg");
 
+
+    let replyMSG = `結果如下\n`
+
+    let contents = []
+
     let replyMessages = {
       type: "flex",
       altText: `${latestTrackConditions[index_1].latestTrackCondition.title} 的結果`,
