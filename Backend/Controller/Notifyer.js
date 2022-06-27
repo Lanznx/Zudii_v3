@@ -26,9 +26,9 @@ async function setUserAccessToken(req, res) {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       }
     )
-    .then((data) => {
-      console.log(data.data, "DATA_ACCCC");
-      // setUserAccessTokenModel(data, state);
+    .then((res) => {
+      console.log(res.data.access_token, "DATA_ACCCC");
+      setUserAccessTokenModel(res.data.access_token, state);
     })
     .catch((err) => {
       console.log(err, "ERROR");
