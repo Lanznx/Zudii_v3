@@ -251,11 +251,11 @@ async function autoCheck() {
     const crawlerResults = await check();
     for (let index = 0; index < crawlerResults.length; index++) {
       const r = crawlerResults[index];
-      if (r.replyMessages !== null) {
+      if (r.reply_MESSAGE !== null) {
         const token = await getUserAccessToken(r.userId);
         console.log(token, "ACCESS");
         axios
-          .post("https://notify-api.line.me/api/notify", r.replyMessages, {
+          .post("https://notify-api.line.me/api/notify", r.reply_MESSAGE, {
             headers: {
               "Content-Type": "application/x-www-form-urlencoded",
               Authorization: `Bearer ${token}`, // TODO: access token
@@ -268,7 +268,7 @@ async function autoCheck() {
             console.log(err, "err");
           });
         // lineClient
-        //   .pushMessage(r.userId, r.replyMessages)
+        //   .pushMessage(r.userId, r.reply_MESSAGE)
         //   .then((data) => console.log(data))
         //   .catch((err) => console.log(err));
       } else console.log("這人的爬蟲條件沒被滿足！");
