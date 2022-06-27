@@ -257,7 +257,7 @@ async function autoCheck() {
         axios
           .post(
             "https://notify-api.line.me/api/notify",
-            'message: "r.reply_MESSAGE"',
+            'message="r.reply_MESSAGE"',
             {
               headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
