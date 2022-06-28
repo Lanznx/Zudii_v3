@@ -27,7 +27,7 @@ app.get("/", (req, res) => {
 // https://i.imgur.com/MwS42AE.png?search?木柵&5000&10000&['1','2']&['整層住家','獨立套房']&0?userIDIDIDIDI&displayNAME
 // https://i.imgur.com/MwS42AE.png?search? title & minRent & maxRent & locationCodes & types & firstRow ? userID & displayNAME
 
-// TODO: 
+// TODO:
 // 1. 取消爬蟲按鈕
 // 2. 檢查字數（不能超過一千）
 // 3. 找不到的 undefined Handling
@@ -254,14 +254,15 @@ async function autoCheck() {
   console.log("cron is working");
   try {
     const crawlerResults = await check();
-    for (let index = 0; index < crawlerResults.length; index++) {
-      const r = crawlerResults[index];
+    for (let index_1 = 0; index_1 < crawlerResults.length; index_1++) {
+      const r = crawlerResults[index_1];
       if (r.push_messages !== null) {
         const token = await getUserAccessToken(r.userId);
-        console.log(token, "ACCESS");
-        r.push_messages.map((push_message)=>{
-          await pushToUser(push_message, token)
-        })
+        console.log(token, "ACCESS_TOKEN");
+        for (let index_2 = 0; index_2 < r.push_messages.length; index_2++) {
+          const push_message = r.push_messages[index_2];
+          await pushToUser(push_message, token);
+        }
       } else console.log("這人的爬蟲條件沒被滿足！");
     }
   } catch (err) {
@@ -269,24 +270,20 @@ async function autoCheck() {
   }
 }
 
-function pushToUser(push_message, token){
+function pushToUser(push_message, token) {
   axios
-  .post(
-    "https://notify-api.line.me/api/notify",
-    `message=${push_message}`,
-    {
+    .post("https://notify-api.line.me/api/notify", `message=${push_message}`, {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Bearer ${token}`, 
+        Authorization: `Bearer ${token}`,
       },
-    }
-  )
-  .then((res) => {
-    console.log(res.data, "message pushed!!!");
-  })
-  .catch((err) => {
-    console.log(err, "err");
-  });
+    })
+    .then((res) => {
+      console.log(res.data, "message pushed!!!");
+    })
+    .catch((err) => {
+      console.log(err, "err");
+    });
 }
 
 cron.schedule("* * * * *", autoCheck);
