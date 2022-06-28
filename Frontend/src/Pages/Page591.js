@@ -44,7 +44,7 @@ export default function Page591() {
       console.log(profile, " profile"); // print raw profile object
     }
   }
-  initializeLIFF();
+  // initializeLIFF();
 
   const codes = {
     // this is the dictionary of location code
@@ -155,7 +155,7 @@ export default function Page591() {
                   setMaxRent={setMaxRent}
                 />
                 <Typography variant="h6">租金範圍</Typography>
-                <Typography variant="h9">
+                <Typography variant="h7">
                   {minRent} ~ {maxRent} 元
                 </Typography>
               </CardContent>
@@ -186,7 +186,7 @@ export default function Page591() {
                 <Typography variant="h6">房屋地區</Typography>
                 <>
                   {location.map((name) => {
-                    return <Typography variant="h9">{name} </Typography>;
+                    return <Typography variant="h7">{name} </Typography>;
                   })}
                 </>
               </CardContent>
@@ -217,7 +217,7 @@ export default function Page591() {
                 <Typography variant="h6">房型種類</Typography>{" "}
                 <>
                   {type.map((name) => {
-                    return <Typography variant="h9">{name} </Typography>;
+                    return <Typography variant="h7">{name} </Typography>;
                   })}
                 </>
               </CardContent>
@@ -246,7 +246,7 @@ export default function Page591() {
                   setSearch={setSearch}
                 />
                 <Typography variant="h6">關鍵字</Typography>
-                <Typography variant="h9">{search}</Typography>
+                <Typography variant="h7">{search}</Typography>
               </CardContent>
             </CardActionArea>
           </Card>

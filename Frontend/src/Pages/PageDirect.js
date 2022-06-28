@@ -9,22 +9,18 @@ export default function PageDirect() {
   const [displayName, setDisplayName] = React.useState("");
 
   async function initializeLIFF() {
-    console.log(REACT_APP_LIFF_DIRECT_ID)
     await liff.init({
       liffId: REACT_APP_LIFF_DIRECT_ID, // Use own liffId
       withLoginOnExternalBrowser: true, // Enable automatic login process
     });
 
     // Start to use liff's api
-    console.log("liff initialized");
     if (!liff.isLoggedIn() && !liff.isInClient()) {
       window.alert("麻煩登入再來，掰掰！");
     } else {
       const profile = await liff.getProfile();
       setUserId(profile.userId);
       setDisplayName(profile.displayName);
-
-      console.log(profile, " profile"); // print raw profile object
     }
   }
   initializeLIFF();
@@ -48,7 +44,7 @@ export default function PageDirect() {
             marginBottom: "20px",
           }}
           onClick={() => {
-            window.location.href = `https://notify-bot.line.me/oauth/authorize?response_type=code&scope=notify&response_mode=form_post&client_id=DhQfj4nguPyCOcJpG9posj&redirect_uri=http://localhost:4500/notify&state=${userId}`;
+            window.location.href = `https://notify-bot.line.me/oauth/authorize?response_type=code&scope=notify&response_mode=form_post&client_id=DhQfj4nguPyCOcJpG9posj&redirect_uri=https://zudii.tk/api/notify&state=${userId}`;
           }}
         >
           開啟通知
