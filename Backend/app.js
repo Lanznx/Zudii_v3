@@ -27,6 +27,11 @@ app.get("/", (req, res) => {
 // https://i.imgur.com/MwS42AE.png?search?木柵&5000&10000&['1','2']&['整層住家','獨立套房']&0?userIDIDIDIDI&displayNAME
 // https://i.imgur.com/MwS42AE.png?search? title & minRent & maxRent & locationCodes & types & firstRow ? userID & displayNAME
 
+// TODO: 
+// 1. 取消爬蟲按鈕
+// 2. 檢查字數（不能超過一千）
+// 3. 找不到的 undefined Handling
+
 bot.on("message", async (event) => {
   try {
     if (event.message.text == "我要抖內！") {
@@ -265,8 +270,8 @@ async function autoCheck() {
               },
             }
           )
-          .then((data) => {
-            console.log(data, "data");
+          .then((res) => {
+            console.log(res.data, "message pushed!!!");
           })
           .catch((err) => {
             console.log(err, "err");
