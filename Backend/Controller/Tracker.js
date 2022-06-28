@@ -57,18 +57,13 @@ async function check() {
         house.link
       }\n====================\n
       `;
-      if((push_message + unit_message).length <= 999){
-        push_message += unit_message
-        console.log(push_message.length, "push_message.length")
-        console.log("push_message += unit_message")
-        console.log(push_message, "push message")
+      if ((push_message + unit_message).length <= 999) {
+        push_message += unit_message;
+      } else if (unitResults.length - index_2 === 1) {
+        push_messages.push(push_message);
       } else {
-        push_messages.push(push_message)
-        console.log(push_message.length, "push_message.length =========== BEFORE ===============")
-        push_message = unit_message
-        console.log(push_message.length, "push_message.length =========== AFTER ===============")
-        console.log("push_message = unit_message ")
-        console.log(push_message, "push message")
+        push_messages.push(push_message);
+        push_message = unit_message;
       }
     }
     crawlerResults.push({
