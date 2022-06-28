@@ -28,7 +28,8 @@ app.get("/", (req, res) => {
 // https://i.imgur.com/MwS42AE.png?search? title & minRent & maxRent & locationCodes & types & firstRow ? userID & displayNAME
 
 // TODO:
-// 1. 取消爬蟲按鈕
+// 1. 取消爬蟲 frontend + backend
+// 2. 正著做、反著做的邏輯
 
 bot.on("message", async (event) => {
   try {
