@@ -63,7 +63,7 @@ async function check() {
 
   }
 
-  console.log(crawlerResults, "05 after map ");
+  console.log(crawlerResults, "05 要推播的訊息們");
 
   return crawlerResults;
 }

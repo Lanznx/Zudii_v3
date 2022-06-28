@@ -86,7 +86,7 @@ async function checkNewHouses(c) {
 
 
   const batch = await collection.find().sort({batch: -1}).limit(1).toArray()
-  console.log(batch, "bbbbbbbb")
+  console.log(batch, "符合 batch 最大的房屋")
   let findHouse = {
     title: {
       $regex: title,
