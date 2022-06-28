@@ -37,30 +37,37 @@ async function check() {
   for (let index_1 = 0; index_1 < latestTrackConditions.length; index_1++) {
     let unitResults = await checkNewHouses(latestTrackConditions[index_1]);
     if (unitResults[0].id_591 === null) {
-      let replyMessages = null;
-      crawlerResults.push({ replyMessages, userId: unitResults.userId });
+      crawlerResults.push({
+        push_messages: null,
+        userId: unitResults.userId,
+      });
       continue;
     }
     console.log(unitResults, "04 個人的 houses");
-    let reply_MESSAGE = `符合您的最新結果如下：\n\n`;
+    let push_messages = [];
+    let push_message = `符合您的最新結果如下：\n\n`;
 
     for (let index_2 = 0; index_2 < unitResults.length; index_2++) {
       const house = unitResults[index_2];
 
-      reply_MESSAGE +=
-        `
+      let unit_message = `
       ${index_2 + 1}.\n${house.title}\n租金：${house.price} 元\n地址：${
-          house.location
-        }\n房型：${house.type}\n坪數：${house.size} 坪\n連結：${
-          house.link
-        }\n====================\n
+        house.location
+      }\n房型：${house.type}\n坪數：${house.size} 坪\n連結：${
+        house.link
+      }\n====================\n
       `;
+      if((push_message + unit_message).length <= 999){
+        push_message += unit_message
+      } else {
+        push_messages.push(push_message)
+        push_message = ""
+      }
     }
     crawlerResults.push({
-      reply_MESSAGE: reply_MESSAGE,
+      push_messages: push_messages,
       userId: unitResults.userId,
     });
-
   }
 
   console.log(crawlerResults, "05 要推播的訊息們");

@@ -256,35 +256,37 @@ async function autoCheck() {
     const crawlerResults = await check();
     for (let index = 0; index < crawlerResults.length; index++) {
       const r = crawlerResults[index];
-      if (r.reply_MESSAGE !== null) {
+      if (r.push_messages !== null) {
         const token = await getUserAccessToken(r.userId);
         console.log(token, "ACCESS");
-        axios
-          .post(
-            "https://notify-api.line.me/api/notify",
-            `message=${r.reply_MESSAGE}`,
-            {
-              headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-                Authorization: `Bearer ${token}`, // TODO: access token
-              },
-            }
-          )
-          .then((res) => {
-            console.log(res.data, "message pushed!!!");
-          })
-          .catch((err) => {
-            console.log(err, "err");
-          });
-        // lineClient
-        //   .pushMessage(r.userId, r.reply_MESSAGE)
-        //   .then((data) => console.log(data))
-        //   .catch((err) => console.log(err));
+        r.push_messages.map((push_message)=>{
+          await pushToUser(push_message, token)
+        })
       } else console.log("這人的爬蟲條件沒被滿足！");
     }
   } catch (err) {
     console.log(err);
   }
+}
+
+function pushToUser(push_message, token){
+  axios
+  .post(
+    "https://notify-api.line.me/api/notify",
+    `message=${push_message}`,
+    {
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        Authorization: `Bearer ${token}`, 
+      },
+    }
+  )
+  .then((res) => {
+    console.log(res.data, "message pushed!!!");
+  })
+  .catch((err) => {
+    console.log(err, "err");
+  });
 }
 
 cron.schedule("* * * * *", autoCheck);

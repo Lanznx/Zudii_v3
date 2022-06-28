@@ -20,7 +20,7 @@ async function setUserAccessToken(req, res) {
       }
     )
     .then((res) => {
-      console.log(res.data.access_token, "DATA_ACCCC");
+      console.log(res.data.access_token, "使用者的 Access Token");
       setUserAccessTokenModel(res.data.access_token, state);
     })
     .catch((err) => {
