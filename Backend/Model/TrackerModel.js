@@ -48,7 +48,6 @@ async function tracker(conditions, userInfo) {
     trackTime: formatDate(new Date()),
   };
 
-
   const userResult = await user.find(findUser).toArray();
   console.log(userResult, "============ user Result ===============");
   if (userResult.length === 0) {
@@ -62,7 +61,8 @@ async function tracker(conditions, userInfo) {
     console.log("insert at existed user");
     user.updateOne(
       { userId: userId },
-      { $push: { trackHistory: trackRecord } },
+      { userName: displayName },
+      { $push: { trackHistory: trackRecord } }
     );
   }
 }
@@ -84,9 +84,8 @@ async function checkNewHouses(c) {
   const { title, minRent, maxRent, sections, types } = c.latestTrackCondition;
   const { userId } = c;
 
-
-  const batch = await collection.find().sort({batch: -1}).limit(1).toArray()
-  console.log(batch, "符合 batch 最大的房屋")
+  const batch = await collection.find().sort({ batch: -1 }).limit(1).toArray();
+  console.log(batch, "符合 batch 最大的房屋");
   let findHouse = {
     title: {
       $regex: title,
@@ -94,7 +93,7 @@ async function checkNewHouses(c) {
     price: { $gte: minRent, $lte: maxRent },
     section: { $in: sections },
     type: { $in: types },
-    batch: batch[0].batch
+    batch: batch[0].batch,
   };
   console.log(findHouse, "02 findHouse");
 
@@ -109,7 +108,9 @@ async function checkNewHouses(c) {
   }
 
   result.userId = userId;
-  result.msg = `https://i.imgur.com/MwS42AE.png?search/track?${title}&${minRent}&${maxRent}&${sections}&${types}&0&${batch[0].batch}?${userId}&${null}`
+  result.msg = `https://i.imgur.com/MwS42AE.png?search/track?${title}&${minRent}&${maxRent}&${sections}&${types}&0&${
+    batch[0].batch
+  }?${userId}&${null}`;
 
   return result;
 }
