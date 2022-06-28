@@ -61,7 +61,7 @@ async function tracker(conditions, userInfo) {
     console.log("insert at existed user");
     user.updateOne(
       { userId: userId },
-      { userName: displayName },
+      { $set: { userName: displayName } },
       { $push: { trackHistory: trackRecord } }
     );
   }
