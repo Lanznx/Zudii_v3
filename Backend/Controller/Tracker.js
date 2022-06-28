@@ -58,6 +58,7 @@ async function check() {
       }\n====================\n
       `;
       if (index_2 + 1 === unitResults.length) {
+        push_message += unit_message;
         push_messages.push(push_message);
       } else if ((push_message + unit_message).length <= 999) {
         push_message += unit_message;
