@@ -109,10 +109,8 @@ async function checkNewHouses(c) {
   }
 
   result.userId = userId;
-  result.msg = `https://i.imgur.com/MwS42AE.png?search/track?${title}&${minRent}&${maxRent}&${sections}&${types}&0&${batch[0].batch}?${userId}&${null}`,
+  result.msg = `https://i.imgur.com/MwS42AE.png?search/track?${title}&${minRent}&${maxRent}&${sections}&${types}&0&${batch[0].batch}?${userId}&${null}`
 
-
-  console.log(result, "03 res");
   return result;
 }
 

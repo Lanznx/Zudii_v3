@@ -15,13 +15,6 @@ async function setUserAccessToken(req, res) {
   axios
     .post(
       `https://notify-bot.line.me/oauth/token?code=${code}&grant_type=authorization_code&redirect_uri=https://zudii.tk/api/notify&client_id=${process.env.NOTIFY_ID}&client_secret=${process.env.NOTIFY_SECRET}`,
-      //   {
-      //     grant_type: "authorization_code",
-      //     code: code,
-      //     redirect_uri: "https://zudii.tk/api/notify",
-      //     client_id: process.env.NOTIFY_ID,
-      //     client_secret: process.env.NOTIFY_SECRET,
-      //   },
       {
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
       }
