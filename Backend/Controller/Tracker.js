@@ -59,11 +59,14 @@ async function check() {
       `;
       if ((push_message + unit_message).length <= 999) {
         push_message += unit_message;
+        console.log(index_2, unitResults.length, "======================================================")
       } else if (index_2 + 1 === unitResults.length) {
         push_messages.push(push_message);
+        console.log(index_2, unitResults.length, "======================================================")
       } else {
         push_messages.push(push_message);
         push_message = unit_message;
+        console.log(index_2, unitResults.length, "======================================================")
       }
     }
     crawlerResults.push({
