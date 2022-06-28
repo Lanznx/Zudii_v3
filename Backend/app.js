@@ -29,8 +29,6 @@ app.get("/", (req, res) => {
 
 // TODO:
 // 1. 取消爬蟲按鈕
-// 2. 檢查字數（不能超過一千）
-// 3. 找不到的 undefined Handling
 
 bot.on("message", async (event) => {
   try {
