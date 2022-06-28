@@ -59,7 +59,7 @@ async function check() {
       `;
       if ((push_message + unit_message).length <= 999) {
         push_message += unit_message;
-      } else if (unitResults.length - index_2 === 1) {
+      } else if (unitResults.length - index_2 === 0) {
         push_messages.push(push_message);
       } else {
         push_messages.push(push_message);
