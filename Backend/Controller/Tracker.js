@@ -68,6 +68,7 @@ async function check() {
         push_message = unit_message;
         console.log(index_2, unitResults.length, "======================================================")
       }
+      console.log(push_message, "push_message")
     }
     crawlerResults.push({
       push_messages: push_messages,
