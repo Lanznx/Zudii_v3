@@ -57,13 +57,13 @@ async function check() {
         house.link
       }\n====================\n
       `;
-      if ((push_message + unit_message).length <= 999) {
-        push_message += unit_message;
-      } else if ((push_message + unit_message).length >= 999) {
+      if (index_2 + 1 === unitResults.length) {
         push_messages.push(push_message);
-        push_message = unit_message;
+      } else if ((push_message + unit_message).length <= 999) {
+        push_message += unit_message;
       } else {
         push_messages.push(push_message);
+        push_message = unit_message;
       }
       console.log(push_message, "push_message");
     }
