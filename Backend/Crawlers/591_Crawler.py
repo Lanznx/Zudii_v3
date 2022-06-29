@@ -1,7 +1,3 @@
-from textwrap import indent
-from turtle import title
-from distutils.command.config import config
-from xml.etree.ElementPath import prepare_child
 from selenium.webdriver.chrome.options import Options
 import time
 from bs4 import BeautifulSoup
@@ -14,6 +10,7 @@ from selenium.webdriver.common.by import By
 from dotenv import dotenv_values, load_dotenv
 import pymongo
 import json
+from datetime import datetime, timedelta, date
 load_dotenv()
 
 
@@ -29,12 +26,22 @@ options.add_argument("--headless")
 options.add_argument("--disable-gpu")
 chrome = webdriver.Chrome(service=Service(CHROME_PATH), options=options)
 
+# ============= 連 mongoDB =============
+client = pymongo.MongoClient(MONGO_CONNECTION)
+db = client.test
+collection = db.dev_591
+
+try:
+    batch_num = collection.find().sort("batch", pymongo.DESCENDING)[0]
+    batch_num = batch_num['batch'] + 1
+except:
+    batch_num = 0
 
 contents = []
 postNumber = 0
 
 
-# section 
+# section
 # 1: 中正區
 # 2: 大同區
 # 3: 中山區
@@ -51,11 +58,12 @@ for section in range(1, 13):
     has_next_page = True
     firstRow = 0
 
-    try: 
+    try:
         while(has_next_page):
             chrome.get(
                 "https://rent.591.com.tw/?region=1&section={}&order=posttime&orderType=desc&firstRow={}".format(section, str(firstRow)))
-            WebDriverWait(chrome, 10000).until(EC.presence_of_element_located((By.CLASS_NAME, "R")))
+            WebDriverWait(chrome, 10000).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "R")))
             soup = BeautifulSoup(chrome.page_source, 'html.parser')
 
             posts = soup.find_all('section', {'class': 'vue-list-rent-item'})
@@ -68,27 +76,33 @@ for section in range(1, 13):
                 print("-------------postNumber-------------", postNumber)
                 content = {
                     "id_591": "",
-                    "imgLink":"",
+                    "imgLink": "",
                     "title": "",
                     "link": "",
                     "section": section,
+                    "position": {"type": "Point", "coordinates": []},
+                    "locationLink": "",
+                    "release_time": "",
                     "location": "",
                     "price": "",
                     "type": "",
-                    "size": ""
+                    "size": "",
+                    "batch": batch_num
                 }
                 # 把內文的每一行都找出來，並印出來
 
                 id_591 = post['data-bind']
                 try:
-                    imgLink = post.find_all("img", {"class": "obsever-lazyimg"})[0]['data-original']
+                    imgLink = post.find_all(
+                        "img", {"class": "obsever-lazyimg"})[0]['data-original']
                 except:
                     imgLink = ""
+                # ============= clean Data =============
                 title = post.find('div', {'class': "item-title"}
-                                ).text.replace(" ", "").replace("\n", "")
+                                  ).text.replace(" ", "").replace("\n", "")
                 link = post.find("a", {'target': "_blank"})['href']
                 location = post.find('div', {'class': "item-area"}
-                                    ).text.replace(" ", "").replace("\n", "")
+                                     ).text.replace(" ", "").replace("\n", "")
                 price = post.find(
                     'div', {'class': "item-price-text"}).text.replace("元/月", "").replace("\n", "").replace(" ", "").replace(",", "")
                 type = (post.find("ul", {"class": "item-style"})).decode_contents().split(
@@ -99,6 +113,45 @@ for section in range(1, 13):
                     size = "Nan"
                 else:
                     size = float(size)
+                # ============= get release time & position =============
+                chrome.get(link)
+                WebDriverWait(chrome, 10000).until(
+                    EC.presence_of_element_located((By.CLASS_NAME, 'google-maps-link')))
+                soup = BeautifulSoup(chrome.page_source, "html.parser")
+                locationLink = soup.find(
+                    "a", {'class': "google-maps-link"})['href']
+                print(locationLink, "Location Link")
+                latitude = locationLink.split("&q=")[1].split(',')[0]
+                print(latitude, " latitude")
+                longitude = locationLink.split("&q=")[1].split(",")[
+                    1].split("&z=")[0]
+                print(longitude, " longtitude")
+
+                release_time_tag = soup.find("div", {"class", "release-time"})
+                release_time_texts = [
+                    t for t in release_time_tag.find_all(text=True)]
+                for release_time_text in release_time_texts:
+                    print(release_time_text,
+                          "========= release time text ===========")
+                    if ("剛剛" in release_time_text or "小時" in release_time_text or "分鐘" in release_time_text):
+                        release_time = datetime.today().strftime('%Y-%m-%d')
+                        print(release_time, "小時、分鐘")
+                        break
+                    elif ("天" in release_time_text):
+                        release_time_text = release_time_text.replace(" ", "")
+                        release_time = (datetime.today(
+                        ) - timedelta(days=int(release_time_text[5:6]))).strftime('%Y-%m-%d')
+                        print(release_time, "天")
+                        break
+                    elif ("月" in release_time_text):
+                        release_time_text = release_time_text.replace(" ", "")
+                        month = release_time_text.split("在")[1].split("月")[0]
+                        day = release_time_text.split("月")[1].split("日")[0]
+                        release_time = date(
+                            int(datetime.today().strftime('%Y')), int(month), int(day))
+                        print(release_time, "月份")
+                        break
+
                 # ============= clean Data =============
                 content.update({"id_591": int(id_591)})
                 content.update({"title": title})
@@ -108,22 +161,22 @@ for section in range(1, 13):
                 content.update({"price": int(price)})
                 content.update({"type": type})
                 content.update({"size": size})
+                content.update({"locationLink": locationLink})
+                content.update(
+                    {"position": {"type": "Point", "coordinates": [float(longitude), float(latitude)]}})
+                content.update({"release_time": release_time})
                 contents.append(content)
 
                 postNumber += 1
-
             if(firstRow >= int(total_rows)):
                 has_next_page = False
             else:
                 firstRow += 30
-    except:
+    except Exception as e:
         print("error in section {}, row {}".format(section, firstRow))
+        print(e)
         pass
 
-# ============= 連 mongoDB =============
-client = pymongo.MongoClient(MONGO_CONNECTION)
-db = client.test
-collection = db.test_591
 
 try:
     for content in contents:
@@ -137,5 +190,14 @@ except Exception as e:
     print(e)
     raise e
 finally:
+    collection.update_many({}, [
+        {
+            '$addFields': {
+                'converted_time': {
+                    '$toDate': '$release_time'
+                },
+            }
+        }
+    ])
     client.close()
     print("Closed connection to MongoDB")
