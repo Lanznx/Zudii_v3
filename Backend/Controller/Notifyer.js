@@ -34,6 +34,7 @@ async function getUserAccessToken(userId) {
 }
 
 async function cancelNotify(req, res) {
+  console.log(req.body)
   const userId = req.body.userId;
   const result = cancelNotifyModel(userId);
   if (result.acknowledged === true) {
