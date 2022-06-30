@@ -68,8 +68,9 @@ async function getAllTrackerConditions() {
   };
   const results = await user.aggregate([getConditions]).toArray();
   const latestTrackConditions = results.map((r) => {
-    if (results.userId !== "" && results.userId !== undefined) return r;
+    if (r.userId !== "" && r.userId !== undefined) return r;
   });
+  console.log("test")
 
   return latestTrackConditions;
 }
