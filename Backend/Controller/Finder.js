@@ -8,7 +8,7 @@ async function search(req, res) {
     locaitonCodes: req.body.locaitonCodes,
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
-    releaseTime: req.body.releaseTime || new Date(2000, 1, 1),
+    releaseTime: req.body.releaseTime || "2000-01-01",
     distanceMRT: req.body.distanceMRT || 1000000000000,
   };
   console.log(conditions, "============ conditions ===============");
