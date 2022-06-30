@@ -66,7 +66,11 @@ async function getAllTrackerConditions() {
       userId: true,
     },
   };
-  const latestTrackConditions = await user.aggregate([getConditions]).toArray();
+  const results = await user.aggregate([getConditions]).toArray();
+  const latestTrackConditions = results.map((r) => {
+    if (result.userId !== "" && result.userId !== undefined) return r;
+  });
+
   return latestTrackConditions;
 }
 
@@ -85,7 +89,7 @@ async function checkNewHouses(c) {
     section: { $in: sections },
     type: { $in: types },
     batch: batch[0].batch,
-    converted_time: { $gte: new Date(releaseTime) || new Date('2000-01-31') }, // 之後要拿掉
+    converted_time: { $gte: new Date(releaseTime) || new Date("2000-01-31") }, // 之後要拿掉
   };
   console.log(findHouse, "02 findHouse");
 
@@ -104,47 +108,49 @@ async function checkNewHouses(c) {
 
   for (let index = 0; index < houses.length; index++) {
     const house = houses[index];
-    const MRT_stations = await mrt.aggregate([
-      {
-        $geoNear: {
-          near: {
-            type: "Point",
-            coordinates: house.position.coordinates,
-          },
-          distanceField: "Distance",
-          maxDistance: distanceMRT || 1000, // 之後要拿掉
-          spherical: true,
-        },
-      },
-      {
-        $project: {
-          Distance: true,
-          stationName: {
-            $arrayElemAt: [
-              {
-                $split: ["$出入口名稱", "出口"],
-              },
-              0,
-            ],
+    const MRT_stations = await mrt
+      .aggregate([
+        {
+          $geoNear: {
+            near: {
+              type: "Point",
+              coordinates: house.position.coordinates,
+            },
+            distanceField: "Distance",
+            maxDistance: distanceMRT || 1000, // 之後要拿掉
+            spherical: true,
           },
         },
-      },
-      {
-        $group: {
-          _id: {
-            stationName: "$stationName",
-          },
-          distance: {
-            $min: "$Distance",
+        {
+          $project: {
+            Distance: true,
+            stationName: {
+              $arrayElemAt: [
+                {
+                  $split: ["$出入口名稱", "出口"],
+                },
+                0,
+              ],
+            },
           },
         },
-      },
-      {
-        $sort: {
-          Distance: 1,
+        {
+          $group: {
+            _id: {
+              stationName: "$stationName",
+            },
+            distance: {
+              $min: "$Distance",
+            },
+          },
         },
-      },
-    ]).toArray();
+        {
+          $sort: {
+            Distance: 1,
+          },
+        },
+      ])
+      .toArray();
     if (MRT_stations.length > 0) {
       house["stations"] = [];
       MRT_stations.map((s) => {
@@ -154,7 +160,7 @@ async function checkNewHouses(c) {
         });
       });
       contain_MRT_Houses.push(house);
-    } 
+    }
   }
   contain_MRT_Houses.userId = userId;
   console.log(contain_MRT_Houses, "contain_MRT_Houses");

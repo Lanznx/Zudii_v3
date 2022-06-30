@@ -118,7 +118,7 @@ async function searcher(conditions, userInfo) {
         },
         {
           $sort: {
-            Distance: 1,
+            distance: 1,
           },
         },
       ])
