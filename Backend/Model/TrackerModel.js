@@ -70,7 +70,7 @@ async function getAllTrackerConditions() {
   const latestTrackConditions = results.map((r) => {
     if (r.userId !== "" && r.userId !== undefined) return r;
   });
-  console.log("test")
+  console.log(latestTrackConditions, "test")
 
   return latestTrackConditions;
 }
@@ -96,9 +96,7 @@ async function checkNewHouses(c) {
 
   const houses = await collection
     .find(findHouse)
-    .sort({ id_591: -1 })
-    .skip(0)
-    .limit(10)
+    .sort({ converted_time: -1 })
     .toArray();
   console.log(houses, "未篩選過捷運的 houses");
   if (houses.length === 0) {

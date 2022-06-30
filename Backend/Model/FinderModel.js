@@ -67,7 +67,7 @@ async function searcher(conditions, userInfo) {
 
   const houses = await collection
     .find(findHouse)
-    .sort({ id_591: -1 })
+    .sort({ converted_time: -1 })
     .skip(firstRow)
     .limit(10)
     .toArray();
