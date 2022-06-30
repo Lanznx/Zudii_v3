@@ -38,7 +38,6 @@ async function check() {
   const crawlerResults = [];
   for (let index_1 = 0; index_1 < latestTrackConditions.length; index_1++) {
     let unitResults = await checkNewHouses(latestTrackConditions[index_1]);
-    console.log(uniResults.length, "uniResults.length ================")
     if (unitResults.length === 0) {
       crawlerResults.push({
         push_messages: null,
