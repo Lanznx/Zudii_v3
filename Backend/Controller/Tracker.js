@@ -12,7 +12,7 @@ async function track(req, res) {
     locaitonCodes: req.body.locaitonCodes,
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
-    releaseTime: req.body.releaseTime || new Date(2000, 1, 1),
+    releaseTime: req.body.releaseTime || '2000-01-01',
     distanceMRT: req.body.distanceMRT || 5000,
   };
   console.log(conditions, "============ conditions ===============");
@@ -38,6 +38,7 @@ async function check() {
   const crawlerResults = [];
   for (let index_1 = 0; index_1 < latestTrackConditions.length; index_1++) {
     let unitResults = await checkNewHouses(latestTrackConditions[index_1]);
+    console.log(uniResults.length, "uniResults.length ================")
     if (unitResults.length === 0) {
       crawlerResults.push({
         push_messages: null,
