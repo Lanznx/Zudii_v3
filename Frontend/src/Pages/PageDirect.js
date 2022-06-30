@@ -23,7 +23,7 @@ export default function PageDirect() {
       setDisplayName(profile.displayName);
     }
   }
-  initializeLIFF();
+  // initializeLIFF();
 
   return (
     <Grid container>
@@ -48,6 +48,27 @@ export default function PageDirect() {
           }}
         >
           開啟通知
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          sx={{
+            width: "100%",
+            height: "50px",
+            borderRadius: "3px",
+            backgroundColor: "#CB4E4E",
+            color: "white",
+            fontSize: "20px",
+            fontWeight: "bold",
+            marginTop: "20px",
+            marginBottom: "20px",
+          }}
+          onClick={() => {
+            fetch("")
+            liff.closeWindow()
+          }}
+        >
+          關閉通知
         </Button>
       </Grid>
       <Grid item xs={2} md={2} />
