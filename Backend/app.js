@@ -178,7 +178,7 @@ bot.on("postback", async (event) => {
         distanceMRT: parseInt(cleanData[7]),
         userId: userInfo[0],
         displayName: userInfo[1],
-        msg: msg,
+        msg: nextMsg,
       },
     };
     if (cleanData[3] === "" || cleanData[3] === "Nan")

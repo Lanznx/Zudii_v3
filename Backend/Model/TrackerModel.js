@@ -85,7 +85,7 @@ async function checkNewHouses(c) {
     section: { $in: sections },
     type: { $in: types },
     batch: batch[0].batch,
-    release_time: { $gte: releaseTime || '2000-01-31' }, // 之後要拿掉
+    converted_time: { $gte: releaseTime || '2000-01-31' }, // 之後要拿掉
   };
   console.log(findHouse, "02 findHouse");
 

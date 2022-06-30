@@ -30,7 +30,7 @@ async function searcher(conditions, userInfo) {
     price: { $gte: minRent, $lte: maxRent },
     section: { $in: locaitonCodes },
     type: { $in: types },
-    release_time: { $gte: releaseTime },
+    converted_time: { $gte: releaseTime },
   };
 
   const findUser = {
