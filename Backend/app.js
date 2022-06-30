@@ -251,10 +251,6 @@ async function autoCheck() {
         console.log(token, "ACCESS_TOKEN");
         for (let index_2 = 0; index_2 < r.push_messages.length; index_2++) {
           const push_message = r.push_messages[index_2];
-          console.log(
-            push_message,
-            "這是我們即將發射的訊息！！！！🧨🧨🧨🧨🧨🧨🧨🧨 "
-          );
           await setTimeout(() => pushToUser(push_message, token), 5000);
         }
       } else console.log("這人的爬蟲條件沒被滿足！");
