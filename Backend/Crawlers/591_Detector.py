@@ -92,83 +92,95 @@ for section in range(1, 13):
                 # 把內文的每一行都找出來，並印出來
 
                 id_591 = post['data-bind']
-                try:
-                    imgLink = post.find_all(
-                        "img", {"class": "obsever-lazyimg"})[0]['data-original']
-                except:
-                    imgLink = ""
-                # ============= clean Data =============
-                title = post.find('div', {'class': "item-title"}
-                                  ).text.replace(" ", "").replace("\n", "")
-                link = post.find("a", {'target': "_blank"})['href']
-                location = post.find('div', {'class': "item-area"}
-                                     ).text.replace(" ", "").replace("\n", "")
-                price = post.find(
-                    'div', {'class': "item-price-text"}).text.replace("元/月", "").replace("\n", "").replace(" ", "").replace(",", "")
-                type = (post.find("ul", {"class": "item-style"})).decode_contents().split(
-                    " ")[0].replace("<li>", "").replace("</li>", "")
-                size = post.find("ul", {"class": "item-style"}).decode_contents().split(" ")[
-                    2].replace("<li>", "").replace("</li>", "").replace("坪", "")
-                if(size == "-->"):
-                    size = "Nan"
-                else:
-                    size = float(size)
-                # ============= get release time & position =============
-                chrome.get(link)
-                WebDriverWait(chrome, 10000).until(
-                    EC.presence_of_element_located((By.CLASS_NAME, 'google-maps-link')))
-                soup = BeautifulSoup(chrome.page_source, "html.parser")
-                locationLink = soup.find(
-                    "a", {'class': "google-maps-link"})['href']
-                print(locationLink, "Location Link")
-                latitude = locationLink.split("&q=")[1].split(',')[0]
-                print(latitude, " latitude")
-                longitude = locationLink.split("&q=")[1].split(",")[
-                    1].split("&z=")[0]
-                print(longitude, " longtitude")
 
-                release_time_tag = soup.find("div", {"class", "release-time"})
-                release_time_texts = [
-                    t for t in release_time_tag.find_all(text=True)]
-                for release_time_text in release_time_texts:
-                    print(release_time_text,
-                          "========= release time text ===========")
-                    if ("剛剛" in release_time_text or "小時" in release_time_text or "分鐘" in release_time_text):
-                        release_time = datetime.today().strftime('%Y-%m-%d')
-                        print(release_time, "小時、分鐘")
-                        break
-                    elif ("天" in release_time_text):
-                        release_time_text = release_time_text.replace(" ", "")
-                        release_time = (datetime.today(
-                        ) - timedelta(days=int(release_time_text[5:6]))).strftime('%Y-%m-%d')
-                        print(release_time, "天")
-                        break
-                    elif ("月" in release_time_text):
-                        release_time_text = release_time_text.replace(" ", "")
-                        month = release_time_text.split("在")[1].split("月")[0]
-                        day = release_time_text.split("月")[1].split("日")[0]
-                        release_time = date(
-                            int(datetime.today().strftime('%Y')), int(month), int(day))
-                        print(release_time, "月份")
-                        break
 
-                # ============= clean Data =============
-                content.update({"id_591": int(id_591)})
-                content.update({"title": title})
-                content.update({"imgLink": imgLink})
-                content.update({"link": link})
-                content.update({"location": location})
-                content.update({"price": int(price)})
-                content.update({"type": type})
-                content.update({"size": size})
-                content.update({"locationLink": locationLink})
-                content.update(
-                    {"position": {"type": "Point", "coordinates": [float(longitude), float(latitude)]}})
-                content.update({"release_time": release_time})
-                contents.append(content)
+                if(collection.find_one({"id_591": int(id_591)}) == None): 
+                    try:
+                        imgLink = post.find_all(
+                            "img", {"class": "obsever-lazyimg"})[0]['data-original']
+                    except:
+                        imgLink = ""
+                    # ============= clean Data =============
+                    title = post.find('div', {'class': "item-title"}
+                                    ).text.replace(" ", "").replace("\n", "")
+                    link = post.find("a", {'target': "_blank"})['href']
+                    location = post.find('div', {'class': "item-area"}
+                                        ).text.replace(" ", "").replace("\n", "")
+                    price = post.find(
+                        'div', {'class': "item-price-text"}).text.replace("元/月", "").replace("\n", "").replace(" ", "").replace(",", "")
+                    type = (post.find("ul", {"class": "item-style"})).decode_contents().split(
+                        " ")[0].replace("<li>", "").replace("</li>", "")
+                    size = post.find("ul", {"class": "item-style"}).decode_contents().split(" ")[
+                        2].replace("<li>", "").replace("</li>", "").replace("坪", "")
+                    if(size == "-->"):
+                        size = "Nan"
+                    else:
+                        size = float(size)
+                    # ============= get release time & position =============
+                    chrome.get(link)
+                    WebDriverWait(chrome, 10000).until(
+                        EC.presence_of_element_located((By.CLASS_NAME, 'google-maps-link')))
+                    soup = BeautifulSoup(chrome.page_source, "html.parser")
+                    locationLink = soup.find(
+                        "a", {'class': "google-maps-link"})['href']
+                    print(locationLink, "Location Link")
+                    latitude = locationLink.split("&q=")[1].split(',')[0]
+                    print(latitude, " latitude")
+                    longitude = locationLink.split("&q=")[1].split(",")[
+                        1].split("&z=")[0]
+                    print(longitude, " longtitude")
 
-                postNumber += 1
+                    release_time_tag = soup.find("div", {"class", "release-time"})
+                    release_time_texts = [
+                        t for t in release_time_tag.find_all(text=True)]
+                    for release_time_text in release_time_texts:
+                        print(release_time_text,
+                            "========= release time text ===========")
+                        if ("剛剛" in release_time_text or "小時" in release_time_text or "分鐘" in release_time_text):
+                            release_time = datetime.today().strftime('%Y-%m-%d')
+                            print(release_time, "小時、分鐘")
+                            break
+                        elif ("天" in release_time_text):
+                            release_time_text = release_time_text.replace(" ", "")
+                            release_time = (datetime.today(
+                            ) - timedelta(days=int(release_time_text[5:6]))).strftime('%Y-%m-%d')
+                            print(release_time, "天")
+                            break
+                        elif ("月" in release_time_text):
+                            release_time_text = release_time_text.replace(" ", "")
+                            month = release_time_text.split("在")[1].split("月")[0]
+                            day = release_time_text.split("月")[1].split("日")[0]
+                            release_time = date(
+                                int(datetime.today().strftime('%Y')), int(month), int(day))
+                            print(release_time, "月份")
+                            break
 
+                    # ============= clean Data =============
+                    content.update({"id_591": int(id_591)})
+                    content.update({"title": title})
+                    content.update({"imgLink": imgLink})
+                    content.update({"link": link})
+                    content.update({"location": location})
+                    content.update({"price": int(price)})
+                    content.update({"type": type})
+                    content.update({"size": size})
+                    content.update({"locationLink": locationLink})
+                    content.update(
+                        {"position": {"type": "Point", "coordinates": [float(longitude), float(latitude)]}})
+                    content.update({"release_time": release_time})
+
+                    try:
+                        collection.insert_one(content)
+                        print(content["id_591"], " inserted")
+                    except Exception as e: 
+                        print(e)
+                        raise e
+
+                    postNumber += 1
+                else: 
+                    print(id_591, "already exist")
+                    postNumber += 1
+                    pass
             if(firstRow >= int(total_rows)):
                 has_next_page = False
             else:
@@ -179,26 +191,15 @@ for section in range(1, 13):
         pass
 
 
-try:
-    for content in contents:
-        if(collection.find_one({"id_591": content["id_591"]}) == None):
 
-            collection.insert_one(content)
-            print(content["id_591"], " inserted")
-        else:
-            print("already exist")
-except Exception as e:
-    print(e)
-    raise e
-finally:
-    collection.update_many({}, [
-        {
-            '$addFields': {
-                'converted_time': {
-                    '$toDate': '$release_time'
-                },
-            }
+collection.update_many({}, [
+    {
+        '$addFields': {
+            'converted_time': {
+                '$toDate': '$release_time'
+            },
         }
-    ])
-    client.close()
-    print("Closed connection to MongoDB")
+    }
+])
+client.close()
+print("Closed connection to MongoDB")
