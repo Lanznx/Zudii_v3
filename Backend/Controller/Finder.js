@@ -71,7 +71,7 @@ async function search(req, res) {
 
     houses.map((house) => {
       if (house.size === "Nan") house.size = "沒有資料";
-      else house.size.toString() + " 坪";
+      else house.size = house.size.toString() + " 坪";
 
       let messageMRT = "";
       for (let i = 0; i < house.stations.length; i++) {
