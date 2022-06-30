@@ -102,6 +102,7 @@ async function checkNewHouses(c) {
   const houses = await collection
     .find(findHouse)
     .sort({ converted_time: -1 })
+    .limit(100)
     .toArray();
   console.log(houses, "未篩選過捷運的 houses");
   if (houses.length === 0) {

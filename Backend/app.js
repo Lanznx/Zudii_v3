@@ -276,7 +276,7 @@ function pushToUser(push_message, token) {
     });
 }
 
-cron.schedule("*/2 * * * *", autoCheck);
+cron.schedule("*/10 * * * *", autoCheck);
 
 serverPort = 4500;
 app.listen(serverPort, () => {
