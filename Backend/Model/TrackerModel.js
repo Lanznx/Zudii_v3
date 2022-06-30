@@ -63,12 +63,13 @@ async function getAllTrackerConditions() {
       latestTrackCondition: {
         $last: "$trackHistory",
       },
-      userId: {$ne:["$userId" ,""]},
+      userId: true,
     },
   };
   const results = await user.aggregate([getConditions]).toArray();
   const latestTrackConditions = results.map((r) => {
-    if (r.userId === true) return r;
+    if (r.userId === "") {}
+    else return r;
   });
   console.log(latestTrackConditions, "test")
 
