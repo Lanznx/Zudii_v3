@@ -63,7 +63,7 @@ async function check() {
         if (i === 2) {
           break;
         } else {
-          messageMRT += "\n         ";
+          messageMRT += "\n            ";
         }
       }
 

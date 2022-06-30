@@ -70,7 +70,7 @@ async function getAllTrackerConditions() {
   const latestTrackConditions = []
   for (let i = 0; i < results.length; i++) {
     const r = results[i];
-    if(r.userId !== "") latestTrackConditions.push(r)
+    if(r.notify === true && r.userId !== "") latestTrackConditions.push(r)
   }
 
   console.log(latestTrackConditions, "test")

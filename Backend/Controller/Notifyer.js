@@ -1,6 +1,7 @@
 const {
   setUserAccessTokenModel,
   getUserAccessTokenModel,
+  cancelNotifyModel,
 } = require("../Model/NotifyerModel");
 const axios = require("axios");
 require("dotenv").config();
@@ -32,7 +33,18 @@ async function getUserAccessToken(userId) {
   return accessToken;
 }
 
+async function cancelNotify(req, res) {
+  const userId = req.body.userId;
+  const result = cancelNotifyModel(userId);
+  if (result.acknowledged === true) {
+    res.send({ success: true, status: 200, message: "成功解除通知！" });
+  }else {
+    res.send({success: false, status: 400, message: "解除通知失敗\n請再試一次"})
+  }
+}
+
 module.exports = {
   setUserAccessToken,
   getUserAccessToken,
+  cancelNotify,
 };

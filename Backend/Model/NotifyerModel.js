@@ -24,7 +24,23 @@ async function getUserAccessTokenModel(userId) {
   return accessToken;
 }
 
+async function cancelNotifyModel(userId) {
+  const result = user.updateOne(
+    {
+      userId: userId,
+    },
+    {
+      $set: {
+        notify: false,
+      },
+    }
+  );
+
+  return result
+}
+
 module.exports = {
   setUserAccessTokenModel,
   getUserAccessTokenModel,
+  cancelNotifyModel,
 };
