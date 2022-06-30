@@ -56,7 +56,7 @@ async function check() {
       else house.size = house.size + " 坪"
 
       let messageMRT = "";
-      for (let i = 0; i < house.stations.length; i++) {
+      for (let i = 0; i < (house.stations).length; i++) {
         const station = house.stations[i];
         messageMRT +=
           station.stationName.toString() + ` ${station.distance}公尺`;
