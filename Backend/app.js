@@ -255,7 +255,7 @@ async function autoCheck() {
             push_message,
             "這是我們即將發射的訊息！！！！🧨🧨🧨🧨🧨🧨🧨🧨 "
           );
-          await setTimeout(() => pushToUser(push_message, token), 1000);
+          await setTimeout(() => pushToUser(push_message, token), 5000);
         }
       } else console.log("這人的爬蟲條件沒被滿足！");
     }

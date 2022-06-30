@@ -8,7 +8,8 @@ async function search(req, res) {
     locaitonCodes: req.body.locaitonCodes,
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
-    batch: req.body.batch || null
+    releaseTime: req.body.releaseTime || new Date(2000, 1, 1),
+    distanceMRT: req.body.distanceMRT || 1000000000000,
   };
   console.log(conditions, "============ conditions ===============");
   const userInfo = {
@@ -41,16 +42,49 @@ async function search(req, res) {
           {
             type: "action",
             action: {
-              type: "message",
-              label: "抖內",
-              text: "我要抖內！",
+              type: "uri",
+              label: "我要抖內！",
+              uri: "https://www.jkopay.com/transfer?j=Transfer:906614325",
             },
           },
+          {
+            type: "action",
+            action: {
+              type: "uri",
+              label: "修改查詢",
+              uri: "https://liff.line.me/1657234288-w3GAax31",
+            },
+          },
+          // {
+          //   type: "action",
+          //   action: {
+          //     type: "uri",
+          //     label: "我想試試看自動回傳",
+          //     uri: "https://liff.line.me/1657234288-w3GAax31",
+          //   },
+          // },
         ],
       },
     };
 
+
+
     houses.map((house) => {
+      if (house.size === "Nan") house.size = "沒有資料";
+      else house.size.toString() + " 坪";
+
+      let messageMRT = "";
+      for (let i = 0; i < house.stations.length; i++) {
+        const station = house.stations[i];
+        messageMRT +=
+          station.stationName.toString() + ` : ${station.distance}公尺`;
+        if (i === 2) {
+          break;
+        } else {
+          messageMRT += "\n";
+        }
+      }
+
       replyMessages.contents.contents.push({
         type: "bubble",
         hero: {
@@ -144,6 +178,29 @@ async function search(req, res) {
                   contents: [
                     {
                       type: "text",
+                      text: "鄰近捷運站",
+                      color: "#999999",
+                      size: "md",
+                      flex: 1,
+                    },
+                    {
+                      type: "text",
+                      text: messageMRT,
+                      wrap: true,
+                      color: "#666666",
+                      size: "sm",
+                      flex: 5,
+                      margin: "none",
+                    },
+                  ],
+                },
+                {
+                  type: "box",
+                  layout: "baseline",
+                  spacing: "sm",
+                  contents: [
+                    {
+                      type: "text",
                       text: "房型",
                       color: "#999999",
                       size: "md",
@@ -174,7 +231,30 @@ async function search(req, res) {
                     },
                     {
                       type: "text",
-                      text: house.size.toString() + " 坪",
+                      text: house.size,
+                      wrap: true,
+                      color: "#666666",
+                      size: "sm",
+                      flex: 5,
+                      margin: "none",
+                    },
+                  ],
+                },
+                {
+                  type: "box",
+                  layout: "baseline",
+                  spacing: "sm",
+                  contents: [
+                    {
+                      type: "text",
+                      text: "日期",
+                      color: "#999999",
+                      size: "md",
+                      flex: 1,
+                    },
+                    {
+                      type: "text",
+                      text: house.release_time,
                       wrap: true,
                       color: "#666666",
                       size: "sm",
@@ -202,6 +282,19 @@ async function search(req, res) {
                 uri: house.link,
                 altUri: {
                   desktop: house.link,
+                },
+              },
+            },
+            {
+              type: "button",
+              style: "link",
+              height: "sm",
+              action: {
+                type: "uri",
+                label: "查看地點",
+                uri: house.locationLink,
+                altUri: {
+                  desktop: house.locationLink,
                 },
               },
             },

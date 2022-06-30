@@ -100,7 +100,6 @@ async function checkNewHouses(c) {
     houses.push({ id_591: null });
     return houses;
   }
-
   let contain_MRT_Houses = [];
 
   for (let index = 0; index < houses.length; index++) {

@@ -52,6 +52,9 @@ async function check() {
     for (let index_2 = 0; index_2 < unitResults.length; index_2++) {
       const house = unitResults[index_2];
 
+      if(house.size === "Nan") house.size = "沒有資料"
+      else house.size = house.size.toString() + " 坪"
+
       let messageMRT = "";
       for (let i = 0; i < house.stations.length; i++) {
         const station = house.stations[i];
@@ -69,7 +72,7 @@ async function check() {
         house.location
       }\n鄰近捷運站: ${messageMRT}\n房型：${house.type}\n坪數：${
         house.size
-      } 坪\n發布時間：${house.release_time}\n貼文連結：${
+      }\n發布時間：${house.release_time}\n貼文連結：${
         house.link
       }\n 
       ====================\n
