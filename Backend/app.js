@@ -24,12 +24,13 @@ app.get("/", (req, res) => {
   res.send(`Wazzzaaapppp \nYou are visitor no.${visitor_number}`);
 });
 
-// https://i.imgur.com/MwS42AE.png?search?木柵&5000&10000&['1','2']&['整層住家','獨立套房']&0?userIDIDIDIDI&displayNAME
-// https://i.imgur.com/MwS42AE.png?search? title & minRent & maxRent & locationCodes & types & firstRow ? userID & displayNAME
+// https://i.imgur.com/MwS42AE.png?search    ?      title & minRent & maxRent & locationCodes & types & firstRow & convertedTime & distanceMRT      ?       userID & displayNAME
 
 // TODO:
 // 1. 取消爬蟲 frontend + backend
-// 2. 正著做、反著做的邏輯
+// 2. 自製縮網址
+// 3. 自動回傳順序錯亂問題
+// 4. 查詢的前端更新 -> flex message & LIFF
 
 bot.on("message", async (event) => {
   try {
@@ -62,6 +63,8 @@ bot.on("message", async (event) => {
               }) || parseInt(cleanData[3]),
             types: cleanData[4].split(","),
             firstRow: parseInt(cleanData[5]),
+            convertedTime: cleanData[6], // 等前端的資料格式確定再做資料處理
+            distanceMRT: parseInt(cleanData[7]),
             userId: userInfo[0],
             displayName: userInfo[1],
             msg: msg,
@@ -97,6 +100,8 @@ bot.on("message", async (event) => {
               }) || parseInt(cleanData[3]),
             types: cleanData[4].split(","),
             firstRow: parseInt(cleanData[5]),
+            convertedTime: cleanData[6], // 等前端的資料格式確定再做資料處理
+            distanceMRT: parseInt(cleanData[7]),
             userId: userInfo[0],
             displayName: userInfo[1],
           },
@@ -149,11 +154,15 @@ bot.on("postback", async (event) => {
       cleanData[4] +
       "&" +
       (parseInt(cleanData[5]) + 10).toString() +
+      "&" +
+      cleanData[6] +
+      "&" +
+      cleanData[7] +
       "?" +
       userInfo[0] +
-      "&";
-    userInfo[1];
-    console.log(nextMsg, "=========== nextnsg ===========");
+      "&" +
+      userInfo[1];
+    console.log(nextMsg, "=========== nextMsg ===========");
     let request = {
       body: {
         text: cleanData[0],
@@ -165,9 +174,11 @@ bot.on("postback", async (event) => {
           }) || parseInt(cleanData[3]),
         types: cleanData[4].split(","),
         firstRow: parseInt(cleanData[5]) + 10,
+        convertedTime: cleanData[6], // 等前端的資料格式確定再做資料處理
+        distanceMRT: parseInt(cleanData[7]),
         userId: userInfo[0],
         displayName: userInfo[1],
-        msg: nextMsg,
+        msg: msg,
       },
     };
     if (cleanData[3] === "" || cleanData[3] === "Nan")
@@ -192,26 +203,6 @@ bot.on("postback", async (event) => {
     console.log(cleanData, " cleanData");
     console.log(cleanData[3], "locationcodes!!!");
     const userInfo = content[3].split("&");
-    const nextMsg =
-      "https://i.imgur.com/MwS42AE.png?search/track?" +
-      cleanData[0] +
-      "&" +
-      cleanData[1] +
-      "&" +
-      cleanData[2] +
-      "&" +
-      cleanData[3] +
-      "&" +
-      cleanData[4] +
-      "&" +
-      (parseInt(cleanData[5]) + 10).toString() +
-      "&" +
-      cleanData[6] +
-      "?" +
-      userInfo[0] +
-      "&";
-    userInfo[1];
-    console.log(nextMsg, "=========== nextnsg ===========");
     let request = {
       body: {
         text: cleanData[0],
@@ -223,10 +214,10 @@ bot.on("postback", async (event) => {
           }) || parseInt(cleanData[3]),
         types: cleanData[4].split(","),
         firstRow: parseInt(cleanData[5]) + 10,
-        batch: parseInt(cleanData[6]),
+        convertedTime: cleanData[6], // 等前端的資料格式確定再做資料處理
+        distanceMRT: parseInt(cleanData[7]),
         userId: userInfo[0],
         displayName: userInfo[1],
-        msg: nextMsg,
       },
     };
     if (cleanData[3] === "" || cleanData[3] === "Nan")
@@ -260,7 +251,11 @@ async function autoCheck() {
         console.log(token, "ACCESS_TOKEN");
         for (let index_2 = 0; index_2 < r.push_messages.length; index_2++) {
           const push_message = r.push_messages[index_2];
-          await pushToUser(push_message, token);
+          console.log(
+            push_message,
+            "這是我們即將發射的訊息！！！！🧨🧨🧨🧨🧨🧨🧨🧨 "
+          );
+          await setTimeout(() => pushToUser(push_message, token), 1000);
         }
       } else console.log("這人的爬蟲條件沒被滿足！");
     }

@@ -12,6 +12,8 @@ async function track(req, res) {
     locaitonCodes: req.body.locaitonCodes,
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
+    releaseTime: req.body.releaseTime || new Date(2000, 1, 1),
+    distanceMRT: req.body.distanceMRT || 1000000000000,
   };
   console.log(conditions, "============ conditions ===============");
   const userInfo = {
@@ -36,7 +38,7 @@ async function check() {
   const crawlerResults = [];
   for (let index_1 = 0; index_1 < latestTrackConditions.length; index_1++) {
     let unitResults = await checkNewHouses(latestTrackConditions[index_1]);
-    if (unitResults[0].id_591 === null) {
+    if (unitResults.length === 0) {
       crawlerResults.push({
         push_messages: null,
         userId: unitResults.userId,
@@ -50,13 +52,30 @@ async function check() {
     for (let index_2 = 0; index_2 < unitResults.length; index_2++) {
       const house = unitResults[index_2];
 
+      let messageMRT = "";
+      for (let i = 0; i < house.stations.length; i++) {
+        const station = house.stations[i];
+        messageMRT +=
+          station.stationName.toString() + ` ${station.distance}公尺`;
+        if (i === 2) {
+          break;
+        } else {
+          messageMRT += "\n                 ";
+        }
+      }
+
       let unit_message = `
       ${index_2 + 1}.\n${house.title}\n租金：${house.price} 元\n地址：${
         house.location
-      }\n房型：${house.type}\n坪數：${house.size} 坪\n連結：${
+      }\n鄰近捷運站: ${messageMRT}\n房型：${house.type}\n坪數：${
+        house.size
+      } 坪\n發布時間：${house.release_time}\n貼文連結：${
         house.link
-      }\n====================\n
-      `;
+      }\n 
+      ====================\n
+      `; // 之後要改地圖網址
+
+
       if (index_2 + 1 === unitResults.length) {
         push_message += unit_message;
         push_messages.push(push_message);
@@ -66,7 +85,6 @@ async function check() {
         push_messages.push(push_message);
         push_message = unit_message;
       }
-      console.log(push_message, "push_message");
     }
     crawlerResults.push({
       push_messages: push_messages,
