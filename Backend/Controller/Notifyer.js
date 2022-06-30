@@ -35,7 +35,7 @@ async function getUserAccessToken(userId) {
 
 async function cancelNotify(req, res) {
   console.log(req.body)
-  const userId = req.body.userId;
+  const userId = JSON.stringify(req.body.userId);
   const result = cancelNotifyModel(userId);
   if (result.acknowledged === true) {
     res.send({ success: true, status: 200, message: "成功解除通知！" });
