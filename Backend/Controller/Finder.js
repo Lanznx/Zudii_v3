@@ -178,7 +178,7 @@ async function search(req, res) {
                   contents: [
                     {
                       type: "text",
-                      text: "鄰近捷運站",
+                      text: "捷運",
                       color: "#999999",
                       size: "md",
                       flex: 1,
