@@ -30,7 +30,7 @@ async function searcher(conditions, userInfo) {
     price: { $gte: minRent, $lte: maxRent },
     section: { $in: locaitonCodes },
     type: { $in: types },
-    converted_time: { $gte: releaseTime },
+    converted_time: { $gte: new Date(releaseTime) },
   };
 
   const findUser = {
@@ -74,53 +74,55 @@ async function searcher(conditions, userInfo) {
   console.log(houses, "未篩選過捷運的 houses");
   if (houses.length === 0) {
     houses.push({ id_591: null });
-    return houses
+    return houses;
   }
   let contain_MRT_Houses = [];
 
   for (let index = 0; index < houses.length; index++) {
     const house = houses[index];
-    const MRT_stations = await mrt.aggregate([
-      {
-        $geoNear: {
-          near: {
-            type: "Point",
-            coordinates: house.position.coordinates,
-          },
-          distanceField: "Distance",
-          maxDistance: distanceMRT ||1000, //之後要拿掉
-          spherical: true,
-        },
-      },
-      {
-        $project: {
-          Distance: true,
-          stationName: {
-            $arrayElemAt: [
-              {
-                $split: ["$出入口名稱", "出口"],
-              },
-              0,
-            ],
+    const MRT_stations = await mrt
+      .aggregate([
+        {
+          $geoNear: {
+            near: {
+              type: "Point",
+              coordinates: house.position.coordinates,
+            },
+            distanceField: "Distance",
+            maxDistance: distanceMRT || 1000, //之後要拿掉
+            spherical: true,
           },
         },
-      },
-      {
-        $group: {
-          _id: {
-            stationName: "$stationName",
-          },
-          distance: {
-            $min: "$Distance",
+        {
+          $project: {
+            Distance: true,
+            stationName: {
+              $arrayElemAt: [
+                {
+                  $split: ["$出入口名稱", "出口"],
+                },
+                0,
+              ],
+            },
           },
         },
-      },
-      {
-        $sort: {
-          Distance: 1,
+        {
+          $group: {
+            _id: {
+              stationName: "$stationName",
+            },
+            distance: {
+              $min: "$Distance",
+            },
+          },
         },
-      },
-    ]).toArray();
+        {
+          $sort: {
+            Distance: 1,
+          },
+        },
+      ])
+      .toArray();
 
     if (MRT_stations.length > 0) {
       house["stations"] = [];
