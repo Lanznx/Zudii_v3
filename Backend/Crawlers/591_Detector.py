@@ -68,7 +68,6 @@ for section in range(1, 13):
 
             posts = soup.find_all('section', {'class': 'vue-list-rent-item'})
             total_rows = soup.find("span", {"class": "R"})
-            print(total_rows)
             total_rows = total_rows.text
             print(total_rows)
 
@@ -125,10 +124,8 @@ for section in range(1, 13):
                         "a", {'class': "google-maps-link"})['href']
                     print(locationLink, "Location Link")
                     latitude = locationLink.split("&q=")[1].split(',')[0]
-                    print(latitude, " latitude")
                     longitude = locationLink.split("&q=")[1].split(",")[
                         1].split("&z=")[0]
-                    print(longitude, " longtitude")
 
                     release_time_tag = soup.find("div", {"class", "release-time"})
                     release_time_texts = [
@@ -138,21 +135,22 @@ for section in range(1, 13):
                             "========= release time text ===========")
                         if ("剛剛" in release_time_text or "小時" in release_time_text or "分鐘" in release_time_text):
                             release_time = datetime.today().strftime('%Y-%m-%d')
-                            print(release_time, "小時、分鐘")
                             break
                         elif ("天" in release_time_text):
                             release_time_text = release_time_text.replace(" ", "")
                             release_time = (datetime.today(
                             ) - timedelta(days=int(release_time_text[5:6]))).strftime('%Y-%m-%d')
-                            print(release_time, "天")
                             break
                         elif ("月" in release_time_text):
                             release_time_text = release_time_text.replace(" ", "")
                             month = release_time_text.split("在")[1].split("月")[0]
                             day = release_time_text.split("月")[1].split("日")[0]
-                            release_time = str(date(
-                                int(datetime.today().strftime('%Y')), int(month), int(day)))
-                            print(release_time, "月份")
+                            if(int(month) <= datetime.now().month):
+                                release_time = str(date(
+                                    int(datetime.today().strftime('%Y')), int(month), int(day)))
+                            else: 
+                                release_time = str(date(
+                                    int(datetime.today().strftime('%Y')) - 1, int(month), int(day)))
                             break
 
                     # ============= clean Data =============

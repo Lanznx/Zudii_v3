@@ -150,9 +150,12 @@ for section in range(1, 13):
                             release_time_text = release_time_text.replace(" ", "")
                             month = release_time_text.split("在")[1].split("月")[0]
                             day = release_time_text.split("月")[1].split("日")[0]
-                            release_time = str(date(
-                                int(datetime.today().strftime('%Y')), int(month), int(day)))
-                            print(release_time, "月份")
+                            if(int(month) <= datetime.now().month):
+                                release_time = str(date(
+                                    int(datetime.today().strftime('%Y')), int(month), int(day)))
+                            else: 
+                                release_time = str(date(
+                                    int(datetime.today().strftime('%Y')) - 1, int(month), int(day)))
                             break
 
                     # ============= clean Data =============

@@ -8,11 +8,12 @@ async function setUserAccessTokenModel(access_token, userId) {
     user.insertOne({
       userId: userId,
       access_token: access_token,
+      notify: true,
     });
   } else {
     user.updateOne(
       { userId: userId },
-      { $set: { access_token: access_token } }
+      { $set: { access_token: access_token, notify: true } }
     );
   }
 }

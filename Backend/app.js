@@ -272,11 +272,11 @@ function pushToUser(push_message, token) {
       console.log(res.data, "message pushed!!!");
     })
     .catch((err) => {
-      console.log(err, "err");
+      console.log(err.data, "err");
     });
 }
 
-cron.schedule("* * * * *", autoCheck);
+cron.schedule("*/5 * * * *", autoCheck);
 
 serverPort = 4500;
 app.listen(serverPort, () => {

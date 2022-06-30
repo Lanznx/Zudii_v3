@@ -4,4 +4,6 @@ const {setUserAccessToken} = require("../Controller/Notifyer")
 
 notify.post("/", setUserAccessToken);
 
+notify.post("/cancel", )
+
 module.exports = notify;
