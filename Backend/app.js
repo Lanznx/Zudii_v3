@@ -251,7 +251,7 @@ async function autoCheck() {
         console.log(token, "ACCESS_TOKEN");
         for (let index_2 = 0; index_2 < r.push_messages.length; index_2++) {
           const push_message = r.push_messages[index_2];
-          await setTimeout(() => pushToUser(push_message, token), 5000);
+          await setTimeout(() => pushToUser(push_message, token), index_2 * 300);
         }
       } else console.log("這人的爬蟲條件沒被滿足！");
     }

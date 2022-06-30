@@ -67,12 +67,12 @@ async function getAllTrackerConditions() {
     },
   };
   const results = await user.aggregate([getConditions]).toArray();
-  const latestTrackConditions = results.map((r) => {
-    if (r.userId === "") {
-      return null
-    }
-    else return r;
-  });
+  const latestTrackConditions = []
+  for (let i = 0; i < results.length; i++) {
+    const r = results[i];
+    if(r.userId !== "") latestTrackConditions.push(r)
+  }
+
   console.log(latestTrackConditions, "test")
 
   return latestTrackConditions;
@@ -131,7 +131,7 @@ async function checkNewHouses(c) {
                 {
                   $split: ["$出入口名稱", "出口"],
                 },
-                0,
+                0, // 這個很重要不能動！
               ],
             },
           },

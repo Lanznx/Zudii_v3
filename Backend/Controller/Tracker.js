@@ -37,7 +37,6 @@ async function check() {
 
   const crawlerResults = [];
   for (let index_1 = 0; index_1 < latestTrackConditions.length; index_1++) {
-    if(latestTrackConditions[index_1] === null) continue
     let unitResults = await checkNewHouses(latestTrackConditions[index_1]);
     if (unitResults.length === 0) {
       crawlerResults.push({
@@ -57,21 +56,21 @@ async function check() {
       else house.size = house.size + " 坪"
 
       let messageMRT = "";
-      for (let i = 0; i < (house.stations).length; i++) {
+      for (let i = 0; i < house.stations.length; i++) {
         const station = house.stations[i];
         messageMRT +=
           station.stationName.toString() + ` ${station.distance}公尺`;
         if (i === 2) {
           break;
         } else {
-          messageMRT += "\n                 ";
+          messageMRT += "\n         ";
         }
       }
 
       let unit_message = `
       ${index_2 + 1}.\n${house.title}\n租金：${house.price} 元\n地址：${
         house.location
-      }\n鄰近捷運站: ${messageMRT}\n房型：${house.type}\n坪數：${
+      }\n捷運：${messageMRT}\n房型：${house.type}\n坪數：${
         house.size
       }\n發布時間：${house.release_time}\n貼文連結：${
         house.link
