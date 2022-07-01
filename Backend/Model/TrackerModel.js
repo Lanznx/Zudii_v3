@@ -151,7 +151,7 @@ async function checkNewHouses(c) {
         },
         {
           $sort: {
-            Distance: 1,
+            distance: 1,
           },
         },
       ])
