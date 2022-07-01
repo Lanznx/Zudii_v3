@@ -13,7 +13,7 @@ async function track(req, res) {
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
     releaseTime: req.body.releaseTime || new Date('2000-01-01'),
-    distanceMRT: req.body.distanceMRT || 5000,
+    distanceMRT: req.body.distanceMRT || 2000,
   };
   console.log(conditions, "============ conditions ===============");
   const userInfo = {

@@ -27,10 +27,7 @@ app.get("/", (req, res) => {
 // https://i.imgur.com/MwS42AE.png?search    ?      title & minRent & maxRent & locationCodes & types & firstRow & convertedTime & distanceMRT      ?       userID & displayNAME
 
 // TODO:
-// 1. 取消爬蟲 frontend + backend
 // 2. 自製縮網址
-// 3. 自動回傳順序錯亂問題
-// 4. 查詢的前端更新 -> flex message & LIFF
 
 bot.on("message", async (event) => {
   try {
