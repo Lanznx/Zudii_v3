@@ -58,8 +58,9 @@ export default function SelectArea(props) {
   return (
     <div>
       <FormControl sx={{ width: 200, mt: 1 }}>
-        <InputLabel id="demo-multiple-name-label">行政區</InputLabel>
+        <InputLabel id="demo-multiple-name-label">行政區（預設全選）</InputLabel>
         <Select
+          sx={{width: '250px'}}
           labelId="demo-multiple-name-label"
           id="demo-multiple-name"
           multiple

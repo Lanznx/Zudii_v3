@@ -7,12 +7,14 @@ import CardMedia from "@mui/material/CardMedia";
 import { Button, CardActionArea } from "@mui/material";
 import rentImg from "../Assets/rent.png";
 import typeImg from "../Assets/type.png";
+import timeImg from "../Assets/time.png";
 import magnifier from "../Assets/magnifier.png";
 import locationImg from "../Assets/location.png";
 import RentDialog from "./Components/RentDialog";
 import LocationDialog from "./Components/LocationDialog";
 import TypeDialog from "./Components/TypeDialog";
 import SearchDialog from "./Components/SearchDialog";
+import ReleaseTimeDialog from "./Components/ReleaseTimeDialog";
 import liff from "@line/liff";
 const REACT_APP_LIFF_ID = process.env.REACT_APP_LIFF_ID;
 
@@ -25,7 +27,28 @@ export default function Page591() {
   const [search, setSearch] = React.useState("");
   const [userId, setUserId] = React.useState("");
   const [displayName, setDisplayName] = React.useState("");
+  const [distanceMRT, setDistanceMRT] = React.useState(1000);
+  const [releaseTime, setReleaseTime] = React.useState([
+    parseInt(new Date().getFullYear()),
+    parseInt(new Date().getMonth() + 1),
+    parseInt(new Date().getDate()),
+  ]);
+  const [chosedTime, setChosedTime] = React.useState("");
 
+  const monthDays = {
+    1: 31,
+    2: 28,
+    3: 31,
+    4: 30,
+    5: 31,
+    6: 30,
+    7: 31,
+    8: 31,
+    9: 30,
+    10: 31,
+    11: 30,
+    12: 31,
+  };
   async function initializeLIFF() {
     await liff.init({
       liffId: REACT_APP_LIFF_ID, // Use own liffId
@@ -40,7 +63,6 @@ export default function Page591() {
       const profile = await liff.getProfile();
       setUserId(profile.userId);
       setDisplayName(profile.displayName);
-
       console.log(profile, " profile"); // print raw profile object
     }
   }
@@ -61,6 +83,32 @@ export default function Page591() {
     11: "南港區",
     12: "文山區",
   };
+  React.useEffect(() => {
+    console.log(releaseTime, " releaseTime");
+    let newTime = "";
+
+    for (let i = 0; i < releaseTime.length; i++) {
+      const item = releaseTime[i];
+      if (i === 0) {
+        newTime += item.toString();
+      } else {
+        newTime += "-" + item.toString();
+      }
+    }
+    if(new Date(newTime).getTime() > new Date().getTime()){
+      alert("超過今天了！");
+      setReleaseTime([
+        parseInt(new Date().getFullYear()),
+        parseInt(new Date().getMonth() + 1),
+        parseInt(new Date().getDate()),
+      ]);
+    }else {
+      setChosedTime(newTime);
+    }
+    console.log(newTime, "newTime")
+
+
+  }, [releaseTime]);
 
   React.useEffect(() => {
     // get key of locationCode by matching codes and location
@@ -123,6 +171,18 @@ export default function Page591() {
     console.log("close");
   };
 
+  const [releaseTimeOpen, setReleaseTimeOpen] = React.useState(false);
+  const handleReleaseTimeOpen = () => {
+    setReleaseTimeOpen(true);
+    console.log("first");
+  };
+
+  const handleReleaseTimeClose = (e) => {
+    e.stopPropagation();
+    setReleaseTimeOpen(false);
+    console.log("close");
+  };
+
   return (
     <Grid container>
       <Grid item xs={1} md={4.5} />
@@ -165,15 +225,14 @@ export default function Page591() {
           <Card sx={{ width: "100%", display: "flex" }}>
             <CardMedia
               sx={{
-                width: "70px",
-                height: "70px",
+                width: "80px",
+                height: "80px",
                 margin: "10px",
                 borderRadius: "10%",
               }}
               component="img"
-              height="70"
+              height="75px"
               image={locationImg}
-              alt="green iguana"
             />
             <CardActionArea onClick={handleLocationOpen}>
               <CardContent>
@@ -182,8 +241,10 @@ export default function Page591() {
                   handleLocationClose={handleLocationClose}
                   location={location}
                   setLocation={setLocation}
+                  distanceMRT={distanceMRT}
+                  setDistanceMRT={setDistanceMRT}
                 />
-                <Typography variant="h6">房屋地區</Typography>
+                <Typography variant="h6">房屋地區及交通</Typography>
                 <>
                   {location.map((name) => {
                     return <Typography variant="h7">{name} </Typography>;
@@ -204,7 +265,6 @@ export default function Page591() {
               component="img"
               height="70"
               image={typeImg}
-              alt="green iguana"
             />
             <CardActionArea onClick={handleTypeOpen}>
               <CardContent>
@@ -233,9 +293,36 @@ export default function Page591() {
                 borderRadius: "10%",
               }}
               component="img"
+              height="200"
+              image={timeImg}
+              alt="green iguana"
+            />
+            <CardActionArea onClick={handleReleaseTimeOpen}>
+              <CardContent>
+                <ReleaseTimeDialog
+                  releaseTimeOpen={releaseTimeOpen}
+                  handleReleaseTimeClose={handleReleaseTimeClose}
+                  releaseTime={releaseTime}
+                  setReleaseTime={setReleaseTime}
+                  monthDays={monthDays}
+                />
+                <Typography variant="h6">貼文時間</Typography>
+                <Typography variant="h7">{chosedTime}</Typography>
+              </CardContent>
+            </CardActionArea>
+          </Card>
+
+          <Card sx={{ width: "100%", display: "flex" }}>
+            <CardMedia
+              sx={{
+                width: "70px",
+                height: "70px",
+                margin: "10px",
+                borderRadius: "10%",
+              }}
+              component="img"
               height="70"
               image={magnifier}
-              alt="green iguana"
             />
             <CardActionArea onClick={handleSearchOpen}>
               <CardContent>
@@ -259,12 +346,11 @@ export default function Page591() {
           <Grid item xs={5} md={5}>
             <Button
               variant="contained"
-              color="primary"
               sx={{
                 width: "100%",
                 height: "50px",
                 borderRadius: "3px",
-                backgroundColor: "#4EADCB",
+                backgroundColor: "#CB4E4E",
                 color: "white",
                 fontSize: "20px",
                 fontWeight: "bold",
@@ -272,24 +358,15 @@ export default function Page591() {
                 marginBottom: "20px",
               }}
               onClick={() => {
-                liff
-                  .sendMessages([
-                    {
-                      type: "image",
-                      originalContentUrl: `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}`,
-                      previewImageUrl: "https://i.imgur.com/MwS42AE.png",
-                    },
-                  ])
-                  .catch((error) => {
-                    window.alert("Error sending message: " + error);
-                  });
-                liff.closeWindow();
-                console.log(
-                  `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}`
-                );
+                setMinRent(0);
+                setMaxRent(0);
+                setLocation([]);
+                setType([]);
+                setSearch("");
+                setLocationCode([]);
               }}
             >
-              送出查詢
+              清除條件
             </Button>
           </Grid>
           <Grid item xs={2} md={2} />
@@ -313,7 +390,7 @@ export default function Page591() {
                   .sendMessages([
                     {
                       type: "image",
-                      originalContentUrl: `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}`,
+                      originalContentUrl: `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}&${chosedTime}&${distanceMRT}`,
                       previewImageUrl: "https://i.imgur.com/MwS42AE.png",
                     },
                   ])
@@ -322,35 +399,45 @@ export default function Page591() {
                   });
                 liff.closeWindow();
                 console.log(
-                  `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}`
+                  `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}&${chosedTime}&${distanceMRT}`,
                 );
               }}
             >
-              設定爬蟲
+              送出查詢
             </Button>
           </Grid>
         </Grid>
         <Button
           variant="contained"
+          color="primary"
           sx={{
             width: "100%",
             height: "50px",
             borderRadius: "3px",
-            backgroundColor: "#CB4E4E",
+            backgroundColor: "#4EADCB",
             color: "white",
             fontSize: "20px",
             fontWeight: "bold",
           }}
           onClick={() => {
-            setMinRent(0);
-            setMaxRent(0);
-            setLocation([]);
-            setType([]);
-            setSearch("");
-            setLocationCode([]);
+            liff
+              .sendMessages([
+                {
+                  type: "image",
+                  originalContentUrl: `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}`,
+                  previewImageUrl: "https://i.imgur.com/MwS42AE.png",
+                },
+              ])
+              .catch((error) => {
+                window.alert("Error sending message: " + error);
+              });
+            liff.closeWindow();
+            console.log(
+              `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}`
+            );
           }}
         >
-          清除條件
+          有符合的房屋時通知我
         </Button>
       </Grid>
       <Grid item xs={1} md={4.5} />

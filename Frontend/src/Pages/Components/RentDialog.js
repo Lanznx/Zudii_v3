@@ -10,7 +10,7 @@ import DialogTitle from "@mui/material/DialogTitle";
 import { Grid, TextField } from "@mui/material";
 
 export default function RentDialog(props) {
-  const { rentOpen, handleRentClose, setMinRent, setMaxRent } = props;
+  const { rentOpen, handleRentClose, setMinRent, setMaxRent, minRent, maxRent } = props;
   return (
     <Dialog open={rentOpen} onClose={handleRentClose} fullWidth>
       <DialogTitle variant="primary" color="primary">
@@ -34,6 +34,7 @@ export default function RentDialog(props) {
                 width: "100px",
               }}
               id="minRent"
+              value={minRent}
               onChange={(e) => {
                 console.log(e.target.value, "minmin")
                 setMinRent(e.target.value);
@@ -54,6 +55,7 @@ export default function RentDialog(props) {
                 width: "100px",
               }}
               id="maxRent"
+              value={maxRent}
               onChange={(e) => {
                 console.log(e.target.value, "mMAX")
                 setMaxRent(e.target.value);

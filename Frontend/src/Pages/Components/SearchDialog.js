@@ -38,7 +38,7 @@ export default function SearchDialog(props) {
               onChange={(e) => {
                 setSearch(e.target.value);
               }}
-              label="關鍵字"
+              label="關鍵字（可留白）"
               type="text"
             />
           </Grid>
