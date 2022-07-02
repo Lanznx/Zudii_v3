@@ -390,7 +390,7 @@ export default function Page591() {
                   .sendMessages([
                     {
                       type: "image",
-                      originalContentUrl: `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}&${chosedTime}&${distanceMRT}`,
+                      originalContentUrl: `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`,
                       previewImageUrl: "https://i.imgur.com/MwS42AE.png",
                     },
                   ])
@@ -399,7 +399,7 @@ export default function Page591() {
                   });
                 liff.closeWindow();
                 console.log(
-                  `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}&${chosedTime}&${distanceMRT}`,
+                  `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`
                 );
               }}
             >
@@ -424,7 +424,7 @@ export default function Page591() {
               .sendMessages([
                 {
                   type: "image",
-                  originalContentUrl: `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}`,
+                  originalContentUrl: `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`,
                   previewImageUrl: "https://i.imgur.com/MwS42AE.png",
                 },
               ])
@@ -433,7 +433,7 @@ export default function Page591() {
               });
             liff.closeWindow();
             console.log(
-              `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0?${userId}&${displayName}`
+              `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`
             );
           }}
         >
