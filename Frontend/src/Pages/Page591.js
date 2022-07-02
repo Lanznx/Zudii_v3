@@ -31,7 +31,7 @@ export default function Page591() {
   const [releaseTime, setReleaseTime] = React.useState([
     parseInt(new Date().getFullYear()),
     parseInt(new Date().getMonth() + 1),
-    parseInt(new Date().getDate()),
+    parseInt(new Date().getDate()) - 1,
   ]);
   const [chosedTime, setChosedTime] = React.useState("");
 
