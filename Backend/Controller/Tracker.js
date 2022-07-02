@@ -12,8 +12,8 @@ async function track(req, res) {
     locaitonCodes: req.body.locaitonCodes,
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
-    releaseTime: req.body.releaseTime || new Date('2000-01-01'),
-    distanceMRT: req.body.distanceMRT || 2000,
+    releaseTime: req.body.releaseTime ,
+    distanceMRT: req.body.distanceMRT ,
   };
   console.log(conditions, "============ conditions ===============");
   const userInfo = {

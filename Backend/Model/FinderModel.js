@@ -44,7 +44,7 @@ async function searcher(conditions, userInfo) {
     sections: locaitonCodes,
     types: types,
     firstRow: firstRow,
-    releaseTime: releaseTime,
+    releaseTime: new Date(releaseTime),
     distanceMRT: distanceMRT,
     searchTime: new Date(),
   };
@@ -89,7 +89,7 @@ async function searcher(conditions, userInfo) {
               coordinates: house.position.coordinates,
             },
             distanceField: "Distance",
-            maxDistance: distanceMRT || 1000, //之後要拿掉
+            maxDistance: distanceMRT,
             spherical: true,
           },
         },

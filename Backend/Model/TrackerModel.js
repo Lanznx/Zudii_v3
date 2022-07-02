@@ -34,7 +34,7 @@ async function tracker(conditions, userInfo) {
     sections: locaitonCodes,
     types: types,
     firstRow: firstRow,
-    releaseTime: releaseTime,
+    releaseTime: new Date(releaseTime),
     distanceMRT: distanceMRT,
     trackTime: new Date(),
   };

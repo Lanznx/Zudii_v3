@@ -8,8 +8,8 @@ async function search(req, res) {
     locaitonCodes: req.body.locaitonCodes,
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
-    releaseTime: req.body.releaseTime || "2000-01-01",
-    distanceMRT: req.body.distanceMRT || 5000,
+    releaseTime: req.body.releaseTime,
+    distanceMRT: req.body.distanceMRT,
   };
   console.log(conditions, "============ conditions ===============");
   const userInfo = {

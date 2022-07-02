@@ -60,7 +60,7 @@ bot.on("message", async (event) => {
               }) || parseInt(cleanData[3]),
             types: cleanData[4].split(","),
             firstRow: parseInt(cleanData[5]),
-            convertedTime: cleanData[6], // 等前端的資料格式確定再做資料處理
+            releaseTime: cleanData[6],
             distanceMRT: parseInt(cleanData[7]),
             userId: userInfo[0],
             displayName: userInfo[1],
@@ -97,7 +97,7 @@ bot.on("message", async (event) => {
               }) || parseInt(cleanData[3]),
             types: cleanData[4].split(","),
             firstRow: parseInt(cleanData[5]),
-            convertedTime: cleanData[6], // 等前端的資料格式確定再做資料處理
+            releaseTime: cleanData[6],
             distanceMRT: parseInt(cleanData[7]),
             userId: userInfo[0],
             displayName: userInfo[1],
@@ -171,7 +171,7 @@ bot.on("postback", async (event) => {
           }) || parseInt(cleanData[3]),
         types: cleanData[4].split(","),
         firstRow: parseInt(cleanData[5]) + 10,
-        convertedTime: cleanData[6], // 等前端的資料格式確定再做資料處理
+        releaseTime: cleanData[6],
         distanceMRT: parseInt(cleanData[7]),
         userId: userInfo[0],
         displayName: userInfo[1],
@@ -211,7 +211,7 @@ bot.on("postback", async (event) => {
           }) || parseInt(cleanData[3]),
         types: cleanData[4].split(","),
         firstRow: parseInt(cleanData[5]) + 10,
-        convertedTime: cleanData[6], // 等前端的資料格式確定再做資料處理
+        releaseTime: cleanData[6],
         distanceMRT: parseInt(cleanData[7]),
         userId: userInfo[0],
         displayName: userInfo[1],
