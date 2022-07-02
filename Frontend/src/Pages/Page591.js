@@ -66,7 +66,7 @@ export default function Page591() {
       console.log(profile, " profile"); // print raw profile object
     }
   }
-  // initializeLIFF();
+  initializeLIFF();
 
   const codes = {
     // this is the dictionary of location code
