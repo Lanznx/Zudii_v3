@@ -112,4 +112,8 @@ test.py
 chromedriver_linux64.zip
 google-chrome-stable_current_amd64.deb
 chromedriver
+<<<<<<< HEAD
 591_Detect_log.txt
+=======
+591_Detect_log.txt
+>>>>>>> ce2879e (gitignore)
