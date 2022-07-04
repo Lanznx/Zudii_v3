@@ -23,10 +23,16 @@ export default function PageDirect() {
       setDisplayName(profile.displayName);
     }
   }
-  initializeLIFF();
+
+  React.useEffect(() => {
+    initializeLIFF();
+  }
+  , []);
 
   return (
     <Grid container>
+      <Grid item xs={12} sx={{ height: "150px" }}></Grid>
+
       <Grid item xs={2} md={2} />
       <Grid item xs={8} md={8}>
         <Button
@@ -34,7 +40,7 @@ export default function PageDirect() {
           color="primary"
           sx={{
             width: "100%",
-            height: "50px",
+            height: "100px",
             borderRadius: "3px",
             backgroundColor: "#4EADCB",
             color: "white",
@@ -54,7 +60,7 @@ export default function PageDirect() {
           color="primary"
           sx={{
             width: "100%",
-            height: "50px",
+            height: "100px",
             borderRadius: "3px",
             backgroundColor: "#CB4E4E",
             color: "white",
@@ -64,7 +70,6 @@ export default function PageDirect() {
             marginBottom: "20px",
           }}
           onClick={() => {
-            console.log(REACT_APP_BASE_URL, "REACT_APP_BASE_URL");
             fetch(REACT_APP_BASE_URL + "notify/cancel", {
               method: "POST",
               headers: {
