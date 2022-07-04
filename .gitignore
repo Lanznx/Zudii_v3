@@ -102,3 +102,14 @@ dist
 
 # TernJS port file
 .tern-port
+
+
+build
+log.txt
+591_log.txt
+FB_log.txt
+test.py
+chromedriver_linux64.zip
+google-chrome-stable_current_amd64.deb
+chromedriver
+591_Detect_log.txt
