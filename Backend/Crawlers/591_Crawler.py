@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, date
 load_dotenv()
 
 
-ENV_PATH = "../.env"
+ENV_PATH = "../../.env"
 MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 CHROME_PATH = dotenv_values(ENV_PATH)["CHROME_PATH"]
 options = Options()

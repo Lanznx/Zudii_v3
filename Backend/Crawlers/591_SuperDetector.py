@@ -4,12 +4,10 @@ from bs4 import BeautifulSoup
 from dotenv import dotenv_values, load_dotenv
 import pymongo
 from datetime import datetime, timedelta, date
-import uuid
 import threading
-import time
 load_dotenv()
 
-start_time = time.time()
+
 ENV_PATH = "../../.env"
 MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 USER_AGENT_1 = dotenv_values(ENV_PATH)['USER_AGENT_1']
@@ -67,7 +65,8 @@ def superCrawler(region):
         records = int(response.json()['records'].replace(",", ""))
 
         print(records, f" <- 這是 region {region} 的總行數")
-        if(records < firstRow):
+        print("我們這次只抓取前 100 筆")
+        if(records < firstRow or firstRow > 100):
             has_next_page = False
             print("沒有下一個 firstRows 了")
             break
@@ -122,33 +121,7 @@ def superCrawler(region):
                     "converted_time": converted_time,
                     "batch": batch_num
                 }
-
-            # headers = {
-            #     'User-Agent': random.choice(USER_AGENTS),
-            #     'deviceid': str(uuid.uuid4()),
-            #     'device': "pc"
-            # }
-            # session = requests.Session()
-            # res = session.get(
-            #     f"https://bff.591.com.tw/v1/house/rent/detail?id={id_591}", headers=headers)
-
-            # longitude = float(res.json()['data']["positionRound"]['lng'])
-            # latitude = float(res.json()['data']["positionRound"]['lat'])
-            # if(longitude > 180 or longitude < -180 or latitude > 90 or latitude < -90):
-            #     print("這個人經緯度怪怪的")
-            #     continue
-            # struct_time = time.localtime(
-            #     res.json()['data']['favData']['posttime'])  # 轉成時間元組
-            # release_time = time.strftime("%Y-%m-%d", struct_time)  # 轉成字串
-            # converted_time = datetime.strptime(release_time, '%Y-%m-%d')
-            # content.update({"release_time": release_time})
-            # content.update({"converted_time": converted_time})
-            # content.update(
-            #     {"position": {"type": "Point", "coordinates": [longitude, latitude]}})
-            # content.update(
-            #     {"locationLink": "https://www.google.com/maps?f=q&hl=zh-TW&q={},{}&z=16".format(latitude, longitude)})
             contents.append(content)
-
 
         if(len(contents) != 0):
             print(
@@ -163,7 +136,6 @@ def superCrawler(region):
 
 
 
-
 threads = []
 for i in range(1, 27):
     t = threading.Thread(target=superCrawler, args=(i,))
@@ -172,6 +144,3 @@ for i in range(1, 27):
 
 for t in threads:
     t.start()
-
-
-print(f"--- {(time.time() - start_time)} seconds ---" )
