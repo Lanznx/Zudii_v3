@@ -57,6 +57,7 @@ def superCrawler(region):
                 f"urlJumpIp={region};"
             headers['X-CSRF-TOKEN'] = csrf
             print("抓到 cookie")
+            time.sleep(random.randint(1, 6))
             response = session.get(
                 f"https://rent.591.com.tw/home/search/rsList?firstRow={firstRow}", headers=headers) 
             print("抓到 response")
