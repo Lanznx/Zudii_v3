@@ -9,7 +9,6 @@ async function searcher(conditions, userInfo) {
     types,
     firstRow,
     releaseTime,
-    distanceMRT,
   } = conditions;
   const { userId, displayName } = userInfo;
 
@@ -45,7 +44,6 @@ async function searcher(conditions, userInfo) {
     types: types,
     firstRow: firstRow,
     releaseTime: new Date(releaseTime),
-    distanceMRT: distanceMRT,
     searchTime: new Date(),
   };
 
@@ -76,67 +74,10 @@ async function searcher(conditions, userInfo) {
     houses.push({ id_591: null });
     return houses;
   }
-  let contain_MRT_Houses = [];
 
-  for (let index = 0; index < houses.length; index++) {
-    const house = houses[index];
-    const MRT_stations = await mrt
-      .aggregate([
-        {
-          $geoNear: {
-            near: {
-              type: "Point",
-              coordinates: house.position.coordinates,
-            },
-            distanceField: "Distance",
-            maxDistance: distanceMRT,
-            spherical: true,
-          },
-        },
-        {
-          $project: {
-            Distance: true,
-            stationName: {
-              $arrayElemAt: [
-                {
-                  $split: ["$出入口名稱", "出口"],
-                },
-                0,
-              ],
-            },
-          },
-        },
-        {
-          $group: {
-            _id: {
-              stationName: "$stationName",
-            },
-            distance: {
-              $min: "$Distance",
-            },
-          },
-        },
-        {
-          $sort: {
-            distance: 1,
-          },
-        },
-      ])
-      .toArray();
+  console.log(houses, "houses");
+  return houses;
 
-    if (MRT_stations.length > 0) {
-      house["stations"] = [];
-      MRT_stations.map((s) => {
-        house["stations"].push({
-          stationName: s._id.stationName,
-          distance: Math.round(s.distance),
-        });
-      });
-      contain_MRT_Houses.push(house);
-    }
-  }
-  console.log(contain_MRT_Houses, "contain_MRT_Houses");
-  return contain_MRT_Houses;
 }
 
 module.exports = {
