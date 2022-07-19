@@ -1,15 +1,15 @@
+import time
 import random
 import requests
 from bs4 import BeautifulSoup
 from dotenv import dotenv_values, load_dotenv
 import pymongo
 from datetime import datetime, timedelta, date
-import uuid
 import threading
-import time
+import certifi
 load_dotenv()
 
-start_time = time.time()
+
 ENV_PATH = "../../.env"
 MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 USER_AGENT_1 = dotenv_values(ENV_PATH)['USER_AGENT_1']
@@ -25,7 +25,7 @@ USER_AGENTS = [USER_AGENT_1, USER_AGENT_2, USER_AGENT_3, USER_AGENT_4, USER_AGEN
 
 
 def superCrawler(region):
-    client = pymongo.MongoClient(MONGO_CONNECTION)
+    client = pymongo.MongoClient(MONGO_CONNECTION,tlsCAFile=certifi.where())
     db = client.test
     collection = db.test_591
     try:
@@ -41,7 +41,6 @@ def superCrawler(region):
         print("================ firstRow:", firstRow, region,  " =================")
         contents = []
         try:
-            print("第一階段爬蟲：抓取大略資料")
             headers = {
                 'User-Agent': random.choice(USER_AGENTS),
             }
@@ -50,17 +49,14 @@ def superCrawler(region):
                 "https://rent.591.com.tw/", headers=headers)
             csrf = BeautifulSoup(response.content, 'html.parser')
             csrf = csrf.find('meta', {"name": "csrf-token"})['content']
-            print("抓到 csrf", csrf)
             response = session.get(
                 f"https://rent.591.com.tw/home/search/rsList?firstRow={firstRow}", headers=headers)
             headers['Cookie'] = f"591_new_session={session.cookies.get_dict()['591_new_session']};" + \
                 f"urlJumpIp={region};"
             headers['X-CSRF-TOKEN'] = csrf
-            print("抓到 cookie")
             time.sleep(random.randint(1, 6))
             response = session.get(
                 f"https://rent.591.com.tw/home/search/rsList?firstRow={firstRow}", headers=headers) 
-            print("抓到 response")
         except Exception as e:
             print("======== 爬蟲的時候發生問題囉，以下是錯誤訊息 ========")
             print(e)
@@ -75,10 +71,7 @@ def superCrawler(region):
         else:
             firstRow += 30
 
-        print("清洗資料")
-
         posts = response.json()['data']['data']
-        print("拿到 POSTS 了！")
         for post in posts:
             print("-------------postNumber-------------", postNumber, region)
             postNumber += 1
@@ -90,6 +83,14 @@ def superCrawler(region):
 
             release_time = post['ltime'].split(" ")[0]
             converted_time = datetime.strptime(release_time, "%Y-%m-%d")
+            post['surrounding']['distance'] = int(post['surrounding']['distance'].replace("公尺", ""))
+            post['surrounding']['desc'] = post['surrounding']['desc'].split("距")[1]
+            if(post['surrounding']['type'] == "bus_station"):
+                post['surrounding']['type'] = "公車"
+            elif(post['surrounding']['type'] == "subway_station"):
+                post['surrounding']['type'] = "捷運"
+            elif(post['surrounding']['type'] == "restaurant"):
+                post['surrounding']['type'] = "餐廳"
             try:
                 content = {
                     "id_591": int(post['post_id']),
@@ -123,33 +124,7 @@ def superCrawler(region):
                     "converted_time": converted_time,
                     "batch": batch_num
                 }
-
-            # headers = {
-            #     'User-Agent': random.choice(USER_AGENTS),
-            #     'deviceid': str(uuid.uuid4()),
-            #     'device': "pc"
-            # }
-            # session = requests.Session()
-            # res = session.get(
-            #     f"https://bff.591.com.tw/v1/house/rent/detail?id={id_591}", headers=headers)
-
-            # longitude = float(res.json()['data']["positionRound"]['lng'])
-            # latitude = float(res.json()['data']["positionRound"]['lat'])
-            # if(longitude > 180 or longitude < -180 or latitude > 90 or latitude < -90):
-            #     print("這個人經緯度怪怪的")
-            #     continue
-            # struct_time = time.localtime(
-            #     res.json()['data']['favData']['posttime'])  # 轉成時間元組
-            # release_time = time.strftime("%Y-%m-%d", struct_time)  # 轉成字串
-            # converted_time = datetime.strptime(release_time, '%Y-%m-%d')
-            # content.update({"release_time": release_time})
-            # content.update({"converted_time": converted_time})
-            # content.update(
-            #     {"position": {"type": "Point", "coordinates": [longitude, latitude]}})
-            # content.update(
-            #     {"locationLink": "https://www.google.com/maps?f=q&hl=zh-TW&q={},{}&z=16".format(latitude, longitude)})
             contents.append(content)
-
 
         if(len(contents) != 0):
             print(
@@ -164,7 +139,6 @@ def superCrawler(region):
 
 
 
-
 threads = []
 for i in range(1, 27):
     t = threading.Thread(target=superCrawler, args=(i,))
@@ -173,6 +147,3 @@ for i in range(1, 27):
 
 for t in threads:
     t.start()
-
-
-print(f"--- {(time.time() - start_time)} seconds ---" )

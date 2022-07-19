@@ -6,6 +6,7 @@ from dotenv import dotenv_values, load_dotenv
 import pymongo
 from datetime import datetime, timedelta, date
 import threading
+import certifi
 load_dotenv()
 
 
@@ -24,7 +25,7 @@ USER_AGENTS = [USER_AGENT_1, USER_AGENT_2, USER_AGENT_3, USER_AGENT_4, USER_AGEN
 
 
 def superCrawler(region):
-    client = pymongo.MongoClient(MONGO_CONNECTION)
+    client = pymongo.MongoClient(MONGO_CONNECTION,tlsCAFile=certifi.where())
     db = client.test
     collection = db.test_591
     try:
@@ -40,7 +41,6 @@ def superCrawler(region):
         print("================ firstRow:", firstRow, region,  " =================")
         contents = []
         try:
-            print("第一階段爬蟲：抓取大略資料")
             headers = {
                 'User-Agent': random.choice(USER_AGENTS),
             }
@@ -49,17 +49,14 @@ def superCrawler(region):
                 "https://rent.591.com.tw/", headers=headers)
             csrf = BeautifulSoup(response.content, 'html.parser')
             csrf = csrf.find('meta', {"name": "csrf-token"})['content']
-            print("抓到 csrf", csrf)
             response = session.get(
                 f"https://rent.591.com.tw/home/search/rsList?firstRow={firstRow}", headers=headers)
             headers['Cookie'] = f"591_new_session={session.cookies.get_dict()['591_new_session']};" + \
                 f"urlJumpIp={region};"
             headers['X-CSRF-TOKEN'] = csrf
-            print("抓到 cookie")
             time.sleep(random.randint(1, 6))
             response = session.get(
                 f"https://rent.591.com.tw/home/search/rsList?firstRow={firstRow}", headers=headers) 
-            print("抓到 response")
         except Exception as e:
             print("======== 爬蟲的時候發生問題囉，以下是錯誤訊息 ========")
             print(e)
@@ -75,10 +72,7 @@ def superCrawler(region):
         else:
             firstRow += 30
 
-        print("清洗資料")
-
         posts = response.json()['data']['data']
-        print("拿到 POSTS 了！")
         for post in posts:
             print("-------------postNumber-------------", postNumber, region)
             postNumber += 1
@@ -90,6 +84,14 @@ def superCrawler(region):
 
             release_time = post['ltime'].split(" ")[0]
             converted_time = datetime.strptime(release_time, "%Y-%m-%d")
+            post['surrounding']['distance'] = int(post['surrounding']['distance'].replace("公尺", ""))
+            post['surrounding']['desc'] = post['surrounding']['desc'].split("距")[1]
+            if(post['surrounding']['type'] == "bus_station"):
+                post['surrounding']['type'] = "公車"
+            elif(post['surrounding']['type'] == "subway_station"):
+                post['surrounding']['type'] = "捷運"
+            elif(post['surrounding']['type'] == "restaurant"):
+                post['surrounding']['type'] = "餐廳"
             try:
                 content = {
                     "id_591": int(post['post_id']),
