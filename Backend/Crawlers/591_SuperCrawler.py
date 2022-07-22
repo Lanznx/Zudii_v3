@@ -20,14 +20,14 @@ USER_AGENT_5 = dotenv_values(ENV_PATH)['USER_AGENT_5']
 USER_AGENT_6 = dotenv_values(ENV_PATH)['USER_AGENT_6']
 USER_AGENT_7 = dotenv_values(ENV_PATH)['USER_AGENT_7']
 USER_AGENT_8 = dotenv_values(ENV_PATH)['USER_AGENT_8']
-USER_AGENTS = [USER_AGENT_1, USER_AGENT_2, USER_AGENT_3, USER_AGENT_4, USER_AGENT_5, USER_AGENT_6, USER_AGENT_7, USER_AGENT_8]
-
+USER_AGENTS = [USER_AGENT_1, USER_AGENT_2, USER_AGENT_3, USER_AGENT_4,
+               USER_AGENT_5, USER_AGENT_6, USER_AGENT_7, USER_AGENT_8]
 
 
 def superCrawler(region):
-    client = pymongo.MongoClient(MONGO_CONNECTION,tlsCAFile=certifi.where())
+    client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
     db = client.test
-    collection = db.test_591
+    collection = db.production_591
     try:
         batch_num = collection.find().sort("batch", pymongo.DESCENDING)[0]
         batch_num = batch_num['batch'] + 1
@@ -38,7 +38,8 @@ def superCrawler(region):
     print("=============== REGION: ", region, "===============")
     has_next_page = True
     while(has_next_page):
-        print("================ firstRow:", firstRow, region,  " =================")
+        print("================ firstRow:", firstRow,
+              region,  " =================")
         contents = []
         try:
             headers = {
@@ -56,7 +57,7 @@ def superCrawler(region):
             headers['X-CSRF-TOKEN'] = csrf
             time.sleep(random.randint(1, 6))
             response = session.get(
-                f"https://rent.591.com.tw/home/search/rsList?firstRow={firstRow}", headers=headers) 
+                f"https://rent.591.com.tw/home/search/rsList?firstRow={firstRow}", headers=headers)
         except Exception as e:
             print("======== 爬蟲的時候發生問題囉，以下是錯誤訊息 ========")
             print(e)
@@ -79,12 +80,13 @@ def superCrawler(region):
             if(collection.find_one({"id_591": id_591}) != None):
                 print(id_591, " already exists")
                 continue
-            
 
             release_time = post['ltime'].split(" ")[0]
             converted_time = datetime.strptime(release_time, "%Y-%m-%d")
-            post['surrounding']['distance'] = int(post['surrounding']['distance'].replace("公尺", ""))
-            post['surrounding']['desc'] = post['surrounding']['desc'].split("距")[1]
+            post['surrounding']['distance'] = int(
+                post['surrounding']['distance'].replace("公尺", ""))
+            post['surrounding']['desc'] = post['surrounding']['desc'].split("距")[
+                1]
             if(post['surrounding']['type'] == "bus_station"):
                 post['surrounding']['type'] = "公車"
             elif(post['surrounding']['type'] == "subway_station"):
@@ -130,13 +132,11 @@ def superCrawler(region):
             print(
                 f"插入 region {region} firstRow {firstRow} 的資料")
             collection.insert_many(contents)
-        else: 
-            print(f"region {region} firstRow {firstRow} already existed，所以我不 insert")
+        else:
+            print(
+                f"region {region} firstRow {firstRow} already existed，所以我不 insert")
     client.close()
     print("Closed connection to MongoDB")
-                
-
-
 
 
 threads = []
