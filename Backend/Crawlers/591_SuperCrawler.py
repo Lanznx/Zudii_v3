@@ -35,11 +35,8 @@ def superCrawler(region):
         batch_num = 0
     postNumber = 1
     firstRow = 0
-    print("=============== REGION: ", region, "===============")
     has_next_page = True
     while(has_next_page):
-        print("================ firstRow:", firstRow,
-              region,  " =================")
         contents = []
         try:
             headers = {
@@ -67,32 +64,33 @@ def superCrawler(region):
         print(records, f" <- 這是 region {region} 的總行數")
         if(records < firstRow):
             has_next_page = False
-            print("沒有下一個 firstRows 了")
             break
         else:
             firstRow += 30
 
         posts = response.json()['data']['data']
         for post in posts:
-            print("-------------postNumber-------------", postNumber, region)
             postNumber += 1
             id_591 = int(post['post_id'])
             if(collection.find_one({"id_591": id_591}) != None):
-                print(id_591, " already exists")
                 continue
 
             release_time = post['ltime'].split(" ")[0]
             converted_time = datetime.strptime(release_time, "%Y-%m-%d")
-            post['surrounding']['distance'] = int(
-                post['surrounding']['distance'].replace("公尺", ""))
-            post['surrounding']['desc'] = post['surrounding']['desc'].split("距")[
-                1]
-            if(post['surrounding']['type'] == "bus_station"):
-                post['surrounding']['type'] = "公車"
-            elif(post['surrounding']['type'] == "subway_station"):
-                post['surrounding']['type'] = "捷運"
-            elif(post['surrounding']['type'] == "restaurant"):
-                post['surrounding']['type'] = "餐廳"
+            try:
+                post['surrounding']['distance'] = int(
+                    post['surrounding']['distance'].replace("公尺", ""))
+                post['surrounding']['desc'] = post['surrounding']['desc'].split("距")[
+                    1]
+                if(post['surrounding']['type'] == "bus_station"):
+                    post['surrounding']['type'] = "公車"
+                elif(post['surrounding']['type'] == "subway_station"):
+                    post['surrounding']['type'] = "捷運"
+                elif(post['surrounding']['type'] == "restaurant"):
+                    post['surrounding']['type'] = "餐廳"
+            except:
+                print(id_591, "沒有 surrounding")
+                continue
             try:
                 content = {
                     "id_591": int(post['post_id']),
@@ -129,12 +127,7 @@ def superCrawler(region):
             contents.append(content)
 
         if(len(contents) != 0):
-            print(
-                f"插入 region {region} firstRow {firstRow} 的資料")
             collection.insert_many(contents)
-        else:
-            print(
-                f"region {region} firstRow {firstRow} already existed，所以我不 insert")
     client.close()
     print("Closed connection to MongoDB")
 
