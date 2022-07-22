@@ -1,5 +1,5 @@
-path = '../util/591_Detect_log.txt'
-file = open(path, 'r')
+path = '/home/ubuntu/Zudii_v3/Backend/util/591_Detect_log.txt'
+file = open(path, 'r', encoding='latin-1')
 mail_meta_count = 0
 mail_meta = []
 for line in file.readlines():
@@ -9,7 +9,7 @@ for line in file.readlines():
     if(mail_meta_count > 4):
         break
 file.close()
-file = open(path, 'w')
+file = open(path, 'w', encoding='latin-1')
 
 file.truncate()
 
