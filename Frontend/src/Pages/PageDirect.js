@@ -26,8 +26,7 @@ export default function PageDirect() {
 
   React.useEffect(() => {
     initializeLIFF();
-  }
-  , []);
+  }, []);
 
   return (
     <Grid container>
@@ -50,7 +49,10 @@ export default function PageDirect() {
             marginBottom: "20px",
           }}
           onClick={() => {
-            window.location.href = `https://notify-bot.line.me/oauth/authorize?response_type=code&scope=notify&response_mode=form_post&client_id=DhQfj4nguPyCOcJpG9posj&redirect_uri=${REACT_APP_BASE_URL}notify&state=${userId}`;
+            if (userId === "") alert("麻煩再按一次！");
+            else {
+              window.location.href = `https://notify-bot.line.me/oauth/authorize?response_type=code&scope=notify&response_mode=form_post&client_id=DhQfj4nguPyCOcJpG9posj&redirect_uri=${REACT_APP_BASE_URL}notify&state=${userId}`;
+            }
           }}
         >
           開啟通知
