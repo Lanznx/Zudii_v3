@@ -7,6 +7,7 @@ import pymongo
 from datetime import datetime, timedelta, date
 import threading
 import certifi
+import uuid
 load_dotenv()
 
 
@@ -98,6 +99,9 @@ def superCrawler(region):
                     "title": post['fulladdress'],
                     "link": "https://rent.591.com.tw/home/" + str(post['post_id']),
                     "region": region,
+                    "region_name": post['region_name'],
+                    "section": post['sectionid'],
+                    "section_name": post['section_name'],
                     "location": post["location"],
                     "price": int(post['price'].replace(",", "")),
                     "type": post['kind_name'],
@@ -115,6 +119,9 @@ def superCrawler(region):
                     "title": post['fulladdress'],
                     "link": "https://rent.591.com.tw/home/" + str(post['post_id']),
                     "region": region,
+                    "region_name": post['region_name'],
+                    "section": post['sectionid'],
+                    "section_name": post['section_name'],
                     "location": post["location"],
                     "price": int(post['price'].replace(",", "")),
                     "type": post['kind_name'],
@@ -124,6 +131,24 @@ def superCrawler(region):
                     "converted_time": converted_time,
                     "batch": batch_num
                 }
+
+            headers = {
+                'User-Agent': random.choice(USER_AGENTS),
+                'deviceid': str(uuid.uuid4()),
+                'device': "pc"
+            }
+            session = requests.Session()
+            res = session.get(
+                f"https://bff.591.com.tw/v1/house/rent/detail?id={id_591}", headers=headers)
+            longitude = float(res.json()['data']["positionRound"]['lng'])
+            latitude = float(res.json()['data']["positionRound"]['lat'])
+            if(longitude > 180 or longitude < -180 or latitude > 90 or latitude < -90):
+                continue
+            content.update(
+                {"position": {"type": "Point", "coordinates": [longitude, latitude]}})
+            content.update(
+                {"locationLink": "https://www.google.com/maps?f=q&hl=zh-TW&q={},{}&z=16".format(latitude, longitude)})
+
             contents.append(content)
 
         if(len(contents) != 0):
