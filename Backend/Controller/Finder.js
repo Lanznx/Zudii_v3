@@ -9,6 +9,7 @@ async function search(req, res) {
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
     releaseTime: req.body.releaseTime,
+    distanceMRT: req.body.distanceMRT,
   };
   console.log(conditions, "============ conditions ===============");
   const userInfo = {
@@ -54,15 +55,33 @@ async function search(req, res) {
               uri: "https://liff.line.me/1657234288-w3GAax31",
             },
           },
+          // {
+          //   type: "action",
+          //   action: {
+          //     type: "uri",
+          //     label: "我想試試看自動回傳",
+          //     uri: "https://liff.line.me/1657234288-w3GAax31",
+          //   },
+          // },
         ],
       },
     };
 
-
-
     houses.map((house) => {
       if (house.size === "Nan") house.size = "沒有資料";
       else house.size = house.size.toString() + " 坪";
+
+      let messageMRT = "";
+      for (let i = 0; i < house.stations.length; i++) {
+        const station = house.stations[i];
+        messageMRT +=
+          station.stationName.toString() + ` : ${station.distance}公尺`;
+        if (i === 2) {
+          break;
+        } else {
+          messageMRT += "\n";
+        }
+      }
 
       replyMessages.contents.contents.push({
         type: "bubble",
@@ -161,6 +180,15 @@ async function search(req, res) {
                       color: "#999999",
                       size: "md",
                       flex: 1,
+                    },
+                    {
+                      type: "text",
+                      text: messageMRT,
+                      wrap: true,
+                      color: "#666666",
+                      size: "sm",
+                      flex: 5,
+                      margin: "none",
                     },
                   ],
                 },

@@ -12,7 +12,8 @@ async function track(req, res) {
     locaitonCodes: req.body.locaitonCodes,
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
-    releaseTime: req.body.releaseTime ,
+    releaseTime: req.body.releaseTime,
+    distanceMRT: req.body.distanceMRT,
   };
   console.log(conditions, "============ conditions ===============");
   const userInfo = {
@@ -51,20 +52,29 @@ async function check() {
     for (let index_2 = 0; index_2 < unitResults.length; index_2++) {
       const house = unitResults[index_2];
 
-      if(house.size === "Nan") house.size = "沒有資料"
-      else house.size = house.size + " 坪"
+      if (house.size === "Nan") house.size = "沒有資料";
+      else house.size = house.size + " 坪";
+
+      let messageMRT = "";
+      for (let i = 0; i < house.stations.length; i++) {
+        const station = house.stations[i];
+        messageMRT +=
+          station.stationName.toString() + ` ${station.distance}公尺`;
+        if (i === 2) {
+          break;
+        } else {
+          messageMRT += "\n            ";
+        }
+      }
 
       let unit_message = `
       ${index_2 + 1}.\n${house.title}\n租金：${house.price} 元\n地址：${
         house.location
-      }\n房型：${house.type}\n坪數：${
+      }\n捷運：${messageMRT}\n房型：${house.type}\n坪數：${
         house.size
-      }\n發布時間：${house.release_time}\n貼文連結：${
-        house.link
-      }\n 
+      }\n發布時間：${house.release_time}\n貼文連結：${house.link}\n 
       ====================\n
       `; // 之後要改地圖網址
-
 
       if (index_2 + 1 === unitResults.length) {
         push_message += unit_message;
