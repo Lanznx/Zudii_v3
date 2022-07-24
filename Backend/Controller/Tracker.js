@@ -78,7 +78,7 @@ async function check() {
       }
     }
     crawlerResults.push({
-      push_messages: push_messages
+      push_messages: push_messages,
       userId: unitResults.userId,
     });
   }
