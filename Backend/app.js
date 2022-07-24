@@ -24,10 +24,7 @@ app.get("/", (req, res) => {
   res.send(`Wazzzaaapppp \nYou are visitor no.${visitor_number}`);
 });
 
-// https://i.imgur.com/MwS42AE.png?search    ?      title & minRent & maxRent & locationCodes & types & firstRow & convertedTime & distanceMRT      ?       userID & displayNAME
-
-// TODO:
-// 2. 自製縮網址
+// https://i.imgur.com/MwS42AE.png?search    ?      title & minRent & maxRent & regionCode & sectionCode & types & firstRow & convertedTime & distanceMRT      ?       userID & displayNAME
 
 bot.on("message", async (event) => {
   try {
@@ -54,7 +51,7 @@ bot.on("message", async (event) => {
             text: cleanData[0],
             price1: parseInt(cleanData[1]),
             price2: parseInt(cleanData[2]),
-            locaitonCodes:
+            regionCode:
               cleanData[3].split(",").map((item) => {
                 return parseInt(item);
               }) || parseInt(cleanData[3]),
@@ -62,13 +59,15 @@ bot.on("message", async (event) => {
             firstRow: parseInt(cleanData[5]),
             releaseTime: cleanData[6],
             distanceMRT: parseInt(cleanData[7]),
+            sectionCodes:
+              cleanData[8].split(",").map((item) => {
+                return parseInt(item);
+              }) || parseInt(cleanData[8]),
             userId: userInfo[0],
             displayName: userInfo[1],
             msg: msg,
           },
         };
-        if (cleanData[3] === "" || cleanData[3] === "Nan")
-          request.body.locaitonCodes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
         if (cleanData[4] === "")
           request.body.types = [
@@ -91,7 +90,7 @@ bot.on("message", async (event) => {
             text: cleanData[0],
             price1: parseInt(cleanData[1]),
             price2: parseInt(cleanData[2]),
-            locaitonCodes:
+            regionCode:
               cleanData[3].split(",").map((item) => {
                 return parseInt(item);
               }) || parseInt(cleanData[3]),
@@ -99,12 +98,14 @@ bot.on("message", async (event) => {
             firstRow: parseInt(cleanData[5]),
             releaseTime: cleanData[6],
             distanceMRT: parseInt(cleanData[7]),
+            sectionCodes:
+              cleanData[8].split(",").map((item) => {
+                return parseInt(item);
+              }) || parseInt(cleanData[8]),
             userId: userInfo[0],
             displayName: userInfo[1],
           },
         };
-        if (cleanData[3] === "" || cleanData[3] === "Nan")
-          request.body.locaitonCodes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
         if (cleanData[4] === "")
           request.body.types = [
@@ -155,6 +156,8 @@ bot.on("postback", async (event) => {
       cleanData[6] +
       "&" +
       cleanData[7] +
+      "&" +
+      cleanData[8] +
       "?" +
       userInfo[0] +
       "&" +
@@ -165,7 +168,7 @@ bot.on("postback", async (event) => {
         text: cleanData[0],
         price1: parseInt(cleanData[1]),
         price2: parseInt(cleanData[2]),
-        locaitonCodes:
+        regionCode:
           cleanData[3].split(",").map((item) => {
             return parseInt(item);
           }) || parseInt(cleanData[3]),
@@ -173,52 +176,15 @@ bot.on("postback", async (event) => {
         firstRow: parseInt(cleanData[5]) + 10,
         releaseTime: cleanData[6],
         distanceMRT: parseInt(cleanData[7]),
+        sectionCodes:
+          cleanData[8].split(",").map((item) => {
+            return parseInt(item);
+          }) || parseInt(cleanData[8]),
         userId: userInfo[0],
         displayName: userInfo[1],
         msg: nextMsg,
       },
     };
-    if (cleanData[3] === "" || cleanData[3] === "Nan")
-      request.body.locaitonCodes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
-
-    if (cleanData[4] === "")
-      request.body.types = [
-        "整層住家",
-        "獨立套房",
-        "分租套房",
-        "雅房",
-        "其他",
-        "車位",
-      ];
-    console.log(request, "========   postback ==========");
-    const replyMessage = await search(request, null);
-    event.reply(replyMessage).then((data) => {
-      console.log(data, "=== data ===");
-    });
-  } else if (content[1] === "search/track") {
-    const cleanData = content[2].split("&");
-    console.log(cleanData, " cleanData");
-    console.log(cleanData[3], "locationcodes!!!");
-    const userInfo = content[3].split("&");
-    let request = {
-      body: {
-        text: cleanData[0],
-        price1: parseInt(cleanData[1]),
-        price2: parseInt(cleanData[2]),
-        locaitonCodes:
-          cleanData[3].split(",").map((item) => {
-            return parseInt(item);
-          }) || parseInt(cleanData[3]),
-        types: cleanData[4].split(","),
-        firstRow: parseInt(cleanData[5]) + 10,
-        releaseTime: cleanData[6],
-        distanceMRT: parseInt(cleanData[7]),
-        userId: userInfo[0],
-        displayName: userInfo[1],
-      },
-    };
-    if (cleanData[3] === "" || cleanData[3] === "Nan")
-      request.body.locaitonCodes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
 
     if (cleanData[4] === "")
       request.body.types = [

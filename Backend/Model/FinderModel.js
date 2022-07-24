@@ -5,7 +5,8 @@ async function searcher(conditions, userInfo) {
     text,
     price1,
     price2,
-    locaitonCodes,
+    sectionCodes,
+    regionCode,
     types,
     firstRow,
     releaseTime,
@@ -28,7 +29,8 @@ async function searcher(conditions, userInfo) {
       $regex: text,
     },
     price: { $gte: minRent, $lte: maxRent },
-    section: { $in: locaitonCodes },
+    region: regionCode,
+    section: { $in: sectionCodes },
     type: { $in: types },
     converted_time: { $gte: new Date(releaseTime) },
   };
@@ -41,7 +43,8 @@ async function searcher(conditions, userInfo) {
     title: text,
     minRent: minRent,
     maxRent: maxRent,
-    sections: locaitonCodes,
+    region: regionCode,
+    sections: sectionCodes,
     types: types,
     firstRow: firstRow,
     releaseTime: new Date(releaseTime),
@@ -74,6 +77,8 @@ async function searcher(conditions, userInfo) {
   console.log(houses, "未篩選過捷運的 houses");
   if (houses.length === 0) {
     houses.push({ id_591: null });
+    return houses;
+  } else if (regionCode !== 1 && regionCode !== 3) {
     return houses;
   }
   let contain_MRT_Houses = [];

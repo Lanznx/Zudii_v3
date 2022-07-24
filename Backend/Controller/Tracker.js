@@ -4,12 +4,13 @@ const {
   getAllTrackerConditions,
 } = require("../Model/TrackerModel");
 
-async function track(req, res) {
+function track(req, res) {
   const conditions = {
     text: req.body.text || "",
     price1: req.body.price1 || 0,
     price2: req.body.price2 || 100000000,
-    locaitonCodes: req.body.locaitonCodes,
+    regionCode: req.body.regionCode,
+    sectionCodes: req.body.sectionCodes,
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
     releaseTime: req.body.releaseTime,

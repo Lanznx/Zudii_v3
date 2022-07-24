@@ -5,7 +5,8 @@ async function tracker(conditions, userInfo) {
     text,
     price1,
     price2,
-    locaitonCodes,
+    regionCode,
+    sectionCodes,
     types,
     firstRow,
     releaseTime,
@@ -31,7 +32,8 @@ async function tracker(conditions, userInfo) {
     title: text,
     minRent: minRent,
     maxRent: maxRent,
-    sections: locaitonCodes,
+    region: regionCode,
+    sections: sectionCodes,
     types: types,
     firstRow: firstRow,
     releaseTime: new Date(releaseTime),
@@ -76,14 +78,20 @@ async function getAllTrackerConditions() {
       latestTrackConditions.push(r);
   }
 
-  console.log(latestTrackConditions, "test");
-
   return latestTrackConditions;
 }
 
 async function checkNewHouses(c) {
-  const { title, minRent, maxRent, sections, types, releaseTime, distanceMRT } =
-    c.latestTrackCondition;
+  const {
+    title,
+    minRent,
+    maxRent,
+    region,
+    sections,
+    types,
+    releaseTime,
+    distanceMRT,
+  } = c.latestTrackCondition;
   const { userId } = c;
 
   const batch = await collection.find().sort({ batch: -1 }).limit(1).toArray();
@@ -93,6 +101,7 @@ async function checkNewHouses(c) {
       $regex: title,
     },
     price: { $gte: minRent, $lte: maxRent },
+    region: region,
     section: { $in: sections },
     type: { $in: types },
     batch: batch[0].batch,
@@ -108,6 +117,8 @@ async function checkNewHouses(c) {
   console.log(houses, "未篩選過捷運的 houses");
   if (houses.length === 0) {
     houses.push({ id_591: null });
+    return houses;
+  } else if (region !== 1 && region !== 3) {
     return houses;
   }
   let contain_MRT_Houses = [];
