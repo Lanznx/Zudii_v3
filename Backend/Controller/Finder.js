@@ -185,7 +185,7 @@ async function search(req, res) {
                     },
                     {
                       type: "text",
-                      text: house.surrounding.distance,
+                      text: house.surrounding.distance.toString() + " 公尺",
                       wrap: true,
                       color: "#666666",
                       size: "sm",
