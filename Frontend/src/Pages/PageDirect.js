@@ -72,6 +72,10 @@ export default function PageDirect() {
             marginBottom: "20px",
           }}
           onClick={() => {
+            if (userId === "") {
+              alert("麻煩再按一次！");
+              return;
+            }
             fetch(REACT_APP_BASE_URL + "notify/cancel", {
               method: "POST",
               headers: {
@@ -81,10 +85,6 @@ export default function PageDirect() {
                 userId: userId,
               }),
             }).then((res) => {
-              if (userId === "") {
-                alert("麻煩再按一次！");
-                return;
-              }
               if (res.status === 200) {
                 window.alert("已取消通知");
                 liff.closeWindow();
