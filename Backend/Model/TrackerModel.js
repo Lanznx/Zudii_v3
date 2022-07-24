@@ -101,7 +101,7 @@ async function checkNewHouses(c) {
       $regex: title,
     },
     price: { $gte: minRent, $lte: maxRent },
-    region: region,
+    region: { $in: region },
     section: { $in: sections },
     type: { $in: types },
     batch: batch[0].batch,

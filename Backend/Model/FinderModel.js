@@ -29,7 +29,7 @@ async function searcher(conditions, userInfo) {
       $regex: text,
     },
     price: { $gte: minRent, $lte: maxRent },
-    region: regionCode,
+    region: { $in: regionCode },
     section: { $in: sectionCodes },
     type: { $in: types },
     converted_time: { $gte: new Date(releaseTime) },
