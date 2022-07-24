@@ -79,6 +79,7 @@ async function searcher(conditions, userInfo) {
     houses.push({ id_591: null });
     return houses;
   } else if (regionCode[0] !== 1 && regionCode[0] !== 3) {
+    houses["hasMRT"] = false;
     return houses;
   }
   let contain_MRT_Houses = [];
