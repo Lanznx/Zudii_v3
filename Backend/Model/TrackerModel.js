@@ -118,6 +118,7 @@ async function checkNewHouses(c) {
     houses.push({ id_591: null });
     return houses;
   } else if (region[0] !== 1 && region[0] !== 3) {
+    houses.userId = userId;
     return houses;
   }
   let contain_MRT_Houses = [];

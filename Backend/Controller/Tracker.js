@@ -59,9 +59,9 @@ async function check() {
       let unit_message = `
       ${index_2 + 1}.\n${house.title}\n租金：${house.price} 元\n地址：${
         house.location
-      }\n${house.surrounding.type}：${house.surrounding.desc}\n房型：${
-        house.type
-      }\n距離：${house.surrounding.distance}\n坪數：${house.size}\n發布時間：${
+      }\n${house.surrounding.type}：${house.surrounding.desc}\n距離：${
+        house.surrounding.distance
+      } 公尺\n房型：${house.type}\n坪數：${house.size}\n發布時間：${
         house.release_time
       }\n貼文連結：${house.link}\n 
       ====================\n
