@@ -81,6 +81,10 @@ export default function PageDirect() {
                 userId: userId,
               }),
             }).then((res) => {
+              if (userId === "") {
+                alert("麻煩再按一次！");
+                return;
+              }
               if (res.status === 200) {
                 window.alert("已取消通知");
                 liff.closeWindow();
