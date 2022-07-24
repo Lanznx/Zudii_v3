@@ -424,10 +424,6 @@ export default function Page591() {
                 liff
                   .sendMessages([
                     {
-                      type: "text",
-                      text: searchMesasge,
-                    },
-                    {
                       type: "image",
                       originalContentUrl: searchMesasge,
                       previewImageUrl: "https://i.imgur.com/MwS42AE.png",
