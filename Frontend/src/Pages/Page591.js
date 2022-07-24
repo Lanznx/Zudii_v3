@@ -403,7 +403,7 @@ export default function Page591() {
                   .sendMessages([
                     {
                       type: "image",
-                      originalContentUrl: `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${regionCode}&${sectionCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`,
+                      originalContentUrl: `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${regionCode}&${type}&0&${chosedTime}&${distanceMRT}&${sectionCode}?${userId}&${displayName}`,
                       previewImageUrl: "https://i.imgur.com/MwS42AE.png",
                     },
                   ])
@@ -411,9 +411,6 @@ export default function Page591() {
                     window.alert("Error sending message: " + error);
                   });
                 liff.closeWindow();
-                console.log(
-                  `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${regionCode}&${sectionCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`
-                );
               }}
             >
               送出查詢
@@ -456,7 +453,7 @@ export default function Page591() {
               .sendMessages([
                 {
                   type: "image",
-                  originalContentUrl: `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${regionCode}&${sectionCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`,
+                  originalContentUrl: `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${regionCode}&${type}&0&${chosedTime}&${distanceMRT}&${sectionCode}?${userId}&${displayName}`,
                   previewImageUrl: "https://i.imgur.com/MwS42AE.png",
                 },
               ])
@@ -464,9 +461,6 @@ export default function Page591() {
                 window.alert("Error sending message: " + error);
               });
             liff.closeWindow();
-            console.log(
-              `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${regionCode}}&${sectionCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`
-            );
           }}
         >
           有符合的房屋時通知我
