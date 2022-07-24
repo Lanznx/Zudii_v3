@@ -118,7 +118,7 @@ async function checkNewHouses(c) {
   if (houses.length === 0) {
     houses.push({ id_591: null });
     return houses;
-  } else if (region !== 1 && region !== 3) {
+  } else if (region[0] !== 1 && region[0] !== 3) {
     return houses;
   }
   let contain_MRT_Houses = [];
