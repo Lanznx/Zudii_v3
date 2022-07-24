@@ -95,7 +95,6 @@ async function checkNewHouses(c) {
   const { userId } = c;
 
   const batch = await collection.find().sort({ batch: -1 }).limit(1).toArray();
-  console.log(batch, "符合 batch 最大的房屋");
   let findHouse = {
     title: {
       $regex: title,
@@ -105,7 +104,7 @@ async function checkNewHouses(c) {
     section: { $in: sections },
     type: { $in: types },
     batch: batch[0].batch,
-    converted_time: { $gte: new Date(releaseTime) || new Date("2000-01-31") }, // 之後要拿掉
+    converted_time: { $gte: new Date(releaseTime) || new Date("2000-01-31") },
   };
   console.log(findHouse, "02 findHouse");
 

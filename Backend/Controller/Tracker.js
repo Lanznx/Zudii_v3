@@ -56,24 +56,14 @@ async function check() {
       if (house.size === "Nan") house.size = "沒有資料";
       else house.size = house.size + " 坪";
 
-      let messageMRT = "";
-      for (let i = 0; i < house.stations.length; i++) {
-        const station = house.stations[i];
-        messageMRT +=
-          station.stationName.toString() + ` ${station.distance}公尺`;
-        if (i === 2) {
-          break;
-        } else {
-          messageMRT += "\n            ";
-        }
-      }
-
       let unit_message = `
       ${index_2 + 1}.\n${house.title}\n租金：${house.price} 元\n地址：${
         house.location
-      }\n捷運：${messageMRT}\n房型：${house.type}\n坪數：${
-        house.size
-      }\n發布時間：${house.release_time}\n貼文連結：${house.link}\n 
+      }\n${house.surrounding.type}：${house.surrounding.desc}\n房型：${
+        house.type
+      }\n距離：${house.surrounding.distance}\n坪數：${house.size}\n發布時間：${
+        house.release_time
+      }\n貼文連結：${house.link}\n 
       ====================\n
       `; // 之後要改地圖網址
 
@@ -88,7 +78,7 @@ async function check() {
       }
     }
     crawlerResults.push({
-      push_messages: push_messages,
+      push_messages: push_messages
       userId: unitResults.userId,
     });
   }
