@@ -17,13 +17,16 @@ import SearchDialog from "./Components/SearchDialog";
 import ReleaseTimeDialog from "./Components/ReleaseTimeDialog";
 import liff from "@line/liff";
 const REACT_APP_LIFF_ID = process.env.REACT_APP_LIFF_ID;
+const provinces = require("../Assets/provinces.json");
 
 export default function Page591() {
   const [minRent, setMinRent] = React.useState(0);
   const [maxRent, setMaxRent] = React.useState(0);
   const [type, setType] = React.useState([]);
-  const [location, setLocation] = React.useState([]); // this the array of location name
-  const [locationCode, setLocationCode] = React.useState([]); // this is the array of location code
+  const [regions, setRegions] = React.useState([]);
+  const [regionCode, setRegionCode] = React.useState([]);
+  const [sections, setSections] = React.useState([]);
+  const [sectionCode, setSectionCode] = React.useState([]);
   const [search, setSearch] = React.useState("");
   const [userId, setUserId] = React.useState("");
   const [displayName, setDisplayName] = React.useState("");
@@ -56,33 +59,16 @@ export default function Page591() {
     });
 
     // Start to use liff's api
-    console.log("liff initialized");
     if (!liff.isLoggedIn() && !liff.isInClient()) {
       window.alert("麻煩登入再來，掰掰！");
     } else {
       const profile = await liff.getProfile();
       setUserId(profile.userId);
       setDisplayName(profile.displayName);
-      console.log(profile, " profile"); // print raw profile object
     }
   }
   initializeLIFF();
 
-  const codes = {
-    // this is the dictionary of location code
-    1: "中正區",
-    2: "大同區",
-    3: "中山區",
-    4: "松山區",
-    5: "大安區",
-    6: "萬華區",
-    7: "信義區",
-    8: "士林區",
-    9: "北投區",
-    10: "內湖區",
-    11: "南港區",
-    12: "文山區",
-  };
   React.useEffect(() => {
     console.log(releaseTime, " releaseTime");
     let newTime = "";
@@ -95,92 +81,88 @@ export default function Page591() {
         newTime += "-" + item.toString();
       }
     }
-    if(new Date(newTime).getTime() > new Date().getTime()){
-      alert("超過今天了！");
+    if (new Date(newTime).getTime() > new Date().getTime()) {
+      alert("你在嘗試搜尋未來");
       setReleaseTime([
         parseInt(new Date().getFullYear()),
         parseInt(new Date().getMonth() + 1),
         parseInt(new Date().getDate()),
       ]);
-    }else {
+    } else {
       setChosedTime(newTime);
     }
-    console.log(newTime, "newTime")
-
-
   }, [releaseTime]);
 
   React.useEffect(() => {
-    // get key of locationCode by matching codes and location
-    for (let i = 0; i < location.length; i++) {
-      for (let key in codes) {
-        if (codes[key] === location[i]) {
-          setLocationCode([...locationCode, key]);
-        }
-      }
-    }
+    // get key of sectionCode by matching codes and section
 
-    console.log(locationCode, "locationCode");
-  }, [location]);
+    let newRegionCode = [];
+    let newSectionCode = [];
+
+    provinces["cities"].map((city) => {
+      if (city.name === regions[0]) {
+        newRegionCode.push(city.region);
+        setRegionCode(newRegionCode);
+        city.sections.map((section) => {
+          sections.map((s) => {
+            if (section.name === s) {
+              newSectionCode.push(section.section);
+              setSectionCode(newSectionCode);
+            }
+          });
+        });
+      }
+    });
+  }, [sections, regions]);
 
   const [rentOpen, setRentOpen] = React.useState(false);
   const handleRentOpen = () => {
     setRentOpen(true);
-    console.log("first");
   };
 
   const handleRentClose = (e) => {
     e.stopPropagation();
     setRentOpen(false);
-    console.log("close");
   };
 
   const [locationOpen, setLocationOpen] = React.useState(false);
   const handleLocationOpen = () => {
     setLocationOpen(true);
-    console.log("first");
   };
 
   const handleLocationClose = (e) => {
     e.stopPropagation();
     setLocationOpen(false);
-    console.log("close");
   };
 
   const [typeOpen, setTypeOpen] = React.useState(false);
   const handleTypeOpen = () => {
     setTypeOpen(true);
-    console.log("first");
   };
 
   const handleTypeClose = (e) => {
     e.stopPropagation();
     setTypeOpen(false);
-    console.log("close");
   };
 
   const [searchOpen, setSearchOpen] = React.useState(false);
   const handleSearchOpen = () => {
     setSearchOpen(true);
-    console.log("first");
   };
 
   const handleSearchClose = (e) => {
     e.stopPropagation();
     setSearchOpen(false);
-    console.log("close");
   };
 
   const [releaseTimeOpen, setReleaseTimeOpen] = React.useState(false);
   const handleReleaseTimeOpen = () => {
     setReleaseTimeOpen(true);
-    console.log("first");
   };
 
   const handleReleaseTimeClose = (e) => {
     e.stopPropagation();
     setReleaseTimeOpen(false);
-    console.log("close");
   };
 
   return (
@@ -239,15 +221,28 @@ export default function Page591() {
                 <LocationDialog
                   locationOpen={locationOpen}
                   handleLocationClose={handleLocationClose}
-                  location={location}
-                  setLocation={setLocation}
+                  regions={regions}
+                  setRegions={setRegions}
+                  sections={sections}
+                  setSections={setSections}
+                  provinces={provinces}
                   distanceMRT={distanceMRT}
                   setDistanceMRT={setDistanceMRT}
                 />
                 <Typography variant="h6">房屋地區及交通</Typography>
                 <>
-                  {location.map((name) => {
-                    return <Typography variant="h7">{name} </Typography>;
+                  {regions.map((name) => {
+                    return (
+                      <Typography variant="h7" sx={{ fontWeight: "bold" }}>
+                        {name}{" "}
+                      </Typography>
+                    );
+                  })}
+                </>
+                <br />
+                <>
+                  {sections.map((name) => {
+                    return <Typography variant="h9">{name} </Typography>;
                   })}
                 </>
               </CardContent>
@@ -360,10 +355,9 @@ export default function Page591() {
               onClick={() => {
                 setMinRent(0);
                 setMaxRent(0);
-                setLocation([]);
                 setType([]);
+                setSections([]);
                 setSearch("");
-                setLocationCode([]);
               }}
             >
               清除條件
@@ -386,11 +380,30 @@ export default function Page591() {
                 marginBottom: "20px",
               }}
               onClick={() => {
+                if (regions.length === 0) {
+                  alert("請選擇縣市");
+                  return;
+                } else if (sections.length === 0) {
+                  let newSectionCode = [];
+
+                  provinces["cities"].map((city) => {
+                    if (city.name === regions[0]) {
+                      city.sections.map((section) => {
+                        newSectionCode.push(section.section);
+                      });
+                    }
+                    setSectionCode(newSectionCode);
+                  });
+                  console.log(
+                    newSectionCode,
+                    "=========== newSectionCode =========="
+                  );
+                }
                 liff
                   .sendMessages([
                     {
                       type: "image",
-                      originalContentUrl: `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`,
+                      originalContentUrl: `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${regionCode}&${sectionCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`,
                       previewImageUrl: "https://i.imgur.com/MwS42AE.png",
                     },
                   ])
@@ -399,7 +412,7 @@ export default function Page591() {
                   });
                 liff.closeWindow();
                 console.log(
-                  `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`
+                  `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${regionCode}&${sectionCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`
                 );
               }}
             >
@@ -420,11 +433,30 @@ export default function Page591() {
             fontWeight: "bold",
           }}
           onClick={() => {
+            if (regions.length === 0) {
+              alert("請選擇縣市");
+              return;
+            } else if (sections.length === 0) {
+              let newSectionCode = [];
+
+              provinces["cities"].map((city) => {
+                if (city.name === regions[0]) {
+                  city.sections.map((section) => {
+                    newSectionCode.push(section.section);
+                  });
+                }
+                setSectionCode(newSectionCode);
+              });
+              console.log(
+                newSectionCode,
+                "=========== newSectionCode =========="
+              );
+            }
             liff
               .sendMessages([
                 {
                   type: "image",
-                  originalContentUrl: `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`,
+                  originalContentUrl: `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${regionCode}&${sectionCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`,
                   previewImageUrl: "https://i.imgur.com/MwS42AE.png",
                 },
               ])
@@ -433,7 +465,7 @@ export default function Page591() {
               });
             liff.closeWindow();
             console.log(
-              `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${locationCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`
+              `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${regionCode}}&${sectionCode}&${type}&0&${chosedTime}&${distanceMRT}?${userId}&${displayName}`
             );
           }}
         >
