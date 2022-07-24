@@ -37,6 +37,28 @@ export default function Page591() {
     parseInt(new Date().getDate()) - 1,
   ]);
   const [chosedTime, setChosedTime] = React.useState("");
+  const [searchMesasge, setSearchMessage] = React.useState("");
+  const [trackMessage, setTrackMessage] = React.useState("");
+
+  React.useEffect(() => {
+    setSearchMessage(
+      `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${regionCode}&${type}&0&${chosedTime}&${distanceMRT}&${sectionCode}?${userId}&${displayName}`
+    );
+    setTrackMessage(
+      `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${regionCode}&${type}&0&${chosedTime}&${distanceMRT}&${sectionCode}?${userId}&${displayName}`
+    );
+  }, [
+    search,
+    minRent,
+    maxRent,
+    regionCode,
+    type,
+    chosedTime,
+    distanceMRT,
+    sectionCode,
+    userId,
+    displayName,
+  ]);
 
   const monthDays = {
     1: 31,
@@ -64,6 +86,7 @@ export default function Page591() {
     } else {
       const profile = await liff.getProfile();
       setUserId(profile.userId);
+      profile.displayName = profile.displayName.replace(" ", "");
       setDisplayName(profile.displayName);
     }
   }
@@ -383,7 +406,7 @@ export default function Page591() {
                 if (regions.length === 0) {
                   alert("請選擇縣市");
                   return;
-                } else if (sections.length === 0) {
+                } else if (sectionCode.length === 0) {
                   let newSectionCode = [];
 
                   provinces["cities"].map((city) => {
@@ -394,16 +417,19 @@ export default function Page591() {
                     }
                     setSectionCode(newSectionCode);
                   });
-                  console.log(
-                    newSectionCode,
-                    "=========== newSectionCode =========="
-                  );
+                  alert("麻煩再按一次");
+                  return;
                 }
+
                 liff
                   .sendMessages([
                     {
+                      type: "text",
+                      text: searchMesasge,
+                    },
+                    {
                       type: "image",
-                      originalContentUrl: `https://i.imgur.com/MwS42AE.png?search?${search}&${minRent}&${maxRent}&${regionCode}&${type}&0&${chosedTime}&${distanceMRT}&${sectionCode}?${userId}&${displayName}`,
+                      originalContentUrl: searchMesasge,
                       previewImageUrl: "https://i.imgur.com/MwS42AE.png",
                     },
                   ])
@@ -433,7 +459,7 @@ export default function Page591() {
             if (regions.length === 0) {
               alert("請選擇縣市");
               return;
-            } else if (sections.length === 0) {
+            } else if (sectionCode.length === 0) {
               let newSectionCode = [];
 
               provinces["cities"].map((city) => {
@@ -444,16 +470,14 @@ export default function Page591() {
                 }
                 setSectionCode(newSectionCode);
               });
-              console.log(
-                newSectionCode,
-                "=========== newSectionCode =========="
-              );
+              alert("麻煩再按一次");
+              return;
             }
             liff
               .sendMessages([
                 {
                   type: "image",
-                  originalContentUrl: `https://i.imgur.com/MwS42AE.png?track?${search}&${minRent}&${maxRent}&${regionCode}&${type}&0&${chosedTime}&${distanceMRT}&${sectionCode}?${userId}&${displayName}`,
+                  originalContentUrl: trackMessage,
                   previewImageUrl: "https://i.imgur.com/MwS42AE.png",
                 },
               ])
