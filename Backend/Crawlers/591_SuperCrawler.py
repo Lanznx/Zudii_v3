@@ -8,10 +8,11 @@ from datetime import datetime, timedelta, date
 import threading
 import certifi
 import uuid
+import redis
 load_dotenv()
 
 
-ENV_PATH = "../../.env"
+ENV_PATH = "../.env"
 MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 USER_AGENT_1 = dotenv_values(ENV_PATH)['USER_AGENT_1']
 USER_AGENT_2 = dotenv_values(ENV_PATH)['USER_AGENT_2']
@@ -25,42 +26,79 @@ USER_AGENTS = [USER_AGENT_1, USER_AGENT_2, USER_AGENT_3, USER_AGENT_4,
                USER_AGENT_5, USER_AGENT_6, USER_AGENT_7, USER_AGENT_8]
 
 
-def superCrawler(region):
-    client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
-    db = client.test
-    collection = db.production_591
+redisClient = redis.Redis(host=dotenv_values(ENV_PATH)['REDIS_HOST'], port=dotenv_values(ENV_PATH)[
+    'REDIS_PORT'], db=dotenv_values(ENV_PATH)['REDIS_DB'])
+
+
+def getBatchNum(collection):
     try:
         batch_num = collection.find().sort("batch", pymongo.DESCENDING)[0]
         batch_num = batch_num['batch'] + 1
     except:
         batch_num = 0
+
+
+def getHouseListFrom591(firstRow, region):
+    headers = {
+        'User-Agent': random.choice(USER_AGENTS),
+    }
+    session = requests.Session()
+    response = session.get(
+        "https://rent.591.com.tw/", headers=headers)
+    csrf = BeautifulSoup(response.content, 'html.parser')
+    csrf = csrf.find('meta', {"name": "csrf-token"})['content']
+    response = session.get(
+        f"https://rent.591.com.tw/home/search/rsList?firstRow={firstRow}", headers=headers)
+    headers['Cookie'] = f"591_new_session={session.cookies.get_dict()['591_new_session']};" + \
+        f"urlJumpIp={region};"
+    headers['X-CSRF-TOKEN'] = csrf
+    time.sleep(random.randint(1, 6))
+    houseList = session.get(
+        f"https://rent.591.com.tw/home/search/rsList?firstRow={firstRow}", headers=headers)
+    return houseList
+
+
+def getHouseFrom591(id_591):
+    headers = {
+        'User-Agent': random.choice(USER_AGENTS),
+        'deviceid': str(uuid.uuid4()),
+        'device': "pc"
+    }
+    session = requests.Session()
+    house = session.get(
+        f"https://bff.591.com.tw/v1/house/rent/detail?id={id_591}", headers=headers)
+    return house
+
+
+def isIdExist(id_591, collection):
+    id = redisClient.get(id_591)
+    if (id != None):
+        return True
+    if collection.find_one({"id": id_591}) != None:
+        return True
+    else:
+        return False
+
+
+def main(region):
+    client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
+    db = client.test
+    collection = db.production_591
+    batch_num = getBatchNum(collection)
+
     postNumber = 1
     firstRow = 0
     has_next_page = True
     while(has_next_page):
         contents = []
         try:
-            headers = {
-                'User-Agent': random.choice(USER_AGENTS),
-            }
-            session = requests.Session()
-            response = session.get(
-                "https://rent.591.com.tw/", headers=headers)
-            csrf = BeautifulSoup(response.content, 'html.parser')
-            csrf = csrf.find('meta', {"name": "csrf-token"})['content']
-            response = session.get(
-                f"https://rent.591.com.tw/home/search/rsList?firstRow={firstRow}", headers=headers)
-            headers['Cookie'] = f"591_new_session={session.cookies.get_dict()['591_new_session']};" + \
-                f"urlJumpIp={region};"
-            headers['X-CSRF-TOKEN'] = csrf
-            time.sleep(random.randint(1, 6))
-            response = session.get(
-                f"https://rent.591.com.tw/home/search/rsList?firstRow={firstRow}", headers=headers)
+            houseList = getHouseListFrom591(firstRow, region)
         except Exception as e:
             print("======== 爬蟲的時候發生問題囉，以下是錯誤訊息 ========")
             print(e)
             continue
-        records = int(response.json()['records'].replace(",", ""))
+
+        records = int(houseList.json()['records'].replace(",", ""))
 
         print(records, f" <- 這是 region {region} 的總行數")
         if(records < firstRow):
@@ -69,12 +107,15 @@ def superCrawler(region):
         else:
             firstRow += 30
 
-        posts = response.json()['data']['data']
+        posts = houseList.json()['data']['data']
         for post in posts:
             postNumber += 1
             id_591 = int(post['post_id'])
-            if(collection.find_one({"id_591": id_591}) != None):
+            if(isIdExist(id_591, collection)):
                 continue
+            if (post['regionid'] != region):
+                continue
+            redisClient.setex(id_591, 3600, id_591)
 
             release_time = post['ltime'].split(" ")[0]
             converted_time = datetime.strptime(release_time, "%Y-%m-%d")
@@ -131,24 +172,15 @@ def superCrawler(region):
                     "converted_time": converted_time,
                     "batch": batch_num
                 }
-
-            headers = {
-                'User-Agent': random.choice(USER_AGENTS),
-                'deviceid': str(uuid.uuid4()),
-                'device': "pc"
-            }
-            session = requests.Session()
-            res = session.get(
-                f"https://bff.591.com.tw/v1/house/rent/detail?id={id_591}", headers=headers)
-            longitude = float(res.json()['data']["positionRound"]['lng'])
-            latitude = float(res.json()['data']["positionRound"]['lat'])
+            house = getHouseFrom591(id_591)
+            longitude = float(house.json()['data']["positionRound"]['lng'])
+            latitude = float(house.json()['data']["positionRound"]['lat'])
             if(longitude > 180 or longitude < -180 or latitude > 90 or latitude < -90):
                 continue
             content.update(
                 {"position": {"type": "Point", "coordinates": [longitude, latitude]}})
             content.update(
                 {"locationLink": "https://www.google.com/maps?f=q&hl=zh-TW&q={},{}&z=16".format(latitude, longitude)})
-
             contents.append(content)
 
         if(len(contents) != 0):
@@ -159,7 +191,7 @@ def superCrawler(region):
 
 threads = []
 for i in range(1, 27):
-    t = threading.Thread(target=superCrawler, args=(i,))
+    t = threading.Thread(target=main, args=(i,))
     threads.append(t)
 
 
