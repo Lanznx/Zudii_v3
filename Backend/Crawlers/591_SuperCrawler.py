@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 from dotenv import dotenv_values, load_dotenv
 import pymongo
 from datetime import datetime, timedelta, date
+import calendar
 import threading
 import certifi
 import uuid
@@ -36,6 +37,7 @@ def getBatchNum(collection):
         batch_num = batch_num['batch'] + 1
     except:
         batch_num = 0
+    return batch_num
 
 
 def getHouseListFrom591(firstRow, region):
@@ -80,10 +82,91 @@ def isIdExist(id_591, collection):
         return False
 
 
+def washPostData(post, batch_num, postNumber, collection, region):
+    if(isIdExist(int(post['post_id']), collection)):
+        return None
+    if (post['regionid'] != region):
+        return None
+    postNumber += 1
+    id_591 = int(post['post_id'])
+    redisClient.setex(id_591, 3600, id_591)
+    release_time = post['ltime'].split(" ")[0]
+    converted_time = datetime.strptime(release_time, "%Y-%m-%d")
+    try:
+        post['surrounding']['distance'] = int(
+            post['surrounding']['distance'].replace("公尺", ""))
+        post['surrounding']['desc'] = post['surrounding']['desc'].split("距")[
+            1]
+        if(post['surrounding']['type'] == "bus_station"):
+            post['surrounding']['type'] = "公車"
+        elif(post['surrounding']['type'] == "subway_station"):
+            post['surrounding']['type'] = "捷運"
+        elif(post['surrounding']['type'] == "restaurant"):
+            post['surrounding']['type'] = "餐廳"
+    except:
+        print(id_591, "沒有 surrounding")
+    try:
+        content = {
+            "id_591": int(post['post_id']),
+            "imgLink": post['photoList'][0],
+            "title": post['fulladdress'],
+            "link": "https://rent.591.com.tw/home/" + str(post['post_id']),
+            "region": post['regionid'],
+            "region_name": post['region_name'],
+            "section": post['sectionid'],
+            "section_name": post['section_name'],
+            "location": post["location"],
+            "price": int(post['price'].replace(",", "")),
+            "type": post['kind_name'],
+            "size": float(post['area']),
+            "surrounding": post['surrounding'],
+            "release_time": release_time,
+            "converted_time": converted_time,
+            "batch": batch_num
+        }
+    except Exception as e:
+        print(e)
+        content = {
+            "id_591": int(post['post_id']),
+            "imgLink": "",
+            "title": post['fulladdress'],
+            "link": "https://rent.591.com.tw/home/" + str(post['post_id']),
+            "region": post['regionid'],
+            "region_name": post['region_name'],
+            "section": post['sectionid'],
+            "section_name": post['section_name'],
+            "location": post["location"],
+            "price": int(post['price'].replace(",", "")),
+            "type": post['kind_name'],
+            "size": float(post['area']),
+            "surrounding": post['surrounding'],
+            "release_time": release_time,
+            "converted_time": converted_time,
+            "batch": batch_num
+        }
+    try:
+        house = getHouseFrom591(id_591)
+        longitude = float(house.json()['data']["positionRound"]['lng'])
+        latitude = float(house.json()['data']["positionRound"]['lat'])
+    except Exception as e:
+        print("=============== 被抓到了 ==================")
+        print(e)
+        return None
+    if(longitude > 180 or longitude < -180 or latitude > 90 or latitude < -90):
+        return None
+    content.update(
+        {"position": {"type": "Point", "coordinates": [longitude, latitude]}})
+    content.update(
+        {"locationLink": "https://www.google.com/maps?f=q&hl=zh-TW&q={},{}&z=16".format(latitude, longitude)})
+    return content
+
+
 def main(region):
+    initail_GMT = time.gmtime()
+    initial_time_stamp = calendar.timegm(initail_GMT)
     client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
     db = client.test
-    collection = db.production_591
+    collection = db.experiment_591
     batch_num = getBatchNum(collection)
 
     postNumber = 1
@@ -98,8 +181,7 @@ def main(region):
             print(e)
             continue
 
-        records = int(houseList.json()['records'].replace(",", ""))
-
+        records = int(str(houseList.json()['records']).replace(",", ""))
         print(records, f" <- 這是 region {region} 的總行數")
         if(records < firstRow):
             has_next_page = False
@@ -109,91 +191,25 @@ def main(region):
 
         posts = houseList.json()['data']['data']
         for post in posts:
-            postNumber += 1
-            id_591 = int(post['post_id'])
-            if(isIdExist(id_591, collection)):
+            content = washPostData(
+                post, batch_num, postNumber, collection, region)
+            if(content == None):
                 continue
-            if (post['regionid'] != region):
-                continue
-            redisClient.setex(id_591, 3600, id_591)
-
-            release_time = post['ltime'].split(" ")[0]
-            converted_time = datetime.strptime(release_time, "%Y-%m-%d")
-            try:
-                post['surrounding']['distance'] = int(
-                    post['surrounding']['distance'].replace("公尺", ""))
-                post['surrounding']['desc'] = post['surrounding']['desc'].split("距")[
-                    1]
-                if(post['surrounding']['type'] == "bus_station"):
-                    post['surrounding']['type'] = "公車"
-                elif(post['surrounding']['type'] == "subway_station"):
-                    post['surrounding']['type'] = "捷運"
-                elif(post['surrounding']['type'] == "restaurant"):
-                    post['surrounding']['type'] = "餐廳"
-            except:
-                print(id_591, "沒有 surrounding")
-                continue
-            try:
-                content = {
-                    "id_591": int(post['post_id']),
-                    "imgLink": post['photoList'][0],
-                    "title": post['fulladdress'],
-                    "link": "https://rent.591.com.tw/home/" + str(post['post_id']),
-                    "region": post['regionid'],
-                    "region_name": post['region_name'],
-                    "section": post['sectionid'],
-                    "section_name": post['section_name'],
-                    "location": post["location"],
-                    "price": int(post['price'].replace(",", "")),
-                    "type": post['kind_name'],
-                    "size": float(post['area']),
-                    "surrounding": post['surrounding'],
-                    "release_time": release_time,
-                    "converted_time": converted_time,
-                    "batch": batch_num
-                }
-            except Exception as e:
-                print(e)
-                content = {
-                    "id_591": int(post['post_id']),
-                    "imgLink": "",
-                    "title": post['fulladdress'],
-                    "link": "https://rent.591.com.tw/home/" + str(post['post_id']),
-                    "region": post['regionid'],
-                    "region_name": post['region_name'],
-                    "section": post['sectionid'],
-                    "section_name": post['section_name'],
-                    "location": post["location"],
-                    "price": int(post['price'].replace(",", "")),
-                    "type": post['kind_name'],
-                    "size": float(post['area']),
-                    "surrounding": post['surrounding'],
-                    "release_time": release_time,
-                    "converted_time": converted_time,
-                    "batch": batch_num
-                }
-            house = getHouseFrom591(id_591)
-            longitude = float(house.json()['data']["positionRound"]['lng'])
-            latitude = float(house.json()['data']["positionRound"]['lat'])
-            if(longitude > 180 or longitude < -180 or latitude > 90 or latitude < -90):
-                continue
-            content.update(
-                {"position": {"type": "Point", "coordinates": [longitude, latitude]}})
-            content.update(
-                {"locationLink": "https://www.google.com/maps?f=q&hl=zh-TW&q={},{}&z=16".format(latitude, longitude)})
             contents.append(content)
-
         if(len(contents) != 0):
             collection.insert_many(contents)
     client.close()
-    print("Closed connection to MongoDB")
+    print("====")
+    print(f"Region {region} Closed connection to MongoDB")
+    time_stamp = calendar.timegm(time.gmtime())
+    print(f"time of region {region} is {time_stamp - initial_time_stamp}")
+    print("====")
 
 
-threads = []
-for i in range(1, 27):
-    t = threading.Thread(target=main, args=(i,))
-    threads.append(t)
-
-
-for t in threads:
-    t.start()
+for j in range(1, 27, 4):
+    for i in range(j, j+4):
+        t = threading.Thread(target=main, args=(i,)).start()
+        if (i == 27):
+            break
+    time.sleep(600)
+    print(f"{j} 輪結束")
