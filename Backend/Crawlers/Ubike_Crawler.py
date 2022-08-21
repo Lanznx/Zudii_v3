@@ -21,14 +21,16 @@ USER_AGENT_8 = dotenv_values(ENV_PATH)['USER_AGENT_8']
 USER_AGENTS = [USER_AGENT_1, USER_AGENT_2, USER_AGENT_3, USER_AGENT_4,
                USER_AGENT_5, USER_AGENT_6, USER_AGENT_7, USER_AGENT_8]
 
+client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
+headers = {
+    'User-Agent': random.choice(USER_AGENTS),
+}
+db = client.test
+collection = db.Ubike
+collection.drop()
 
-def main(city):
-    client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
-    headers = {
-        'User-Agent': random.choice(USER_AGENTS),
-    }
-    db = client.test
-    collection = db.Ubike
+
+def main(city, collection, headers):
     session = requests.Session()
     response = session.get(
         f"https://ptx.transportdata.tw/MOTC/v2/Bike/Station/City/{city}?$top=10000&$format=JSON", headers=headers)
@@ -42,8 +44,7 @@ def main(city):
                 "type": "Point",
                 "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
             }})
-            collection.update_many({"StationUID": station['StationUID']}, {
-                                   "$set": station}, upsert=True)
+        collection.insert_many(ubike_stations)
 
     elif(city == "NewTaipei"):
         for station in ubike_stations:
@@ -53,8 +54,7 @@ def main(city):
                 "type": "Point",
                 "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
             }})
-            collection.update_many({"StationUID": station['StationUID']}, {
-                                   "$set": station}, upsert=True)
+        collection.insert_many(ubike_stations)
     elif(city == "Taoyuan"):
         for station in ubike_stations:
             station.update({"region_name": "桃園市"})
@@ -63,8 +63,7 @@ def main(city):
                 "type": "Point",
                 "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
             }})
-            collection.update_many({"StationUID": station['StationUID']}, {
-                                   "$set": station}, upsert=True)
+        collection.insert_many(ubike_stations)
     elif(city == "Hsinchu"):
         for station in ubike_stations:
             station.update({"region_name": "新竹市"})
@@ -73,8 +72,7 @@ def main(city):
                 "type": "Point",
                 "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
             }})
-            collection.update_many({"StationUID": station['StationUID']}, {
-                                   "$set": station}, upsert=True)
+        collection.insert_many(ubike_stations)
     elif(city == "KinmenCounty"):
         for station in ubike_stations:
             station.update({"region_name": "金門縣"})
@@ -83,8 +81,7 @@ def main(city):
                 "type": "Point",
                 "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
             }})
-            collection.update_many({"StationUID": station['StationUID']}, {
-                                   "$set": station}, upsert=True)
+        collection.insert_many(ubike_stations)
     elif(city == "Kaohsiung"):
         for station in ubike_stations:
             station.update({"region_name": "高雄市"})
@@ -93,8 +90,7 @@ def main(city):
                 "type": "Point",
                 "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
             }})
-            collection.update_many({"StationUID": station['StationUID']}, {
-                                   "$set": station}, upsert=True)
+        collection.insert_many(ubike_stations)
     elif(city == "Taichung"):
         for station in ubike_stations:
             station.update({"region_name": "台中市"})
@@ -103,8 +99,7 @@ def main(city):
                 "type": "Point",
                 "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
             }})
-            collection.update_many({"StationUID": station['StationUID']}, {
-                                   "$set": station}, upsert=True)
+        collection.insert_many(ubike_stations)
     elif(city == "Tainan"):
         for station in ubike_stations:
             station.update({"region_name": "台南市"})
@@ -113,8 +108,7 @@ def main(city):
                 "type": "Point",
                 "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
             }})
-            collection.update_many({"StationUID": station['StationUID']}, {
-                                   "$set": station}, upsert=True)
+        collection.insert_many(ubike_stations)
     elif(city == "PingtungCounty"):
         for station in ubike_stations:
             station.update({"region_name": "屏東縣"})
@@ -123,8 +117,7 @@ def main(city):
                 "type": "Point",
                 "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
             }})
-            collection.update_many({"StationUID": station['StationUID']}, {
-                                   "$set": station}, upsert=True)
+        collection.insert_many(ubike_stations)
     elif(city == "Chiayi"):
         for station in ubike_stations:
             station.update({"region_name": "嘉義市"})
@@ -133,8 +126,7 @@ def main(city):
                 "type": "Point",
                 "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
             }})
-            collection.update_many({"StationUID": station['StationUID']}, {
-                                   "$set": station}, upsert=True)
+        collection.insert_many(ubike_stations)
     elif(city == "MiaoliCounty"):
         for station in ubike_stations:
             station.update({"region_name": "苗栗縣"})
@@ -143,8 +135,8 @@ def main(city):
                 "type": "Point",
                 "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
             }})
-            collection.update_many({"StationUID": station['StationUID']}, {
-                                   "$set": station}, upsert=True)
+        collection.insert_many(ubike_stations)
+
     print(city)
 
 
@@ -153,4 +145,6 @@ cities = ["KinmenCounty", "Kaohsiung",
 
 
 for city in cities:
-    main(city)
+    main(city, collection, headers)
+collection.create_index([("position", pymongo.GEOSPHERE)])
+client.close()
