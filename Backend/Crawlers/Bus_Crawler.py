@@ -33,7 +33,7 @@ collection.drop()
 def main(city, collection, headers):
     session = requests.Session()
     response = session.get(
-        f"https://ptx.transportdata.tw/MOTC/v2/Bus/Station/City/{city}?%24top=10000&%24format=JSON", headers=headers)
+        f"https://ptx.transportdata.tw/MOTC/v2/Bus/Stop/City/{city}?%24top=100000&%24format=JSON", headers=headers)
     pprint.pprint(len(response.json()))
     bus_stations = response.json()
     if(city == "Taipei"):
@@ -42,7 +42,7 @@ def main(city, collection, headers):
             station.update({"region": 1})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
 
@@ -52,7 +52,7 @@ def main(city, collection, headers):
             station.update({"region": 3})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "Taoyuan"):
@@ -61,7 +61,7 @@ def main(city, collection, headers):
             station.update({"region": 6})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "Hsinchu"):
@@ -70,7 +70,7 @@ def main(city, collection, headers):
             station.update({"region": 4})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "KinmenCounty"):
@@ -79,7 +79,7 @@ def main(city, collection, headers):
             station.update({"region": 25})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "Kaohsiung"):
@@ -88,7 +88,7 @@ def main(city, collection, headers):
             station.update({"region": 17})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "Taichung"):
@@ -97,7 +97,7 @@ def main(city, collection, headers):
             station.update({"region": 8})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "Tainan"):
@@ -106,7 +106,7 @@ def main(city, collection, headers):
             station.update({"region": 15})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "PingtungCounty"):
@@ -115,7 +115,7 @@ def main(city, collection, headers):
             station.update({"region": 19})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "Chiayi"):
@@ -124,7 +124,7 @@ def main(city, collection, headers):
             station.update({"region": 12})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "MiaoliCounty"):
@@ -133,7 +133,7 @@ def main(city, collection, headers):
             station.update({"region": 7})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "PenghuCounty"):
@@ -142,7 +142,7 @@ def main(city, collection, headers):
             station.update({"region": 24})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "Keelung"):
@@ -151,7 +151,7 @@ def main(city, collection, headers):
             station.update({"region": 2})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "TaitungCounty"):
@@ -160,7 +160,7 @@ def main(city, collection, headers):
             station.update({"region": 22})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "YilanCounty"):
@@ -169,7 +169,7 @@ def main(city, collection, headers):
             station.update({"region": 21})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "ChiaYiCounty"):
@@ -178,7 +178,7 @@ def main(city, collection, headers):
             station.update({"region": 13})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "YunlinCounty"):
@@ -187,7 +187,7 @@ def main(city, collection, headers):
             station.update({"region": 14})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "NantouCounty"):
@@ -196,7 +196,7 @@ def main(city, collection, headers):
             station.update({"region": 11})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "ChanghuaCounty"):
@@ -205,7 +205,7 @@ def main(city, collection, headers):
             station.update({"region": 10})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "HualienCounty"):
@@ -214,7 +214,7 @@ def main(city, collection, headers):
             station.update({"region": 23})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
     elif(city == "HsinchuCounty"):
@@ -223,7 +223,7 @@ def main(city, collection, headers):
             station.update({"region": 5})
             station.update({"position": {
                 "type": "Point",
-                "coordinates": [station['StationPosition']["PositionLon"], station['StationPosition']["PositionLat"]]
+                "coordinates": [station['StopPosition']["PositionLon"], station['StopPosition']["PositionLat"]]
             }})
         collection.insert_many(bus_stations)
 
