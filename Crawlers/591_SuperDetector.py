@@ -13,7 +13,7 @@ import redis
 load_dotenv()
 
 
-ENV_PATH = "../.env"
+ENV_PATH = ".env"
 MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 USER_AGENT_1 = dotenv_values(ENV_PATH)['USER_AGENT_1']
 USER_AGENT_2 = dotenv_values(ENV_PATH)['USER_AGENT_2']
@@ -183,7 +183,7 @@ def main(region):
 
         records = int(str(houseList.json()['records']).replace(",", ""))
         print(records, f" <- 這是 region {region} 的總行數")
-        if(records < firstRow):
+        if(records < firstRow or firstRow >= 120):
             has_next_page = False
             break
         else:
@@ -211,5 +211,5 @@ for j in range(1, 27, 4):
         t = threading.Thread(target=main, args=(i,)).start()
         if (i == 27):
             break
-    time.sleep(600)
+    time.sleep(120)
     print(f"{j} 輪結束")

@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, date
 load_dotenv()
 
 
-ENV_PATH = "../../.env"
+ENV_PATH = "../.env"
 MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 CHROME_PATH = dotenv_values(ENV_PATH)["CHROME_PATH"]
 options = Options()
@@ -92,8 +92,7 @@ for section in range(1, 13):
 
                 id_591 = post['data-bind']
 
-
-                if(collection.find_one({"id_591": int(id_591)}) == None): 
+                if(collection.find_one({"id_591": int(id_591)}) == None):
                     try:
                         imgLink = post.find_all(
                             "img", {"class": "obsever-lazyimg"})[0]['data-original']
@@ -101,10 +100,10 @@ for section in range(1, 13):
                         imgLink = ""
                     # ============= clean Data =============
                     title = post.find('div', {'class': "item-title"}
-                                    ).text.replace(" ", "").replace("\n", "")
+                                      ).text.replace(" ", "").replace("\n", "")
                     link = post.find("a", {'target': "_blank"})['href']
                     location = post.find('div', {'class': "item-area"}
-                                        ).text.replace(" ", "").replace("\n", "")
+                                         ).text.replace(" ", "").replace("\n", "")
                     price = post.find(
                         'div', {'class': "item-price-text"}).text.replace("元/月", "").replace("\n", "").replace(" ", "").replace(",", "")
                     type = (post.find("ul", {"class": "item-style"})).decode_contents().split(
@@ -127,28 +126,32 @@ for section in range(1, 13):
                     longitude = locationLink.split("&q=")[1].split(",")[
                         1].split("&z=")[0]
 
-                    release_time_tag = soup.find("div", {"class", "release-time"})
+                    release_time_tag = soup.find(
+                        "div", {"class", "release-time"})
                     release_time_texts = [
                         t for t in release_time_tag.find_all(text=True)]
                     for release_time_text in release_time_texts:
                         print(release_time_text,
-                            "========= release time text ===========")
+                              "========= release time text ===========")
                         if ("剛剛" in release_time_text or "小時" in release_time_text or "分鐘" in release_time_text):
                             release_time = datetime.today().strftime('%Y-%m-%d')
                             break
                         elif ("天" in release_time_text):
-                            release_time_text = release_time_text.replace(" ", "")
+                            release_time_text = release_time_text.replace(
+                                " ", "")
                             release_time = (datetime.today(
                             ) - timedelta(days=int(release_time_text[5:6]))).strftime('%Y-%m-%d')
                             break
                         elif ("月" in release_time_text):
-                            release_time_text = release_time_text.replace(" ", "")
-                            month = release_time_text.split("在")[1].split("月")[0]
+                            release_time_text = release_time_text.replace(
+                                " ", "")
+                            month = release_time_text.split(
+                                "在")[1].split("月")[0]
                             day = release_time_text.split("月")[1].split("日")[0]
                             if(int(month) <= datetime.now().month):
                                 release_time = str(date(
                                     int(datetime.today().strftime('%Y')), int(month), int(day)))
-                            else: 
+                            else:
                                 release_time = str(date(
                                     int(datetime.today().strftime('%Y')) - 1, int(month), int(day)))
                             break
@@ -170,12 +173,12 @@ for section in range(1, 13):
                     try:
                         collection.insert_one(content)
                         print(content["id_591"], " inserted")
-                    except Exception as e: 
+                    except Exception as e:
                         print(e)
                         raise e
 
                     postNumber += 1
-                else: 
+                else:
                     print(id_591, "already exist")
                     postNumber += 1
                     pass
@@ -187,7 +190,6 @@ for section in range(1, 13):
         print("error in section {}, row {}".format(section, firstRow))
         print(e)
         pass
-
 
 
 collection.update_many({}, [

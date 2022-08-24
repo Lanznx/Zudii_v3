@@ -8,7 +8,7 @@ import certifi
 load_dotenv()
 
 
-ENV_PATH = "../.env"
+ENV_PATH = ".env"
 MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 USER_AGENT_1 = dotenv_values(ENV_PATH)['USER_AGENT_1']
 USER_AGENT_2 = dotenv_values(ENV_PATH)['USER_AGENT_2']
