@@ -1,4 +1,6 @@
 import time
+import math
+import pprint
 import random
 import requests
 from bs4 import BeautifulSoup
@@ -10,6 +12,8 @@ import threading
 import certifi
 import uuid
 import redis
+import pika
+import json
 load_dotenv()
 
 
@@ -60,16 +64,16 @@ def getHouseListFrom591(firstRow, region):
     return houseList
 
 
-def getHouseFrom591(id_591):
+def getDetailedHouseFrom591(id_591):
     headers = {
         'User-Agent': random.choice(USER_AGENTS),
         'deviceid': str(uuid.uuid4()),
         'device': "pc"
     }
     session = requests.Session()
-    house = session.get(
+    detailedHouse = session.get(
         f"https://bff.591.com.tw/v1/house/rent/detail?id={id_591}", headers=headers)
-    return house
+    return json.loads(detailedHouse.content)
 
 
 def isIdExist(id_591, collection):
@@ -82,16 +86,13 @@ def isIdExist(id_591, collection):
         return False
 
 
-def washPostData(post, batch_num, postNumber, collection, region):
-    if(isIdExist(int(post['post_id']), collection)):
-        return None
+def washRoughPost(post, batch_num, postNumber, region):
     if (post['regionid'] != region):
         return None
     postNumber += 1
     id_591 = int(post['post_id'])
     redisClient.setex(id_591, 3600, id_591)
     release_time = post['ltime'].split(" ")[0]
-    converted_time = datetime.strptime(release_time, "%Y-%m-%d")
     try:
         post['surrounding']['distance'] = int(
             post['surrounding']['distance'].replace("公尺", ""))
@@ -106,8 +107,9 @@ def washPostData(post, batch_num, postNumber, collection, region):
     except:
         print(id_591, "沒有 surrounding")
     try:
-        content = {
+        cleanedRoughPost = {
             "id_591": int(post['post_id']),
+            "reachable": 1,
             "imgLink": post['photoList'][0],
             "title": post['fulladdress'],
             "link": "https://rent.591.com.tw/home/" + str(post['post_id']),
@@ -117,17 +119,18 @@ def washPostData(post, batch_num, postNumber, collection, region):
             "section_name": post['section_name'],
             "location": post["location"],
             "price": int(post['price'].replace(",", "")),
+            "unit_price": math.ceil(int(post['price'].replace(",", "")) / float(post['area'])),
             "type": post['kind_name'],
             "size": float(post['area']),
             "surrounding": post['surrounding'],
             "release_time": release_time,
-            "converted_time": converted_time,
             "batch": batch_num
         }
     except Exception as e:
         print(e)
-        content = {
+        cleanedRoughPost = {
             "id_591": int(post['post_id']),
+            "reachable": 1,
             "imgLink": "",
             "title": post['fulladdress'],
             "link": "https://rent.591.com.tw/home/" + str(post['post_id']),
@@ -137,43 +140,34 @@ def washPostData(post, batch_num, postNumber, collection, region):
             "section_name": post['section_name'],
             "location": post["location"],
             "price": int(post['price'].replace(",", "")),
+            "unit_price": math.ceil(int(post['price'].replace(",", "")) / float(post['area'])),
             "type": post['kind_name'],
             "size": float(post['area']),
             "surrounding": post['surrounding'],
             "release_time": release_time,
-            "converted_time": converted_time,
             "batch": batch_num
         }
-    try:
-        house = getHouseFrom591(id_591)
-        longitude = float(house.json()['data']["positionRound"]['lng'])
-        latitude = float(house.json()['data']["positionRound"]['lat'])
-    except Exception as e:
-        print("=============== 被抓到了 ==================")
-        print(e)
-        return None
-    if(longitude > 180 or longitude < -180 or latitude > 90 or latitude < -90):
-        return None
-    content.update(
-        {"position": {"type": "Point", "coordinates": [longitude, latitude]}})
-    content.update(
-        {"locationLink": "https://www.google.com/maps?f=q&hl=zh-TW&q={},{}&z=16".format(latitude, longitude)})
-    return content
+    return cleanedRoughPost
 
 
 def main(region):
     initail_GMT = time.gmtime()
     initial_time_stamp = calendar.timegm(initail_GMT)
+    connection = pika.BlockingConnection(
+        pika.ConnectionParameters('localhost', heartbeat=0))
+    channel = connection.channel()
+    channel.queue_declare("DetailedPostWasher")
+    channel.queue_declare("SurroundingSeparater")
+    channel.exchange_declare(exchange='ex', exchange_type='direct')
     client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
     db = client.test
-    collection = db.experiment_591
+    collection = db.dev_591
     batch_num = getBatchNum(collection)
 
     postNumber = 1
     firstRow = 0
     has_next_page = True
     while(has_next_page):
-        contents = []
         try:
             houseList = getHouseListFrom591(firstRow, region)
         except Exception as e:
@@ -183,26 +177,38 @@ def main(region):
 
         records = int(str(houseList.json()['records']).replace(",", ""))
         print(records, f" <- 這是 region {region} 的總行數")
+        # this is it ========================================================================================================================================================================================================================
         if(records < firstRow or firstRow >= 120):
             has_next_page = False
             break
         else:
             firstRow += 30
+        # this is it ========================================================================================================================================================================================================================
 
         posts = houseList.json()['data']['data']
         for post in posts:
-            content = washPostData(
-                post, batch_num, postNumber, collection, region)
-            if(content == None):
+            if(isIdExist(int(post['post_id']), collection)):
                 continue
-            contents.append(content)
-        if(len(contents) != 0):
-            collection.insert_many(contents)
+            cleanedRoughPost = washRoughPost(
+                post, batch_num, postNumber, region)
+            if(cleanedRoughPost == None):
+                continue
+            detailedPost = getDetailedHouseFrom591(
+                int(cleanedRoughPost['id_591']))
+            postToBeWashed = {
+                'cleanedRoughPost': cleanedRoughPost,
+                'detailedPost': detailedPost
+            }
+            channel.basic_publish(
+                exchange='ex', routing_key='DetailedPostWasher', body=json.dumps(postToBeWashed, default=str))
+            channel.basic_publish(
+                exchange='ex', routing_key='SurroundingSeparater', body=json.dumps(detailedPost, default=str))
     client.close()
     print("====")
-    print(f"Region {region} Closed connection to MongoDB")
+    print(f"Region {region} Closed Connection to DB")
     time_stamp = calendar.timegm(time.gmtime())
-    print(f"time of region {region} is {time_stamp - initial_time_stamp}")
+    print(
+        f"time of region {region} is {time_stamp - initial_time_stamp} second")
     print("====")
 
 
