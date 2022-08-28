@@ -3,11 +3,30 @@ version: '3.8'
 services:
   mq:
     image: rabbitmq:3-management-alpine
+    container_name: zudii_mq
     ports:
-      - 15672:15672
-      - 5672:5672
+      - 127.0.0.1:5672:5672
+      - 127.0.0.1:15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+  cache:
     restart: always
+    container_name: zudii_redis
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    healthcheck:
+      test: redis-cli ping
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
   server:
+    container_name: zudii_server
     build:
       context: ./Backend
     ports:
@@ -15,10 +34,54 @@ services:
       - 5000:5000
     restart: always
   crawlers:
+    container_name: zudii_crawlers
     build:
       context: ./Crawlers
-    restart: always
+    image: zudii_crawlers
+    restart: on-failure
     depends_on:
-      - mq
-    ports:
-      - 127.0.0.1:12288:12288
+      mq:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    command: python3 591_SuperDetector.py
+  washer-1:
+    container_name: zudii_washer-1
+    image: zudii_crawlers
+    restart: on-failure
+    depends_on:
+      mq:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    command: python3 DetailedPostWasher.py
+  washer-2:
+    container_name: zudii_washer-2
+    image: zudii_crawlers
+    restart: on-failure
+    depends_on:
+      mq:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    command: python3 DetailedPostWasher.py
+  separator-1:
+    container_name: zudii_separator-1
+    image: zudii_crawlers
+    restart: on-failure
+    depends_on:
+      mq:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    command: python3 SurroundingSeparater.py
+  separator-2:
+    container_name: zudii_separator-2
+    image: zudii_crawlers
+    restart: on-failure
+    depends_on:
+      mq:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    command: python3 SurroundingSeparater.py

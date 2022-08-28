@@ -1,4 +1,3 @@
-from re import S
 from dotenv import dotenv_values, load_dotenv
 import pymongo
 import certifi
@@ -12,7 +11,7 @@ ENV_PATH = ".env"
 MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 
 connection = pika.BlockingConnection(
-    pika.ConnectionParameters('localhost', heartbeat=0))
+    pika.ConnectionParameters(dotenv_values(ENV_PATH)['RABBIT_MQ_HOST'], heartbeat=0))
 channel = connection.channel()
 channel.queue_declare("SurroundingSeparater")
 client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())

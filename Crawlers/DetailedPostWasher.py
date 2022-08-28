@@ -13,10 +13,10 @@ MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 
 credentials = pika.PlainCredentials('guest', 'guest')
 connection = pika.BlockingConnection(
-    pika.ConnectionParameters('localhost', credentials=credentials, heartbeat=0))
+    pika.ConnectionParameters(dotenv_values(ENV_PATH)['RABBIT_MQ_HOST'], credentials=credentials, heartbeat=0))
 channel = connection.channel()
 channel.queue_declare("DetailedPostWasher", auto_delete=False)
-channel.basic_qos(prefetch_count=50)
+# channel.basic_qos(prefetch_count=5)
 client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
 db = client.test
 collection_591 = db.dev_591

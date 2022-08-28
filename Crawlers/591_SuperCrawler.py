@@ -35,13 +35,15 @@ redisClient = redis.Redis(host=dotenv_values(ENV_PATH)['REDIS_HOST'], port=doten
     'REDIS_PORT'], db=dotenv_values(ENV_PATH)['REDIS_DB'])
 
 
-def getBatchNum(collection):
-    try:
-        batch_num = collection.find().sort("batch", pymongo.DESCENDING)[0]
-        batch_num = batch_num['batch'] + 1
-    except:
-        batch_num = 0
-    return batch_num
+try:
+    batch_client = pymongo.MongoClient(
+        MONGO_CONNECTION, tlsCAFile=certifi.where())
+    batch_collection = batch_client.test.dev_591
+    batch_num = batch_collection.find().sort("batch", pymongo.DESCENDING)[0]
+    batch_num = batch_num['batch'] + 1
+    batch_client.close()
+except:
+    batch_num = 0
 
 
 def getHouseListFrom591(firstRow, region):
@@ -76,11 +78,9 @@ def getDetailedHouseFrom591(id_591):
     return json.loads(detailedHouse.content)
 
 
-def isIdExist(id_591, collection):
+def isIdExist(id_591):
     id = redisClient.get(id_591)
     if (id != None):
-        return True
-    if collection.find_one({"id": id_591}) != None:
         return True
     else:
         return False
@@ -154,7 +154,7 @@ def main(region):
     initail_GMT = time.gmtime()
     initial_time_stamp = calendar.timegm(initail_GMT)
     connection = pika.BlockingConnection(
-        pika.ConnectionParameters('localhost', heartbeat=0))
+        pika.ConnectionParameters(dotenv_values(ENV_PATH)['RABBIT_MQ_HOST'], heartbeat=0))
     channel = connection.channel()
     channel.queue_declare("DetailedPostWasher")
     channel.queue_declare("SurroundingSeparater")
@@ -162,7 +162,6 @@ def main(region):
     client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
     db = client.test
     collection = db.dev_591
-    batch_num = getBatchNum(collection)
 
     postNumber = 1
     firstRow = 0
@@ -187,7 +186,9 @@ def main(region):
 
         posts = houseList.json()['data']['data']
         for post in posts:
-            if(isIdExist(int(post['post_id']), collection)):
+            if(isIdExist(int(post['post_id']))):
+                continue
+            if(collection.find_one({"id_591": int(post['post_id'])}) != None):
                 continue
             cleanedRoughPost = washRoughPost(
                 post, batch_num, postNumber, region)
@@ -210,6 +211,7 @@ def main(region):
     print(
         f"time of region {region} is {time_stamp - initial_time_stamp} second")
     print("====")
+    connection.close()
 
 
 for j in range(1, 27, 4):
