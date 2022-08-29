@@ -226,6 +226,6 @@ def schedule():
 
 schedule()  # 讓排程跑第一次
 scheduler = BlockingScheduler()
-scheduler.add_job(schedule, 'interval', minutes=20, args=[])
+scheduler.add_job(schedule, 'interval', minutes=30, args=[])
 
 scheduler.start()
