@@ -1,3 +1,4 @@
+from apscheduler.schedulers.blocking import BlockingScheduler
 import time
 import math
 import pprint
@@ -214,10 +215,18 @@ def main(region):
     connection.close()
 
 
-for j in range(1, 27, 4):
-    for i in range(j, j+4):
-        t = threading.Thread(target=main, args=(i,)).start()
-        if (i == 27):
-            break
-    time.sleep(120)
-    print(f"{j} 輪結束")
+def schedule():
+    for j in range(1, 27, 4):
+        for i in range(j, j+4):
+            t = threading.Thread(target=main, args=(i,)).start()
+            if (i == 27):
+                break
+        time.sleep(120)
+        print(f"{j} 輪結束")
+
+
+schedule()  # 讓排程跑第一次
+scheduler = BlockingScheduler()
+scheduler.add_job(schedule, 'interval', minutes=20, args=[])
+
+scheduler.start()

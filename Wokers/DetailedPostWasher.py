@@ -110,12 +110,13 @@ def wash(ch, method, properties, body):
     print("03 addConvertedTime")
     collection_591.insert_one(cleanedDetailedPost_3)
     print("04 insert")
+    ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
 channel.exchange_declare(exchange='ex', exchange_type='direct',
                          passive=False, durable=False, auto_delete=False)
 channel.queue_bind(exchange='ex', queue='DetailedPostWasher')
 channel.basic_consume(queue='DetailedPostWasher',
-                      on_message_callback=wash, auto_ack=True)
+                      on_message_callback=wash, auto_ack=False)
 print("====== DetailedPostWasher is consuming ======")
 channel.start_consuming()
