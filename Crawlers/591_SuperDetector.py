@@ -36,17 +36,6 @@ redisClient = redis.Redis(host=dotenv_values(ENV_PATH)['REDIS_HOST'], port=doten
     'REDIS_PORT'], db=dotenv_values(ENV_PATH)['REDIS_DB'])
 
 
-try:
-    batch_client = pymongo.MongoClient(
-        MONGO_CONNECTION, tlsCAFile=certifi.where())
-    batch_collection = batch_client.test.dev_591
-    batch_num = batch_collection.find().sort("batch", pymongo.DESCENDING)[0]
-    batch_num = batch_num['batch'] + 1
-    batch_client.close()
-except:
-    batch_num = 0
-
-
 def getHouseListFrom591(firstRow, region):
     headers = {
         'User-Agent': random.choice(USER_AGENTS),
@@ -151,7 +140,7 @@ def washRoughPost(post, batch_num, postNumber, region):
     return cleanedRoughPost
 
 
-def main(region):
+def main(region, batch_num):
     initail_GMT = time.gmtime()
     initial_time_stamp = calendar.timegm(initail_GMT)
     connection = pika.BlockingConnection(
@@ -216,9 +205,19 @@ def main(region):
 
 
 def schedule():
+    try:
+        batch_client = pymongo.MongoClient(
+            MONGO_CONNECTION, tlsCAFile=certifi.where())
+        batch_collection = batch_client.test.dev_591
+        batch_num = batch_collection.find().sort(
+            "batch", pymongo.DESCENDING)[0]
+        batch_num = batch_num['batch'] + 1
+        batch_client.close()
+    except:
+        batch_num = 0
     for j in range(1, 27, 4):
         for i in range(j, j+4):
-            t = threading.Thread(target=main, args=(i,)).start()
+            threading.Thread(target=main, args=(i, batch_num)).start()
             if (i == 27):
                 break
         time.sleep(120)

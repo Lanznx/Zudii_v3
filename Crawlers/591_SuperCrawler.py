@@ -1,3 +1,4 @@
+from apscheduler.schedulers.blocking import BlockingScheduler
 import time
 import math
 import pprint
@@ -33,17 +34,6 @@ USER_AGENTS = [USER_AGENT_1, USER_AGENT_2, USER_AGENT_3, USER_AGENT_4,
 
 redisClient = redis.Redis(host=dotenv_values(ENV_PATH)['REDIS_HOST'], port=dotenv_values(ENV_PATH)[
     'REDIS_PORT'], db=dotenv_values(ENV_PATH)['REDIS_DB'])
-
-
-try:
-    batch_client = pymongo.MongoClient(
-        MONGO_CONNECTION, tlsCAFile=certifi.where())
-    batch_collection = batch_client.test.dev_591
-    batch_num = batch_collection.find().sort("batch", pymongo.DESCENDING)[0]
-    batch_num = batch_num['batch'] + 1
-    batch_client.close()
-except:
-    batch_num = 0
 
 
 def getHouseListFrom591(firstRow, region):
@@ -150,7 +140,7 @@ def washRoughPost(post, batch_num, postNumber, region):
     return cleanedRoughPost
 
 
-def main(region):
+def main(region, batch_num):
     initail_GMT = time.gmtime()
     initial_time_stamp = calendar.timegm(initail_GMT)
     connection = pika.BlockingConnection(
@@ -214,10 +204,28 @@ def main(region):
     connection.close()
 
 
-for j in range(1, 27, 4):
-    for i in range(j, j+4):
-        t = threading.Thread(target=main, args=(i,)).start()
-        if (i == 27):
-            break
-    time.sleep(480)
-    print(f"{j} 輪結束")
+def schedule():
+    try:
+        batch_client = pymongo.MongoClient(
+            MONGO_CONNECTION, tlsCAFile=certifi.where())
+        batch_collection = batch_client.test.dev_591
+        batch_num = batch_collection.find().sort(
+            "batch", pymongo.DESCENDING)[0]
+        batch_num = batch_num['batch'] + 1
+        batch_client.close()
+    except:
+        batch_num = 0
+    for j in range(1, 27, 4):
+        for i in range(j, j+4):
+            threading.Thread(target=main, args=(i, batch_num)).start()
+            if (i == 27):
+                break
+        time.sleep(480)
+        print(f"{j} 輪結束")
+
+
+schedule()  # 讓排程跑第一次
+scheduler = BlockingScheduler()
+scheduler.add_job(schedule, 'interval', minutes=20, args=[])
+
+scheduler.start()
