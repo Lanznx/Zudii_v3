@@ -5,16 +5,20 @@ import (
 	"math/rand"
 	"net/http"
 	"os"
+	"sync"
 	"time"
 	"url_shortener/src/db"
 	"url_shortener/src/model"
 
 	"github.com/gin-gonic/gin"
-	"github.com/go-redis/redis"
 	"github.com/joho/godotenv"
 )
 
 func ShortenUrl(c *gin.Context) {
+	wg := new(sync.WaitGroup)
+	wg.Add(1)
+	defer wg.Wait()
+
 	originalUrl := c.PostForm("original_url")
 	if originalUrl == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "original_url is required"})
@@ -27,10 +31,9 @@ func ShortenUrl(c *gin.Context) {
 	BASE_URL := os.Getenv("BASE_URL")
 	uid := genUniqueId()
 	shortUrl := BASE_URL + uid
-	go model.InsertlUrls(originalUrl, uid)
+	go model.InsertlUrls(originalUrl, uid, wg)
 
-	redisClient := db.ConnectRedis()
-	err = redisClient.Set(uid, originalUrl, 24*time.Hour).Err()
+	err = db.SetValueToRedis(uid, originalUrl, 24*time.Hour)
 	if err != nil {
 		log.Fatal(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "redis error"})
@@ -56,21 +59,22 @@ func RedirectUrl(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "short_url is required"})
 		return
 	}
-	redisClient := db.ConnectRedis()
-	cacheUrl, err := redisClient.Get(uid).Result()
-	if err == redis.Nil {
-		originalUrl := model.GetOriginalUrl(uid)
-		if originalUrl == "" {
-			c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "url not found"})
-			return
-		}
-		redisClient.Set(uid, originalUrl, 24*time.Hour).Err()
-		c.Redirect(http.StatusMovedPermanently, originalUrl)
-	} else if err != nil {
+	cacheUrl, err := db.GetValueFromRedis(uid)
+	if err != nil {
 		log.Fatal(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "redis error"})
-	} else {
-		c.Redirect(http.StatusMovedPermanently, cacheUrl)
 	}
+	if cacheUrl != "" {
+		c.Redirect(http.StatusMovedPermanently, cacheUrl)
+		return
+	}
+
+	originalUrl := model.GetOriginalUrl(uid)
+	if originalUrl == "" {
+		c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "url not found"})
+		return
+	}
+	db.SetValueToRedis(uid, originalUrl, 24*time.Hour)
+	c.Redirect(http.StatusMovedPermanently, originalUrl)
 
 }

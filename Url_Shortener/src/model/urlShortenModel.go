@@ -4,12 +4,13 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"sync"
 	"url_shortener/src/db"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func InsertlUrls(originalUrl string, uid string) bool {
+func InsertlUrls(originalUrl string, uid string, wg *sync.WaitGroup) bool {
 	client := db.ConnectMongoDB()
 	collection := client.Database("url_shortener").Collection("urls")
 	result, insertErr := collection.InsertOne(context.TODO(), bson.M{"original_url": originalUrl, "uid": uid, "visit_number": 0})
@@ -19,6 +20,7 @@ func InsertlUrls(originalUrl string, uid string) bool {
 	}
 	fmt.Println("this is result ", result.InsertedID)
 	defer client.Disconnect(context.TODO())
+	defer wg.Done()
 	return true
 }
 

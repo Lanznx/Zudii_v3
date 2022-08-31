@@ -8,7 +8,7 @@ import (
 
 func UrlRoutes(router *gin.Engine) {
 	// this is a route for url shortening
-	router.POST("/url", controller.ShortenUrl)
+	router.POST("/", controller.ShortenUrl)
 	// this is a route for getting the original url
 	router.GET("/:uid", controller.RedirectUrl)
 
