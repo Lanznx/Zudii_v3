@@ -15,9 +15,10 @@ func connectRedis() *redis.Client {
 		log.Fatal(err)
 	}
 
-	REDIS_URI := os.Getenv("REDIS_URI")
+	REDIS_HOST := os.Getenv("REDIS_HOST")
+	REDIS_PORT := os.Getenv("REDIS_PORT")
 	client := redis.NewClient(&redis.Options{
-		Addr: REDIS_URI,
+		Addr: REDIS_HOST + ":" + REDIS_PORT,
 	})
 
 	_, err = client.Ping().Result()

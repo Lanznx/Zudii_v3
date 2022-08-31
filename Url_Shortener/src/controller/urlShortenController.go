@@ -40,6 +40,7 @@ func ShortenUrl(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"success": true, "short_url": shortUrl})
+	c.Request.Body.Close()
 }
 
 func genUniqueId() string {
@@ -76,5 +77,5 @@ func RedirectUrl(c *gin.Context) {
 	}
 	db.SetValueToRedis(uid, originalUrl, 24*time.Hour)
 	c.Redirect(http.StatusMovedPermanently, originalUrl)
-
+	c.Request.Body.Close()
 }
