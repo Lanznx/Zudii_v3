@@ -1,11 +1,11 @@
 package controller
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"net/http"
 	"os"
-	"sync"
 	"time"
 	"url_shortener/src/db"
 	"url_shortener/src/model"
@@ -14,13 +14,18 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func ShortenUrl(c *gin.Context) {
-	wg := new(sync.WaitGroup)
-	wg.Add(1)
-	defer wg.Wait()
+type ShortenUrlReqBody struct {
+	OriginalUrl string `json:"original_url"`
+}
 
-	originalUrl := c.PostForm("original_url")
-	if originalUrl == "" {
+func ShortenUrl(c *gin.Context) {
+	var reqBody ShortenUrlReqBody
+	if err := c.BindJSON(&reqBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "invalid request body"})
+		return
+	}
+	fmt.Println(reqBody.OriginalUrl, "reqBody.originalUrl ===========")
+	if reqBody.OriginalUrl == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "original_url is required"})
 		return
 	}
@@ -31,9 +36,9 @@ func ShortenUrl(c *gin.Context) {
 	BASE_URL := os.Getenv("BASE_URL")
 	uid := genUniqueId()
 	shortUrl := BASE_URL + uid
-	go model.InsertlUrls(originalUrl, uid, wg)
+	model.InsertlUrls(reqBody.OriginalUrl, uid)
 
-	err = db.SetValueToRedis(uid, originalUrl, 24*time.Hour)
+	err = db.SetValueToRedis(uid, reqBody.OriginalUrl, 24*time.Hour)
 	if err != nil {
 		log.Fatal(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "redis error"})
@@ -55,6 +60,7 @@ func genUniqueId() string {
 }
 
 func RedirectUrl(c *gin.Context) {
+
 	uid := c.Param("uid")
 	if uid == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"success": false, "message": "short_url is required"})
@@ -65,7 +71,9 @@ func RedirectUrl(c *gin.Context) {
 		log.Fatal(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"success": false, "message": "redis error"})
 	}
+	fmt.Println(uid, " redirecting to cache", cacheUrl)
 	if cacheUrl != "" {
+		model.IncreaseVisitNumber(uid)
 		c.Redirect(http.StatusMovedPermanently, cacheUrl)
 		return
 	}
@@ -75,7 +83,8 @@ func RedirectUrl(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"success": false, "message": "url not found"})
 		return
 	}
-	db.SetValueToRedis(uid, originalUrl, 24*time.Hour)
+	fmt.Println(uid, " redirecting to mongo", originalUrl)
+	db.SetValueToRedis(uid, originalUrl, 3*time.Minute)
+	model.IncreaseVisitNumber(uid)
 	c.Redirect(http.StatusMovedPermanently, originalUrl)
-	c.Request.Body.Close()
 }

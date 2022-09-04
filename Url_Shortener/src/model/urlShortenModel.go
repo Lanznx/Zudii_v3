@@ -4,13 +4,12 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"sync"
 	"url_shortener/src/db"
 
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func InsertlUrls(originalUrl string, uid string, wg *sync.WaitGroup) bool {
+func InsertlUrls(originalUrl string, uid string) bool {
 	client := db.ConnectMongoDB()
 	collection := client.Database("url_shortener").Collection("urls")
 	result, insertErr := collection.InsertOne(context.TODO(), bson.M{"original_url": originalUrl, "uid": uid, "visit_number": 0})
@@ -19,8 +18,7 @@ func InsertlUrls(originalUrl string, uid string, wg *sync.WaitGroup) bool {
 		log.Fatal(insertErr)
 	}
 	fmt.Println("this is result ", result.InsertedID)
-	defer client.Disconnect(context.TODO())
-	defer wg.Done()
+	defer db.CloseMongoDB(client)
 	return true
 }
 
@@ -44,7 +42,14 @@ func GetOriginalUrl(uid string) string {
 		return ""
 	}
 
-	go collection.UpdateOne(context.TODO(), bson.M{"uid": uid}, bson.M{"$set": bson.M{"visit_number": result["visit_number"].(int32) + 1}})
-	defer client.Disconnect(context.TODO())
+	defer db.CloseMongoDB(client)
 	return result["original_url"].(string)
+}
+
+func IncreaseVisitNumber(uid string) {
+	client := db.ConnectMongoDB()
+	collection := client.Database("url_shortener").Collection("urls")
+
+	collection.UpdateOne(context.TODO(), bson.M{"uid": uid}, bson.M{"$inc": bson.M{"visit_number": 1}})
+	defer db.CloseMongoDB(client)
 }

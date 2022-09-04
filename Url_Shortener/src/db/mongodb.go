@@ -41,3 +41,11 @@ func ConnectMongoDB() *mongo.Client {
 	}
 	return client
 }
+
+func CloseMongoDB(client *mongo.Client) {
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+	err := client.Disconnect(ctx)
+	if err != nil {
+		log.Fatal(err)
+	}
+}

@@ -1,6 +1,8 @@
 package db
 
 import (
+	"context"
+	"fmt"
 	"log"
 	"os"
 	"time"
@@ -9,7 +11,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-func connectRedis() *redis.Client {
+func ConnectRedis() *redis.Client {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal(err)
@@ -21,15 +23,11 @@ func connectRedis() *redis.Client {
 		Addr: REDIS_HOST + ":" + REDIS_PORT,
 	})
 
-	_, err = client.Ping().Result()
-	if err != nil {
-		log.Fatal(err)
-	}
 	return client
 }
 
 func GetValueFromRedis(key string) (string, error) {
-	client := connectRedis()
+	client := ConnectRedis()
 	value, err := client.Get(key).Result()
 	if err == redis.Nil {
 		return "", nil
@@ -40,10 +38,32 @@ func GetValueFromRedis(key string) (string, error) {
 	return value, err
 }
 func SetValueToRedis(key string, value string, time time.Duration) error {
-	client := connectRedis()
+	client := ConnectRedis()
 	err := client.Set(key, value, time).Err()
 	if err != nil {
 		log.Fatal(err)
 	}
 	return err
+}
+
+func GetExpiredKey() string {
+	client := ConnectRedis()
+	_, err := client.Do(context.TODO(), "CONFIG", "SET", "notify-keyspace-events", "KEA").Result()
+	// this is telling redis to publish events since it's off by default.
+	if err != nil {
+		fmt.Printf("unable to set keyspace events %v", err.Error())
+		os.Exit(1)
+	}
+	pubsub := client.Subscribe("__keyevent@0__:expired")
+
+	for {
+		key, err := pubsub.ReceiveMessage()
+		if err != nil {
+			fmt.Printf("unable to receive message %v", err.Error())
+			os.Exit(1)
+		}
+		fmt.Printf("key %v expired", key.Payload)
+
+		return key.Payload
+	}
 }
