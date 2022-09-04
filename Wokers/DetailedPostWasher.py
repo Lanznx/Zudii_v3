@@ -1,4 +1,5 @@
 import pprint
+import requests
 from dotenv import dotenv_values, load_dotenv
 import pymongo
 import certifi
@@ -99,6 +100,28 @@ def addConvertedTime(cleanedDetailedPost_2):
     return cleanedDetailedPost_2
 
 
+def addShortenUrl(cleanedDetailedPost_3):
+    session = requests.Session()
+    short_url = session.post(
+        "https://zudii.tk/url/",
+        data=json.dumps({
+            "original_url": f"https://rent.591.com.tw/home/{cleanedDetailedPost_3['id_591']}",
+        })
+    )
+    location_short_url = session.post(
+        "https://zudii.tk/url/",
+        data=json.dumps({
+            "original_url": f"https://rent.591.com.tw/home/{cleanedDetailedPost_3['locationLink']}",
+        })
+    )
+    cleanedDetailedPost_3.update(
+        {"short_url": short_url.json()['short_url']})
+    cleanedDetailedPost_3.update(
+        {"location_short_url": location_short_url.json()['short_url']})
+
+    return cleanedDetailedPost_3
+
+
 def wash(ch, method, properties, body):
     cleanedRoughPost = json.loads(body)['cleanedRoughPost']
     detailedPost = json.loads(body)['detailedPost']
@@ -108,7 +131,9 @@ def wash(ch, method, properties, body):
     print("02 addTraffic")
     cleanedDetailedPost_3 = addConvertedTime(cleanedDetailedPost_2)
     print("03 addConvertedTime")
-    collection_591.insert_one(cleanedDetailedPost_3)
+    cleanedDetailedPost_4 = addShortenUrl(cleanedDetailedPost_3)
+    print("04 addShortenUrl")
+    collection_591.insert_one(cleanedDetailedPost_4)
     print("04 insert")
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
