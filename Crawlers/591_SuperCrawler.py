@@ -146,8 +146,8 @@ def main(region, batch_num):
     connection = pika.BlockingConnection(
         pika.ConnectionParameters(dotenv_values(ENV_PATH)['RABBIT_MQ_HOST'], heartbeat=0))
     channel = connection.channel()
-    channel.queue_declare("DetailedPostWasher")
-    channel.queue_declare("SurroundingSeparater")
+    channel.queue_declare("DetailedPostWasher", durable=True)
+    channel.queue_declare("SurroundingSeparater", durable=True)
     channel.exchange_declare(exchange='ex', exchange_type='direct')
     client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
     db = client.test
@@ -191,7 +191,9 @@ def main(region, batch_num):
                 'detailedPost': detailedPost
             }
             channel.basic_publish(
-                exchange='ex', routing_key='DetailedPostWasher', body=json.dumps(postToBeWashed, default=str))
+                exchange='ex', routing_key='DetailedPostWasher', body=json.dumps(postToBeWashed, default=str), properties=pika.BasicProperties(
+                    delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE,
+                ))
             channel.basic_publish(
                 exchange='ex', routing_key='SurroundingSeparater', body=json.dumps(detailedPost, default=str))
     client.close()

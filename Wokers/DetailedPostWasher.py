@@ -16,8 +16,11 @@ credentials = pika.PlainCredentials('guest', 'guest')
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(dotenv_values(ENV_PATH)['RABBIT_MQ_HOST'], credentials=credentials, heartbeat=0))
 channel = connection.channel()
-channel.queue_declare("DetailedPostWasher", auto_delete=False)
-# channel.basic_qos(prefetch_count=5)
+channel.exchange_declare(
+    exchange='ex', exchange_type='fanout', durable=True)
+channel.queue_declare("DetailedPostWasher", auto_delete=False, durable=True)
+channel.queue_bind(exchange='ex', queue='DetailedPostWasher')
+
 client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
 db = client.test
 collection_591 = db.dev_591
@@ -138,9 +141,6 @@ def wash(ch, method, properties, body):
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
-channel.exchange_declare(exchange='ex', exchange_type='direct',
-                         passive=False, durable=False, auto_delete=False)
-channel.queue_bind(exchange='ex', queue='DetailedPostWasher')
 channel.basic_consume(queue='DetailedPostWasher',
                       on_message_callback=wash, auto_ack=False)
 print("====== DetailedPostWasher is consuming ======")

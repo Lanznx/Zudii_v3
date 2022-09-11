@@ -13,7 +13,11 @@ MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 connection = pika.BlockingConnection(
     pika.ConnectionParameters(dotenv_values(ENV_PATH)['RABBIT_MQ_HOST'], heartbeat=0))
 channel = connection.channel()
-channel.queue_declare("SurroundingSeparater")
+channel.exchange_declare(
+    exchange='ex', exchange_type='fanout', durable=True)
+channel.queue_declare("SurroundingSeparater", durable=True)
+channel.queue_bind(exchange='ex', queue='SurroundingSeparater')
+
 client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
 db = client.test
 collection_restaurant = db.restaurant
@@ -73,15 +77,12 @@ def surroundingSeparation(detailedPost):
 
 
 def separate(ch, method, properties, body):
-    detailedPost = json.loads(body)
+    detailedPost = json.loads(body)['detailedPost']
     surroundingSeparation(detailedPost)
     print("05 surroundingSeparation")
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 
-channel.exchange_declare(exchange='ex', exchange_type='direct',
-                         passive=False, durable=False, auto_delete=False)
-channel.queue_bind(exchange='ex', queue='SurroundingSeparater')
 channel.basic_consume(queue='SurroundingSeparater',
                       on_message_callback=separate, auto_ack=False)
 print("====== SurroundingSeparater is consuming ======")
