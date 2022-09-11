@@ -1,18 +1,83 @@
 version: '3.8'
 
 services:
-  # mq:
-  #   image: rabbitmq:3-management-alpine
-  #   container_name: zudii_mq
-  #   ports:
-  #     - 127.0.0.1:5672:5672
-  #     - 127.0.0.1:15672:15672
-  #   healthcheck:
-  #     test: rabbitmq-diagnostics -q ping
-  #     interval: 30s
-  #     timeout: 5s
-  #     retries: 5
-  #     start_period: 3s
+  mq:
+    image: rabbitmq:3-management-alpine
+    container_name: zudii_mq
+    ports:
+      - 127.0.0.1:5672:5672
+      - 127.0.0.1:15672:15672
+    healthcheck:
+      test: rabbitmq-diagnostics -q ping
+      interval: 30s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
+  server:
+    container_name: zudii_server
+    build:
+      context: ./Backend
+    ports:
+      - 4500:4500
+      - 5000:5000
+    restart: always
+  crawlers:
+    container_name: zudii_crawlers
+    build:
+      context: ./Crawlers
+    restart: on-failure
+    depends_on:
+      mq:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+  washer-1:
+    &worker
+    container_name: zudii_washer-1
+    build:
+      context: ./Wokers
+    image: zudii_workers_image
+    restart: on-failure
+    depends_on:
+      mq:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    command: python3 DetailedPostWasher.py
+  washer-2:
+    <<: *worker
+    container_name: zudii_washer-2
+    image: zudii_workers_image
+    restart: on-failure
+    depends_on:
+      mq:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    command: python3 DetailedPostWasher.py
+
+  separator-1:
+    <<: *worker
+    container_name: zudii_separator-1
+    image: zudii_workers_image
+    restart: on-failure
+    depends_on:
+      mq:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    command: python3 SurroundingSeparater.py
+  separator-2:
+    <<: *worker
+    container_name: zudii_separator-2
+    image: zudii_workers_image
+    restart: on-failure
+    depends_on:
+      mq:
+        condition: service_healthy
+      cache:
+        condition: service_healthy
+    command: python3 SurroundingSeparater.py
   cache:
     restart: always
     container_name: zudii_redis
@@ -25,71 +90,6 @@ services:
       timeout: 5s
       retries: 5
       start_period: 3s
-  # server:
-  #   container_name: zudii_server
-  #   build:
-  #     context: ./Backend
-  #   ports:
-  #     - 4500:4500
-  #     - 5000:5000
-  #   restart: always
-  # crawlers:
-  #   container_name: zudii_crawlers
-  #   build:
-  #     context: ./Crawlers
-  #   restart: on-failure
-  #   depends_on:
-  #     mq:
-  #       condition: service_healthy
-  #     cache:
-  #       condition: service_healthy
-  # washer-1:
-  #   &worker
-  #   container_name: zudii_washer-1
-  #   build:
-  #     context: ./Wokers
-  #   image: zudii_workers_image
-  #   restart: on-failure
-  #   depends_on:
-  #     mq:
-  #       condition: service_healthy
-  #     cache:
-  #       condition: service_healthy
-  #   command: python3 DetailedPostWasher.py
-  # washer-2:
-  #   <<: *worker
-  #   container_name: zudii_washer-2
-  #   image: zudii_workers_image
-  #   restart: on-failure
-  #   depends_on:
-  #     mq:
-  #       condition: service_healthy
-  #     cache:
-  #       condition: service_healthy
-  #   command: python3 DetailedPostWasher.py
-
-  # separator-1:
-  #   <<: *worker
-  #   container_name: zudii_separator-1
-  #   image: zudii_workers_image
-  #   restart: on-failure
-  #   depends_on:
-  #     mq:
-  #       condition: service_healthy
-  #     cache:
-  #       condition: service_healthy
-  #   command: python3 SurroundingSeparater.py
-  # separator-2:
-  #   <<: *worker
-  #   container_name: zudii_separator-2
-  #   image: zudii_workers_image
-  #   restart: on-failure
-  #   depends_on:
-  #     mq:
-  #       condition: service_healthy
-  #     cache:
-  #       condition: service_healthy
-  #   command: python3 SurroundingSeparater.py
   url-shortener:
     container_name: url-shortener
     image: url_shortener
