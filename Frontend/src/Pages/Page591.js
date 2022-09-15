@@ -17,6 +17,7 @@ import SearchDialog from "./Components/SearchDialog";
 import ReleaseTimeDialog from "./Components/ReleaseTimeDialog";
 import liff from "@line/liff";
 const REACT_APP_LIFF_ID = process.env.REACT_APP_LIFF_ID;
+const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
 const provinces = require("../Assets/provinces.json");
 
 export default function Page591() {
@@ -39,6 +40,36 @@ export default function Page591() {
   const [chosedTime, setChosedTime] = React.useState("");
   const [searchMesasge, setSearchMessage] = React.useState("");
   const [trackMessage, setTrackMessage] = React.useState("");
+
+  React.useEffect(() => {
+    if (userId === "") {
+      return
+    }
+    fetch(REACT_APP_BASE_URL + "find/myCondition", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: userId,
+      }),
+    }).then((res) => {
+      return res.json()
+    }).then((response) => {
+      console.log(response, " ========= response ========")
+      if (response.success) {
+        console.log(response.data, "=========== response.datas ==============")
+        setMinRent(response.data.minRent);
+        setMaxRent(response.data.maxRent);
+        setType(response.data.types);
+        setRegionCode(response.data.region);
+        setSectionCode(response.data.sections);
+        setSearch(response.data.title);
+        setDistanceMRT(response.data.distanceMRT);
+        convertCodesToSectionsAndRegions(response.data.region, response.data.sections);
+      };
+    });
+  }, [userId])
 
   React.useEffect(() => {
     setSearchMessage(
@@ -115,6 +146,28 @@ export default function Page591() {
       setChosedTime(newTime);
     }
   }, [releaseTime]);
+
+  async function convertCodesToSectionsAndRegions(regions, sections) {
+    let convertedRegions = [];
+    let convertedSections = [];
+
+    regions.forEach(region => {
+      provinces['cities'].forEach(province => {
+        if (province.region === region) {
+          convertedRegions.push(province.name);
+        }
+        sections.forEach(user_section => {
+          province.sections.forEach((province_section) => {
+            if (user_section === province_section.section) {
+              convertedSections.push(province_section.name);
+            }
+          })
+        });
+      })
+    });
+    setRegions(convertedRegions);
+    setSections(convertedSections);
+  }
 
   React.useEffect(() => {
     // get key of sectionCode by matching codes and section
