@@ -43,6 +43,8 @@ services:
         condition: service_healthy
       cache:
         condition: service_healthy
+      url-shortener:
+        condition: service_healthy
     command: python3 DetailedPostWasher.py
   washer-2:
     <<: *worker
@@ -53,6 +55,8 @@ services:
       mq:
         condition: service_healthy
       cache:
+        condition: service_healthy
+      url-shortener:
         condition: service_healthy
     command: python3 DetailedPostWasher.py
 
@@ -98,6 +102,12 @@ services:
       - 9000:9000
     build:
       context: ./Url_Shortener
+    healthcheck:
+      test: ping localhost:9000
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 3s
     depends_on:
       cache:
         condition: service_healthy
