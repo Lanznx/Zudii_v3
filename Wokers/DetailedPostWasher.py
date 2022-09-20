@@ -11,6 +11,7 @@ load_dotenv()
 
 ENV_PATH = ".env"
 MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
+SHORTEN_BASE_URL = dotenv_values(ENV_PATH)["SHORTEN_BASE_URL"]
 
 credentials = pika.PlainCredentials('guest', 'guest')
 connection = pika.BlockingConnection(
@@ -106,13 +107,13 @@ def addConvertedTime(cleanedDetailedPost_2):
 def addShortenUrl(cleanedDetailedPost_3):
     session = requests.Session()
     short_url = session.post(
-        "https://zudii.tk/url/",
+        SHORTEN_BASE_URL,
         data=json.dumps({
             "original_url": f"https://rent.591.com.tw/home/{cleanedDetailedPost_3['id_591']}",
         })
     )
     location_short_url = session.post(
-        "https://zudii.tk/url/",
+        SHORTEN_BASE_URL,
         data=json.dumps({
             "original_url": f"https://rent.591.com.tw/home/{cleanedDetailedPost_3['locationLink']}",
         })
