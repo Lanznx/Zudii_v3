@@ -1,10 +1,10 @@
-import * as React from 'react';
-import { useTheme } from '@mui/material/styles';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
+import * as React from "react";
+import { useTheme } from "@mui/material/styles";
+import OutlinedInput from "@mui/material/OutlinedInput";
+import InputLabel from "@mui/material/InputLabel";
+import MenuItem from "@mui/material/MenuItem";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -17,54 +17,40 @@ const MenuProps = {
   },
 };
 
-const names = [
-  '中正區',
-  '大同區',
-  '中山區',
-  '松山區',
-  '大安區',
-  '萬華區',
-  '信義區',
-  '士林區',
-  '北投區',
-  '內湖區',
-  '南港區',
-  '文山區',
-];
-
-function getStyles(name, location, theme) {
+function getStyles(name, regions, theme) {
   return {
     fontWeight:
-      location.indexOf(name) === -1
+      regions.indexOf(name) === -1
         ? theme.typography.fontWeightRegular
         : theme.typography.fontWeightMedium,
   };
 }
 
-export default function SelectArea(props) {
+export default function SelectRegion(props) {
   const theme = useTheme();
-  const {location, setLocation} = props
+  const { provinces, setRegions, regions } = props;
+  const names = provinces["cities"].map((province) => province.name);
 
   const handleChange = (event) => {
     const {
       target: { value },
     } = event;
-    setLocation(
+    setRegions(
       // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
+      typeof value === "string" ? value.split(",") : value
     );
   };
 
   return (
     <div>
       <FormControl sx={{ width: 200, mt: 1 }}>
-        <InputLabel id="demo-multiple-name-label">行政區（預設全選）</InputLabel>
+        <InputLabel id="demo-multiple-name-label">縣市</InputLabel>
         <Select
-          sx={{width: '250px'}}
+          defaultValue=""
+          sx={{ width: "250px" }}
           labelId="demo-multiple-name-label"
           id="demo-multiple-name"
-          multiple
-          value={location}
+          value={regions}
           onChange={handleChange}
           input={<OutlinedInput label="Name" />}
           MenuProps={MenuProps}
@@ -73,7 +59,7 @@ export default function SelectArea(props) {
             <MenuItem
               key={name}
               value={name}
-              style={getStyles(name, location, theme)}
+              style={getStyles(name, regions, theme)}
             >
               {name}
             </MenuItem>

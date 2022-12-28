@@ -5,7 +5,8 @@ async function tracker(conditions, userInfo) {
     text,
     price1,
     price2,
-    locaitonCodes,
+    regionCode,
+    sectionCodes,
     types,
     firstRow,
     releaseTime,
@@ -31,7 +32,8 @@ async function tracker(conditions, userInfo) {
     title: text,
     minRent: minRent,
     maxRent: maxRent,
-    sections: locaitonCodes,
+    region: regionCode,
+    sections: sectionCodes,
     types: types,
     firstRow: firstRow,
     releaseTime: new Date(releaseTime),
@@ -68,34 +70,41 @@ async function getAllTrackerConditions() {
     },
   };
   const results = await user.aggregate([getConditions]).toArray();
-  const latestTrackConditions = []
+  const latestTrackConditions = [];
   for (let i = 0; i < results.length; i++) {
     const r = results[i];
     console.log(r, "user info ");
-    if(r.notify === true && r.userId !== "" && r.latestTrackCondition !== null) latestTrackConditions.push(r)
+    if (r.notify === true && r.userId !== "" && r.latestTrackCondition !== null)
+      latestTrackConditions.push(r);
   }
-
-  console.log(latestTrackConditions, "test")
 
   return latestTrackConditions;
 }
 
 async function checkNewHouses(c) {
-  const { title, minRent, maxRent, sections, types, releaseTime, distanceMRT } =
-    c.latestTrackCondition;
+  const {
+    title,
+    minRent,
+    maxRent,
+    region,
+    sections,
+    types,
+    releaseTime,
+    distanceMRT,
+  } = c.latestTrackCondition;
   const { userId } = c;
 
   const batch = await collection.find().sort({ batch: -1 }).limit(1).toArray();
-  console.log(batch, "符合 batch 最大的房屋");
   let findHouse = {
     title: {
       $regex: title,
     },
     price: { $gte: minRent, $lte: maxRent },
+    region: { $in: region },
     section: { $in: sections },
     type: { $in: types },
     batch: batch[0].batch,
-    converted_time: { $gte: new Date(releaseTime) || new Date("2000-01-31") }, // 之後要拿掉
+    converted_time: { $gte: new Date(releaseTime) || new Date("2000-01-31") },
   };
   console.log(findHouse, "02 findHouse");
 
@@ -107,6 +116,9 @@ async function checkNewHouses(c) {
   console.log(houses, "未篩選過捷運的 houses");
   if (houses.length === 0) {
     houses.push({ id_591: null });
+    return houses;
+  } else if (region[0] !== 1 && region[0] !== 3) {
+    houses.userId = userId;
     return houses;
   }
   let contain_MRT_Houses = [];

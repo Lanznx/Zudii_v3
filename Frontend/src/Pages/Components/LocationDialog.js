@@ -5,30 +5,44 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import SelectArea from "./SelectArea";
-import { TextField } from "@mui/material";
+import SelectRegion from "./SelectRegion";
+import SelectSection from "./SelectSection";
+import { TextField, Typography } from "@mui/material";
 
 export default function LocationDialog(props) {
   const {
     locationOpen,
     handleLocationClose,
-    location,
-    setLocation,
-    distanceMRT,
+    regions,
+    setRegions,
+    sections,
+    setSections,
+    provinces,
     setDistanceMRT,
   } = props;
   return (
     <Dialog open={locationOpen} onClose={handleLocationClose} fullWidth>
       <DialogTitle variant="primary" color="primary">
-        地區（限台北市）
+        地區
       </DialogTitle>
       <DialogContent>
         <DialogContentText>請選擇房屋地區、輸入捷運距離</DialogContentText>
-        <SelectArea location={location} setLocation={setLocation} />
+        <SelectRegion
+          setRegions={setRegions}
+          regions={regions}
+          provinces={provinces}
+        />
+        <SelectSection
+          sections={sections}
+          setSections={setSections}
+          regions={regions}
+          provinces={provinces}
+        />
+
         <TextField
           id="distanceMRT"
-          label="捷運距離（預設 1000 公尺）"
-          sx={{mt: "10px", width: '250px'}}
+          label="台北捷運（預設 1000 公尺）"
+          sx={{ mt: "10px", width: "250px" }}
           type="number"
           onChange={(e) => {
             setDistanceMRT(e.target.value);
@@ -38,7 +52,7 @@ export default function LocationDialog(props) {
       <DialogActions>
         <Button
           onClick={(e) => {
-            setLocation([]);
+            setSections([]);
             handleLocationClose(e);
           }}
           color="primary"
