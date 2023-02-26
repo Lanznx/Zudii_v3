@@ -29,7 +29,7 @@ chrome = webdriver.Chrome(service=Service(CHROME_PATH), options=options)
 # ============= 連 mongoDB =============
 client = pymongo.MongoClient(MONGO_CONNECTION)
 db = client.test
-collection = db.dev_591
+collection = db.prod_591
 
 try:
     batch_num = collection.find().sort("batch", pymongo.DESCENDING)[0]
