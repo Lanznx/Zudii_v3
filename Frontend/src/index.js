@@ -13,7 +13,7 @@ root.render(
       <Routes>
         <Route path="/page591" element={<Page591 />} />
         <Route path="/pageFB" element={<PageFaceBook />} />
-        <Route path="/pageMap" element={<PageMap />} />
+        <Route path="/map" element={<PageMap />} />
         <Route path="/" element={<PageDirect />} />
       </Routes>
     </Router>
