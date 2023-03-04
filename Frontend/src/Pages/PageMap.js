@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Grid, IconButton  } from "@mui/material";
+import { Grid, IconButton } from "@mui/material";
 import liff from "@line/liff";
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 // import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
@@ -202,10 +202,16 @@ export default function PageMap() {
           Longitude: {Math.round(lng * 100) / 100} | Latitude: {Math.round(lat * 100) / 100}
         </div>
 
-        <div ref={mapContainer} style={{
-          height: '120vh',
+        <div style={{
+          height: '100vh',
           width: '100vw',
-        }} />
+          overflow: 'hidden',
+        }}>
+          <div ref={mapContainer} style={{
+            height: '120vh',
+            width: '100vw',
+          }} />
+        </div>
         <MapDialog
           openDialog={openDialog}
           setOpenDialog={setOpenDialog}
@@ -226,7 +232,7 @@ export default function PageMap() {
             right: 16,
             zIndex: "3",
           }}>
-            
+
           <MyLocationIcon />
         </IconButton>
         <IconButton onClick={handleDialogOpen}
