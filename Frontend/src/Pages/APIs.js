@@ -10,4 +10,4 @@ const getNearByHouses = async (query) => {
   return data;
 }
 
-module.exports = { getNearByHouses };
+export { getNearByHouses }
