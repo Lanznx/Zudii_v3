@@ -1,11 +1,14 @@
 import * as React from "react";
-import { Button, Grid, IconButton, Stack, Typography } from "@mui/material";
+import { Grid, IconButton  } from "@mui/material";
 import liff from "@line/liff";
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 // import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
+import SearchIcon from '@mui/icons-material/Search';
+import FindReplaceIcon from '@mui/icons-material/FindReplace';
 import "../index.css"
 import 'mapbox-gl/dist/mapbox-gl.css';
+import MapDialog from "./Components/MapDialog";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibGFuem54IiwiYSI6ImNsNzJ2bWRicjB6NDUzcHA2djY5OHRha2sifQ.fz8PcF3zTbKsAjgXFQ4zqA';
 const REACT_APP_LIFF_DIRECT_ID = process.env.REACT_APP_LIFF_DIRECT_ID;
@@ -23,6 +26,15 @@ export default function PageMap() {
   const [userLng, setUserLng] = React.useState(121.56);
   const [userLat, setUserLat] = React.useState(25);
   const [zoom, setZoom] = React.useState(15);
+  const [loading, setLoading] = React.useState(true);
+  const [openDialog, setOpenDialog] = React.useState(false);
+  const handleDialogClose = (e) => {
+    e.stopPropagation();
+    setOpenDialog(false);
+  };
+  const handleDialogOpen = (e) => {
+    setOpenDialog(true);
+  };
 
 
   React.useEffect(() => {
@@ -46,7 +58,7 @@ export default function PageMap() {
   });
 
   React.useEffect(() => {
-    getNearByHouses();
+    loadNearByHouses();
   }, []);
 
   React.useEffect(() => {
@@ -56,12 +68,9 @@ export default function PageMap() {
 
 
 
-  function getNearByHouses() {
+  function loadNearByHouses() {
     map.current.on('load', () => {
       map.current.addSource('places', {
-        // This GeoJSON contains features that include an "icon"
-        // property. The value of the "icon" property corresponds
-        // to an image in the Mapbox Streets style's sprite.
         type: 'geojson',
         data: {
           type: 'FeatureCollection',
@@ -99,15 +108,11 @@ export default function PageMap() {
 
 
       map.current.on('click', 'places', (e) => {
-        // Copy coordinates array.
         const coordinates = e.features[0].geometry.coordinates.slice();
         const description = e.features[0].properties.description;
         console.log(e.lngLat.lng)
         console.log(coordinates[0])
 
-        // Ensure that if the map is zoomed out such that multiple
-        // copies of the feature are visible, the popup appears
-        // over the copy being pointed to.
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
           coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
         }
@@ -174,12 +179,9 @@ export default function PageMap() {
   }, []);
 
   return (
-
-
-    <Grid container >
-      {/* <Grid item xs={12}>
-
-      </Grid> */}
+    <Grid container sx={{
+      overflow: "hidden",
+    }}>
       <Grid item xs={12} sx={{
         mt: 0,
         display: "flex",
@@ -204,7 +206,30 @@ export default function PageMap() {
           height: '120vh',
           width: '100vw',
         }} />
+        <MapDialog
+          openDialog={openDialog}
+          setOpenDialog={setOpenDialog}
+          handleDialogClose={handleDialogClose}
+          coordinates={[lng, lat]}
+          userId={userId}
+        />
         <IconButton onClick={flyToUserLocation}
+          color="primary"
+          size="large"
+          sx={{
+            backgroundColor: "white",
+            '&:hover': {
+              backgroundColor: "white",
+            },
+            position: 'absolute',
+            bottom: 160,
+            right: 16,
+            zIndex: "3",
+          }}>
+            
+          <MyLocationIcon />
+        </IconButton>
+        <IconButton onClick={handleDialogOpen}
           color="primary"
           size="large"
           sx={{
@@ -216,8 +241,26 @@ export default function PageMap() {
             bottom: 100,
             right: 16,
             zIndex: "3",
-          }}>
-          <MyLocationIcon />
+          }}
+        >
+          <SearchIcon />
+        </IconButton>
+
+        <IconButton onClick={handleDialogOpen}
+          color="primary"
+          size="large"
+          sx={{
+            backgroundColor: "white",
+            '&:hover': {
+              backgroundColor: "white",
+            },
+            position: 'absolute',
+            bottom: 40,
+            right: 16,
+            zIndex: "3",
+          }}
+        >
+          <FindReplaceIcon />
         </IconButton>
       </Grid>
     </Grid>
