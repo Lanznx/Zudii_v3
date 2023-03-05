@@ -11,10 +11,10 @@ import { FormControl, Grid, InputLabel, MenuItem, Select, TextField } from "@mui
 
 import SelectType from "./SelectType";
 
-import { getNearByHouses } from "../APIs";
+import { loadNearByHouses } from "../APIs";
 
 export default function MapDialog(props) {
-  const { openDialog, setOpenDialog, handleDialogClose, coordinates, userId } = props;
+  const { openDialog, handleDialogClose, coordinates, userId, setHouseQuery, map, setCanQuickSearch, setLoading } = props;
   const [minRent, setMinRent] = React.useState(0);
   const [maxRent, setMaxRent] = React.useState(0);
   const [size, setSize] = React.useState(0);
@@ -55,6 +55,18 @@ export default function MapDialog(props) {
     days.push(day + i);
   }
 
+  React.useEffect(() => {
+    setHouseQuery({
+      coordinates: coordinates,
+      minRent: minRent,
+      maxRent: maxRent,
+      type: type,
+      userId: userId,
+      releaseTime: releaseTime,
+      size: size,
+    });
+  }, [minRent, maxRent, type, releaseTime, size]);
+
   return (
     <Dialog open={openDialog} onClose={handleDialogClose} fullWidth>
       <DialogTitle variant="primary" color="primary">
@@ -80,7 +92,6 @@ export default function MapDialog(props) {
               id="minRent"
               value={minRent}
               onChange={(e) => {
-                console.log(e.target.value, "minmin")
                 setMinRent(e.target.value);
               }}
               label="最低"
@@ -101,7 +112,6 @@ export default function MapDialog(props) {
               id="maxRent"
               value={maxRent}
               onChange={(e) => {
-                console.log(e.target.value, "mMAX")
                 setMaxRent(e.target.value);
               }}
               label="最高"
@@ -140,7 +150,6 @@ export default function MapDialog(props) {
                   id="year"
                   value={releaseTime[0]}
                   onChange={(e) => {
-                    console.log(e.target.value, "year");
                     setReleaseTime([
                       e.target.value,
                       releaseTime[1],
@@ -169,7 +178,6 @@ export default function MapDialog(props) {
                   id="month"
                   value={releaseTime[1]}
                   onChange={(e) => {
-                    console.log(e.target.value, "month");
                     setReleaseTime([
                       releaseTime[0],
                       e.target.value,
@@ -256,16 +264,22 @@ export default function MapDialog(props) {
       <DialogActions sx={{
         justifyContent: "center",
       }}>
-        <Button onClick={()=>{
-          getNearByHouses({
-            minRent,
-            maxRent,
-            type,
-            releaseTime,
-            size,
-            coordinates,
-            userId,
-          });
+        <Button onClick={async (e) => {
+          setLoading(true);
+          handleDialogClose(e);
+          await loadNearByHouses(
+            map,
+            {
+              coordinates: coordinates,
+              minRent: minRent,
+              maxRent: maxRent,
+              type: type,
+              userId: userId,
+              releaseTime: releaseTime,
+              size: size,
+            });
+          setLoading(false);
+          setCanQuickSearch(true);
         }} sx={{
           color: "#fff",
           backgroundColor: "primary.main",

@@ -1,23 +1,20 @@
 import * as React from "react";
-import { Grid, IconButton } from "@mui/material";
+import { Backdrop, CircularProgress, Grid, IconButton } from "@mui/material";
 import liff from "@line/liff";
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
-// import LocationSearchingIcon from '@mui/icons-material/LocationSearching';
 import MyLocationIcon from '@mui/icons-material/MyLocation';
 import SearchIcon from '@mui/icons-material/Search';
 import FindReplaceIcon from '@mui/icons-material/FindReplace';
 import "../index.css"
 import 'mapbox-gl/dist/mapbox-gl.css';
 import MapDialog from "./Components/MapDialog";
+import { getNearByHouses, loadNearByHouses } from "./APIs";
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibGFuem54IiwiYSI6ImNsNzJ2bWRicjB6NDUzcHA2djY5OHRha2sifQ.fz8PcF3zTbKsAjgXFQ4zqA';
 const REACT_APP_LIFF_DIRECT_ID = process.env.REACT_APP_LIFF_DIRECT_ID;
-const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
-const REACT_APP_MAPBOX_TOKEN = process.env.REACT_APP_MAPBOX_TOKEN;
 
 export default function PageMap() {
   const [userId, setUserId] = React.useState("");
-  const [displayName, setDisplayName] = React.useState("");
   const map = React.useRef(null);
   const mapContainer = React.useRef(null);
 
@@ -26,8 +23,10 @@ export default function PageMap() {
   const [userLng, setUserLng] = React.useState(121.56);
   const [userLat, setUserLat] = React.useState(25);
   const [zoom, setZoom] = React.useState(15);
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
+  const [houseQuery, setHouseQuery] = React.useState({});
+  const [canQuickSearch, setCanQuickSearch] = React.useState(false);
   const handleDialogClose = (e) => {
     e.stopPropagation();
     setOpenDialog(false);
@@ -35,7 +34,6 @@ export default function PageMap() {
   const handleDialogOpen = (e) => {
     setOpenDialog(true);
   };
-
 
   React.useEffect(() => {
     if (map.current) return; // initialize map only once
@@ -47,6 +45,7 @@ export default function PageMap() {
       zoom: zoom
     });
     setUserPosition();
+    initHouses();
   });
 
   React.useEffect(() => {
@@ -58,39 +57,45 @@ export default function PageMap() {
   });
 
   React.useEffect(() => {
-    loadNearByHouses();
-  }, []);
-
-  React.useEffect(() => {
     flyToUserLocation();
   }, [userLng, userLat]);
 
+  function initHouses() {
+    map.current.on('load', async () => {
+      setLoading(true);
+      const houses = await getNearByHouses({
+        coordinates: [userLng, userLat],
+        minRent: 0,
+        maxRent: 100000000,
+        type: ["整層住家", "獨立套房", "雅房", "分租套房", "車位", "其他"],
+        userId: userId || "123",
+        releaseTime: "2020-01-01",
+        size: 0,
+      })
+      setLoading(false);
+      const housesFeatures = houses.map((house) => {
+        return {
+          'type': 'Feature',
+          'properties': {
+            "description": `<img src=${house["imgLink"]} width="100%"/>
+            <p>坪數：${house["size"]} 坪</p>
+            <p>租金：${house["rent"]}</p>
+            <p>房型：${house["type"]}</p>
+            <p>上架日：${house["releaseTime"]}</p>
+            <a href=${house["shortUrl"]}>詳細資訊</a>`,
+          },
+          'geometry': {
+            'type': 'Point',
+            'coordinates': house["coordinates"]
+          }
+        }
+      })
 
-
-
-  function loadNearByHouses() {
-    map.current.on('load', () => {
       map.current.addSource('places', {
         type: 'geojson',
         data: {
           type: 'FeatureCollection',
-          features: [
-            {
-              'type': 'Feature',
-              'properties': {
-                "description": `<img src=${"https://img1.591.com.tw/house/2022/08/25/166139130696367663.jpg!510x400.jpg"} width="100%"/>
-                <p>坪數：${5} 坪</p><p>租金：${5000}</p>
-                <p>房型：${"雅房"}</p>
-                <p>上架日：${"2023-2-12"}</p>
-                <p>租金：${5000}</p>
-                <a href=${"https://rent.591.com.tw/home/14000758"}>詳細資訊</a>`,
-              },
-              'geometry': {
-                'type': 'Point',
-                'coordinates': [121.573, 24.99]
-              }
-            },
-          ]
+          features: housesFeatures,
         }
       })
 
@@ -106,12 +111,9 @@ export default function PageMap() {
         },
       });
 
-
       map.current.on('click', 'places', (e) => {
         const coordinates = e.features[0].geometry.coordinates.slice();
         const description = e.features[0].properties.description;
-        console.log(e.lngLat.lng)
-        console.log(coordinates[0])
 
         while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
           coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
@@ -123,8 +125,6 @@ export default function PageMap() {
           .addTo(map.current);
       });
     })
-
-
   }
 
   function getUserPosition() {
@@ -169,19 +169,25 @@ export default function PageMap() {
     } else {
       const profile = await liff.getProfile();
       setUserId(profile.userId);
-      setDisplayName(profile.displayName);
     }
   }
 
   React.useEffect(() => {
     // initializeLIFF();
-
   }, []);
 
   return (
     <Grid container sx={{
       overflow: "hidden",
     }}>
+      <CircularProgress sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        color: "primary.main",
+        zIndex: (theme) => loading ? theme.zIndex.drawer + 1 : -1,
+      }}
+        color="inherit" />
       <Grid item xs={12} sx={{
         mt: 0,
         display: "flex",
@@ -214,10 +220,13 @@ export default function PageMap() {
         </div>
         <MapDialog
           openDialog={openDialog}
-          setOpenDialog={setOpenDialog}
           handleDialogClose={handleDialogClose}
           coordinates={[lng, lat]}
           userId={userId}
+          setHouseQuery={setHouseQuery}
+          map={map}
+          setCanQuickSearch={setCanQuickSearch}
+          setLoading={setLoading}
         />
         <IconButton onClick={flyToUserLocation}
           color="primary"
@@ -252,7 +261,21 @@ export default function PageMap() {
           <SearchIcon />
         </IconButton>
 
-        <IconButton onClick={handleDialogOpen}
+        <IconButton onClick={async () => {
+          setHouseQuery({
+            coordinates: [lng, lat],
+            minRent: houseQuery['minRent'],
+            maxRent: houseQuery['maxRent'],
+            type: houseQuery['type'],
+            userId: houseQuery['userId'],
+            releaseTime: houseQuery['releaseTime'],
+            size: houseQuery['size'],
+          })
+          setLoading(true)
+          await loadNearByHouses(map, houseQuery)
+          setLoading(false)
+        }}
+          disabled={!canQuickSearch}
           color="primary"
           size="large"
           sx={{
