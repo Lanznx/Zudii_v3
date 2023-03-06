@@ -227,7 +227,7 @@ export default function PageMap() {
         </div>
 
         <div style={{
-          height: '100vh',
+          height: '95vh',
           width: '100vw',
           overflow: 'hidden',
         }}>
