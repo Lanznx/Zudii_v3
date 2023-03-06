@@ -244,14 +244,14 @@ function pushToUser(push_message, token) {
     });
 }
 
-// cron.schedule("* * * * *", autoCheck);
+cron.schedule("* * * * *", autoCheck);
 
-serverPort = 4600;
+serverPort = 4500;
 app.listen(serverPort, () => {
   console.log(`🔥🔥🔥 hi, your server is running on port ${serverPort} 🔥🔥🔥`);
 });
 
-port = 5100;
+port = 5000;
 bot.listen("/linewebhook", port, () => {
   console.log(`🧨🧨🧨🧨🧨🧨🧨🧨 lineBot listen on ${port} 🧨🧨🧨🧨🧨🧨🧨🧨`);
 });
