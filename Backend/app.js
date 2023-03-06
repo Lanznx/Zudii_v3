@@ -6,6 +6,7 @@ const express = require("express");
 const app = express();
 const finderRoutes = require("./Routes/Find.js");
 const notifyRoutes = require("./Routes/Notify");
+const mapRoutes = require("./Routes/Map");
 const path = require("path");
 const cors = require("cors");
 const cron = require("node-cron");
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/find", finderRoutes);
 app.use("/notify", notifyRoutes);
+app.use("/map", mapRoutes);
 
 let visitor_number = 0;
 app.get("/", (req, res) => {
@@ -242,14 +244,14 @@ function pushToUser(push_message, token) {
     });
 }
 
-cron.schedule("* * * * *", autoCheck);
+// cron.schedule("* * * * *", autoCheck);
 
-serverPort = 4500;
+serverPort = 4600;
 app.listen(serverPort, () => {
   console.log(`🔥🔥🔥 hi, your server is running on port ${serverPort} 🔥🔥🔥`);
 });
 
-port = 5000;
+port = 5100;
 bot.listen("/linewebhook", port, () => {
   console.log(`🧨🧨🧨🧨🧨🧨🧨🧨 lineBot listen on ${port} 🧨🧨🧨🧨🧨🧨🧨🧨`);
 });

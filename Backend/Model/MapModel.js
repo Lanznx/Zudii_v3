@@ -3,18 +3,14 @@ const { collection, user } = require("../util/MongoDB");
 async function mapSearcher(limitations){
     const {
         userId,
-        center,
+        coordinates,
         minRent,
         maxRent,
         type,
-        search,
         releaseTime,
     } = limitations;
 
     const pinpointHouse = {
-        title: {
-            $regex: search,
-        },
         price: {
             $gte: minRent,
             $lte: maxRent
@@ -28,7 +24,7 @@ async function mapSearcher(limitations){
     };
 
     const searchRecord = {
-        title: text,
+        title: "",
         minRent: minRent,
         maxRent: maxRent,
         region: null,
@@ -58,18 +54,20 @@ async function mapSearcher(limitations){
       }
 
     const house_result = await collection
-    .find(pinpointHouse)
     .aggregate([
         {
             $geoNear: {
                 near:{
                     type: "Point",
-                    coordinate: center
+                    coordinates: coordinates,
                 },
-                distanceField: "Distance",
+                distanceField: "distance",
                 maxDistance: 1000,
                 spherical: true,
             },
+        },
+        {
+            $match:pinpointHouse,
         },
         {
             $sort: {
@@ -82,9 +80,9 @@ async function mapSearcher(limitations){
     .toArray();
 
     if(house_result.length === 0){
-        houses.push({ id_591: null });
-        return houses;
+        house_result.push({ id_591: null });
     }
+    return house_result;
 
 }
 
