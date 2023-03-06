@@ -22,7 +22,7 @@ export default function PageMap() {
   const [lat, setLat] = React.useState(24.99);
   const [userLng, setUserLng] = React.useState(121.56);
   const [userLat, setUserLat] = React.useState(25);
-  const [zoom, setZoom] = React.useState(15);
+  const [zoom, setZoom] = React.useState(10);
   const [loading, setLoading] = React.useState(false);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [houseQuery, setHouseQuery] = React.useState({});
@@ -291,6 +291,11 @@ export default function PageMap() {
             size: houseQuery['size'],
           })
           setLoading(true)
+          map.current.flyTo({
+            center: [lng, lat],
+            zoom: 13,
+            essential: true
+          });
           const amount = await loadNearByHouses(map, houseQuery)
           setAmountOfHouses(amount)
           setLoading(false)

@@ -14,7 +14,7 @@ import SelectType from "./SelectType";
 import { loadNearByHouses } from "../APIs";
 
 export default function MapDialog(props) {
-  const { openDialog, handleDialogClose, coordinates, userId, setHouseQuery, map, setCanQuickSearch, setLoading, setAmountOfHouses } = props;
+  const { openDialog, handleDialogClose, coordinates, userId, setHouseQuery, map, setCanQuickSearch, setLoading, setAmountOfHouses, setZoom } = props;
   const [minRent, setMinRent] = React.useState(0);
   const [maxRent, setMaxRent] = React.useState(0);
   const [size, setSize] = React.useState(0);
@@ -267,6 +267,11 @@ export default function MapDialog(props) {
         <Button onClick={async (e) => {
           setLoading(true);
           handleDialogClose(e);
+          map.current.flyTo({
+            center: [coordinates[0], coordinates[1]],
+            zoom: 13,
+            essential: true
+          });
           const amount = await loadNearByHouses(
             map,
             {
