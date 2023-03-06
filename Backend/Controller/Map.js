@@ -23,6 +23,7 @@ async function mapSearch(req, res) {
         type: house.type,
       };
     });
+    res.status(200).send(result);
     return result;
   } catch (err) {
     console.log(err);
