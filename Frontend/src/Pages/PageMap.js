@@ -175,7 +175,7 @@ export default function PageMap() {
   }
 
   React.useEffect(() => {
-    // initializeLIFF();
+    initializeLIFF();
   }, []);
 
   return (
