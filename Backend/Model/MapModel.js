@@ -70,7 +70,6 @@ async function mapSearcher(limitations) {
       },
     ])
     .sort({ converted_time: -1 })
-    .limit(10)
     .toArray();
 
   if (house_result.length === 0) {
