@@ -68,7 +68,7 @@ export default function PageMap() {
         minRent: 0,
         maxRent: 100000000,
         type: ["整層住家", "獨立套房", "雅房", "分租套房", "車位", "其他"],
-        userId: userId || "123",
+        userId: userId,
         releaseTime: "2020-01-01",
         size: 0,
       })
@@ -173,7 +173,7 @@ export default function PageMap() {
   }
 
   React.useEffect(() => {
-    // initializeLIFF();
+    initializeLIFF();
   }, []);
 
   return (
