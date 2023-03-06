@@ -1,8 +1,7 @@
-const express = require('express');
+const express = require("express");
 const map = express.Router();
 const { mapSearch } = require("../Controller/Map");
 
+map.post("/", mapSearch);
 
-map.post("/", mapSearch)
-
-module.exports = map
+module.exports = map;
