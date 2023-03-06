@@ -8,15 +8,23 @@ const getNearByHouses = async (query) => {
     },
     body: JSON.stringify(query),
   });
+  if (!response.ok) {
+    alert("伺服器錯誤，請聯絡開發者")
+    return []
+  };
   const data = await response.json();
-  console.log(data, "data")
+  console.log(data, "house data")
   return data;
 }
 
 async function loadNearByHouses(map, houseQuery) {
-  if(houseQuery["maxRent"] === 0) houseQuery["maxRent"] = 100000000
-  if(houseQuery["type"][0] === "") houseQuery["type"] = ["整層住家", "獨立套房", "雅房", "分租套房", "車位", "其他"]
+  if (houseQuery["maxRent"] === 0) houseQuery["maxRent"] = 100000000
+  if (houseQuery["type"][0] === "") houseQuery["type"] = ["整層住家", "獨立套房", "雅房", "分租套房", "車位", "其他"]
+  houseQuery["releaseTime"] = houseQuery["releaseTime"].join("-")
   const houses = await getNearByHouses(houseQuery)
+  if (houses.length === 0) {
+    return 0;
+  }
   const housesFeatures = houses.map((house) => {
     return {
       'type': 'Feature',
@@ -39,6 +47,7 @@ async function loadNearByHouses(map, houseQuery) {
     type: 'FeatureCollection',
     features: housesFeatures,
   })
+  return houses.length;
 }
 
 export { getNearByHouses, loadNearByHouses }

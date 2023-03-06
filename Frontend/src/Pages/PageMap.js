@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Backdrop, CircularProgress, Grid, IconButton } from "@mui/material";
+import { Chip, CircularProgress, Grid, IconButton } from "@mui/material";
 import liff from "@line/liff";
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import MyLocationIcon from '@mui/icons-material/MyLocation';
@@ -27,6 +27,7 @@ export default function PageMap() {
   const [openDialog, setOpenDialog] = React.useState(false);
   const [houseQuery, setHouseQuery] = React.useState({});
   const [canQuickSearch, setCanQuickSearch] = React.useState(false);
+  const [amountOfHouses, setAmountOfHouses] = React.useState(0);
   const handleDialogClose = (e) => {
     e.stopPropagation();
     setOpenDialog(false);
@@ -72,6 +73,7 @@ export default function PageMap() {
         releaseTime: "2020-01-01",
         size: 0,
       })
+      setAmountOfHouses(houses.length);
       setLoading(false);
       const housesFeatures = houses.map((house) => {
         return {
@@ -173,7 +175,7 @@ export default function PageMap() {
   }
 
   React.useEffect(() => {
-    initializeLIFF();
+    // initializeLIFF();
   }, []);
 
   return (
@@ -188,6 +190,22 @@ export default function PageMap() {
         zIndex: (theme) => loading ? theme.zIndex.drawer + 1 : -1,
       }}
         color="inherit" />
+      <Grid item xs={12} sx={{
+        alignItems: "center",
+        justifyContent: "center",
+        display: "flex",
+      }}>
+        <Chip sx={{
+          position: "absolute",
+          top: "7%",
+          zIndex: (theme) => loading ? theme.zIndex.drawer - 1 : +1,
+          backgroundColor: "rgba(100, 149, 237, 0.9)",
+          color: "#fff",
+        }}
+          label={`查到 ${amountOfHouses} 筆資料`}
+        />
+      </Grid>
+
       <Grid item xs={12} sx={{
         mt: 0,
         display: "flex",
@@ -227,6 +245,7 @@ export default function PageMap() {
           map={map}
           setCanQuickSearch={setCanQuickSearch}
           setLoading={setLoading}
+          setAmountOfHouses={setAmountOfHouses}
         />
         <IconButton onClick={flyToUserLocation}
           color="primary"
@@ -272,7 +291,8 @@ export default function PageMap() {
             size: houseQuery['size'],
           })
           setLoading(true)
-          await loadNearByHouses(map, houseQuery)
+          const amount = await loadNearByHouses(map, houseQuery)
+          setAmountOfHouses(amount)
           setLoading(false)
         }}
           disabled={!canQuickSearch}
