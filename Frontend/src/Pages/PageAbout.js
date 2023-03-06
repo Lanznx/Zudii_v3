@@ -93,7 +93,8 @@ export default function PageAbout() {
                     口 出門前可以帶上身份證件和一點現金，若是遇上喜歡的房源，可馬上付訂金
                 </Grid>
                 <Grid item xs={1}></Grid>
-                <Grid xs={12}></Grid>
+                <Grid item xs={12}></Grid>
+                <Grid item xs={12}></Grid>
                 <Grid item xs={2}></Grid>
                 <Grid item xs={9}>
                   <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -102,7 +103,7 @@ export default function PageAbout() {
                 </Grid>
                 <Grid item xs={1}></Grid>
                 <Grid item xs={2}></Grid>
-                <Grid xs={9}>
+                <Grid item xs={9}>
                     口 確認每月租金、水電計價方式、有無其他外加費用
                     <br></br>
                     口 年繳／月繳／長租 有無優惠
@@ -111,7 +112,9 @@ export default function PageAbout() {
                     <br></br>
                     口 確認電表所在位置、垃圾處理方式
                 </Grid>
-                <Grid xs={12}></Grid>
+                <Grid item xs={1}></Grid>
+                <Grid item xs={12}></Grid>
+                <Grid item xs={12}></Grid>
                 <Grid item xs={2}></Grid>
                 <Grid item xs={9}>
                   <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
@@ -120,14 +123,15 @@ export default function PageAbout() {
                 </Grid>
                 <Grid item xs={1}></Grid>
                 <Grid item xs={2}></Grid>
-                <Grid xs={9}>
+                <Grid item xs={9}>
                     口 付訂金後記得索取收據
                     <br></br>
                     口 確認簽約後是否退還定金，或是可折抵押金、租金
                     <br></br>
-                    口 詢問租金從哪一天開始算、是否可提前寄放物品
+                    口 詢問租金從哪天開始算、是否可寄放物品
                 </Grid>
                 <Grid item xs={1}></Grid>
+                <Grid item xs={12}></Grid>
               </Grid>
             </Grid>
           </Grid>
