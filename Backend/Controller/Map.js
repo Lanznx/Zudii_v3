@@ -5,8 +5,8 @@ async function mapSearch(req, res) {
     const limitations = {
       userId: req.body.userId,
       coordinates: [parseFloat(req.body.coordinates[0]), parseFloat(req.body.coordinates[1])],
-      minRent: req.body.minRent || 0,
-      maxRent: req.body.maxRent || 10000000,
+      minRent: parseInt(req.body.minRent) || 0,
+      maxRent: parseInt(req.body.maxRent) || 10000000,
       type: req.body.type || [],
       releaseTime: req.body.releaseTime || "2022-01-01",
     };
