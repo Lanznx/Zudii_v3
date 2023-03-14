@@ -45,7 +45,7 @@ export default function Page591() {
     if (userId === "") {
       return
     }
-    fetch(REACT_APP_BASE_URL + "find/myCondition", {
+    fetch(REACT_APP_BASE_URL + "/find/myCondition", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -7,9 +7,6 @@ import Chip from "@mui/material/Chip";
 import Grid from "@mui/material/Grid";
 import liff from "@line/liff";
 
-const REACT_APP_LIFF_DIRECT_ID = process.env.REACT_APP_LIFF_DIRECT_ID;
-const REACT_APP_BASE_URL = process.env.REACT_APP_BASE_URL;
-
 const theme = createTheme({
   palette: {
     primary: {
