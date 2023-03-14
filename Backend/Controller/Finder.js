@@ -12,7 +12,6 @@ async function search(req, res) {
     releaseTime: req.body.releaseTime,
     distanceMRT: req.body.distanceMRT,
   };
-  console.log(conditions, "============ conditions ===============");
   const userInfo = {
     userId: req.body.userId,
     displayName: req.body.displayName,
