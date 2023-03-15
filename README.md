@@ -1,10 +1,8 @@
-# Zudii_v3
-test
-## 租迪是為小資族／大學生設計的爬蟲應用
-功能可以大致拆分成：爬蟲、後端、LineBot
+<img width="951" alt="截圖 2023-03-15 16 47 19" src="https://user-images.githubusercontent.com/96360357/225255498-a3b232aa-d366-456b-9e56-5b23aebdf6ea.png">
 
-我希望透過這個功能幫助大家在第一時間找到自己理想的租屋
+# Demo Video
 
-## 爬蟲啟動指令
-`/usr/bin/python3 /Users/lanz/Zudii_v3/Backend/Crawlers/591_Crawler.py`
-`/usr/bin/python3 /Users/lanz/Zudii_v3/Backend/Crawlers/FaceBook_Crawler.py`
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/q7L77qQN2cc/0.jpg)](https://www.youtube.com/watch?v=q7L77qQN2cc)
+
+# System Architecture
+<img width="950" alt="截圖 2023-03-15 16 50 41" src="https://user-images.githubusercontent.com/96360357/225256355-d142c18e-77ec-4c28-b841-a52c11093d7b.png">
