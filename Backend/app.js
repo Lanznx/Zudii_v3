@@ -6,6 +6,7 @@ const express = require("express");
 const app = express();
 const finderRoutes = require("./Routes/Find.js");
 const notifyRoutes = require("./Routes/Notify");
+const mapRoutes = require("./Routes/Map");
 const path = require("path");
 const cors = require("cors");
 const cron = require("node-cron");
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/find", finderRoutes);
 app.use("/notify", notifyRoutes);
+app.use("/map", mapRoutes);
 
 let visitor_number = 0;
 app.get("/", (req, res) => {
@@ -44,8 +46,6 @@ bot.on("message", async (event) => {
       if (content[1] === "search") {
         const cleanData = content[2].split("&");
         const userInfo = content[3].split("&");
-        console.log(cleanData, " cleanData");
-        console.log(cleanData[3], "locationcodes!!!");
         let request = {
           body: {
             text: cleanData[0],
@@ -130,14 +130,10 @@ bot.on("message", async (event) => {
 
 bot.on("postback", async (event) => {
   const msg = event.postback.data;
-  console.log(msg, "original MSG");
   const content = msg.split("?");
-  console.log(content, "content");
 
   if (content[1] === "search") {
     const cleanData = content[2].split("&");
-    console.log(cleanData, " cleanData");
-    console.log(cleanData[3], "locationcodes!!!");
     const userInfo = content[3].split("&");
     const nextMsg =
       "https://i.imgur.com/MwS42AE.png?search?" +
@@ -162,7 +158,6 @@ bot.on("postback", async (event) => {
       userInfo[0] +
       "&" +
       userInfo[1];
-    console.log(nextMsg, "=========== nextMsg ===========");
     let request = {
       body: {
         text: cleanData[0],
@@ -195,7 +190,6 @@ bot.on("postback", async (event) => {
         "其他",
         "車位",
       ];
-    console.log(request, "========   postback ==========");
     const replyMessage = await search(request, null);
     event.reply(replyMessage).then((data) => {
       console.log(data, "=== data ===");
@@ -211,7 +205,6 @@ async function autoCheck() {
       const r = crawlerResults[index_1];
       if (r.push_messages !== null) {
         const token = await getUserAccessToken(r.userId);
-        console.log(token, "ACCESS_TOKEN");
         for (let index_2 = 0; index_2 < r.push_messages.length; index_2++) {
           const push_message = r.push_messages[index_2];
           await setTimeout(

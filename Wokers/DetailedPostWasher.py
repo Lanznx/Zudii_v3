@@ -24,7 +24,7 @@ channel.queue_bind(exchange='ex', queue='DetailedPostWasher')
 
 client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
 db = client.test
-collection_591 = db.dev_591
+collection_591 = db.prod_591
 collection_restaurant = db.restaurant
 collection_shop = db.shop
 collection_school = db.school

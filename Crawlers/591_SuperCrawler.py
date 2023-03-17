@@ -150,7 +150,7 @@ def main(region, batch_num):
         exchange='ex', exchange_type='fanout', durable=True)
     client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
     db = client.test
-    collection = db.dev_591
+    collection = db.prod_591
 
     postNumber = 1
     firstRow = 0
@@ -205,7 +205,7 @@ def schedule():
     try:
         batch_client = pymongo.MongoClient(
             MONGO_CONNECTION, tlsCAFile=certifi.where())
-        batch_collection = batch_client.test.dev_591
+        batch_collection = batch_client.test.prod_591
         batch_num = batch_collection.find().sort(
             "batch", pymongo.DESCENDING)[0]
         batch_num = batch_num['batch'] + 1

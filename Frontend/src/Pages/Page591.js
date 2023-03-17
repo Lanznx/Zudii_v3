@@ -45,7 +45,7 @@ export default function Page591() {
     if (userId === "") {
       return
     }
-    fetch(REACT_APP_BASE_URL + "find/myCondition", {
+    fetch(REACT_APP_BASE_URL + "/find/myCondition", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -91,20 +91,7 @@ export default function Page591() {
     displayName,
   ]);
 
-  const monthDays = {
-    1: 31,
-    2: 28,
-    3: 31,
-    4: 30,
-    5: 31,
-    6: 30,
-    7: 31,
-    8: 31,
-    9: 30,
-    10: 31,
-    11: 30,
-    12: 31,
-  };
+
   async function initializeLIFF() {
     await liff.init({
       liffId: REACT_APP_LIFF_ID, // Use own liffId
@@ -375,7 +362,6 @@ export default function Page591() {
                   handleReleaseTimeClose={handleReleaseTimeClose}
                   releaseTime={releaseTime}
                   setReleaseTime={setReleaseTime}
-                  monthDays={monthDays}
                 />
                 <Typography variant="h6">貼文時間</Typography>
                 <Typography variant="h7">{chosedTime}</Typography>

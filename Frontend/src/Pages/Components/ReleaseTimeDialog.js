@@ -14,8 +14,21 @@ export default function ReleaseTimedialog(props) {
     handleReleaseTimeClose,
     setReleaseTime,
     releaseTime,
-    monthDays,
   } = props;
+  const monthDays = {
+    1: 31,
+    2: 28,
+    3: 31,
+    4: 30,
+    5: 31,
+    6: 30,
+    7: 31,
+    8: 31,
+    9: 30,
+    10: 31,
+    11: 30,
+    12: 31,
+  };
   let year = 2021;
   let month = 1;
   let day = 1;

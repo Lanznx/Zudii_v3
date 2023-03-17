@@ -4,6 +4,8 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import Page591 from "./Pages/Page591";
 import PageDirect from "./Pages/PageDirect";
 import PageFaceBook from "./Pages/PageFaceBook";
+import PageMap from "./Pages/PageMap";
+import PageAbout from "./Pages/PageAbout";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
@@ -12,6 +14,8 @@ root.render(
       <Routes>
         <Route path="/page591" element={<Page591 />} />
         <Route path="/pageFB" element={<PageFaceBook />} />
+        <Route path="/map" element={<PageMap />} />
+        <Route path="/pageAbout" element={<PageAbout />} />
         <Route path="/" element={<PageDirect />} />
       </Routes>
     </Router>

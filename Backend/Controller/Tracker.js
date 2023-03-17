@@ -7,16 +7,15 @@ const {
 function track(req, res) {
   const conditions = {
     text: req.body.text || "",
-    price1: req.body.price1 || 0,
-    price2: req.body.price2 || 100000000,
+    price1: parseInt(req.body.price1) || 0,
+    price2: parseInt(req.body.price2) || 100000000,
     regionCode: req.body.regionCode,
     sectionCodes: req.body.sectionCodes,
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
     releaseTime: req.body.releaseTime,
-    distanceMRT: req.body.distanceMRT,
+    distanceMRT: parseInt(req.body.distanceMRT),
   };
-  console.log(conditions, "============ conditions ===============");
   const userInfo = {
     userId: req.body.userId,
     displayName: req.body.displayName,
@@ -34,8 +33,6 @@ function track(req, res) {
 async function check() {
   const latestTrackConditions = await getAllTrackerConditions();
 
-  console.log(latestTrackConditions, " 01 大家的 conditions");
-
   const crawlerResults = [];
   for (let index_1 = 0; index_1 < latestTrackConditions.length; index_1++) {
     let unitResults = await checkNewHouses(latestTrackConditions[index_1]);
@@ -46,7 +43,6 @@ async function check() {
       });
       continue;
     }
-    console.log(unitResults, "04 個人的 houses");
     let push_messages = [];
     let push_message = `符合您的最新結果如下：\n\n`;
 
@@ -55,7 +51,14 @@ async function check() {
 
       if (house.size === "Nan") house.size = "沒有資料";
       else house.size = house.size + " 坪";
+      
+	
 
+
+	console.log(house)
+
+
+	
       let unit_message = `
       ${index_2 + 1}.\n${house.title}\n租金：${house.price} 元\n地址：${
         house.location
@@ -82,9 +85,6 @@ async function check() {
       userId: unitResults.userId,
     });
   }
-
-  console.log(crawlerResults, "05 要推播的訊息們");
-
   return crawlerResults;
 }
 

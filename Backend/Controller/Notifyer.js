@@ -8,10 +8,6 @@ require("dotenv").config();
 
 async function setUserAccessToken(req, res) {
   const { code, state } = req.body;
-  console.log(process.env.NOTIFY_ID, "process.env.NOTIFY_ID");
-  console.log(process.env.NOTIFY_SECRET, "process.env.NOTIFY_SECRET");
-  console.log(code, "setUserAccessTokenModel: CODE");
-  console.log(state, "setUserAccessTokenModel: userID");
   axios
     .post(
       `https://notify-bot.line.me/oauth/token?code=${code}&grant_type=authorization_code&redirect_uri=https://zudii.tk/api/notify&client_id=${process.env.NOTIFY_ID}&client_secret=${process.env.NOTIFY_SECRET}`,
@@ -20,7 +16,6 @@ async function setUserAccessToken(req, res) {
       }
     )
     .then((res) => {
-      console.log(res.data.access_token, "使用者的 Access Token");
       setUserAccessTokenModel(res.data.access_token, state);
     })
     .catch((err) => {
@@ -34,7 +29,6 @@ async function getUserAccessToken(userId) {
 }
 
 async function cancelNotify(req, res) {
-  console.log(req.body, "hihi");
   const userId = req.body.userId;
   const result = await cancelNotifyModel(userId);
   if (result.acknowledged === true) {

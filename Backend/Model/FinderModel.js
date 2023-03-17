@@ -53,7 +53,6 @@ async function searcher(conditions, userInfo) {
   };
 
   const userResult = await user.find(findUser).toArray();
-  console.log(userResult, "============ user Result ===============");
   if (userResult.length === 0) {
     user.insertOne({
       userId: userId,
@@ -61,7 +60,6 @@ async function searcher(conditions, userInfo) {
       searchHistory: [searchRecord],
     });
   } else {
-    console.log("insert at existed user");
     user.updateOne(
       { userId: userId },
       { $push: { searchHistory: searchRecord } }
@@ -74,7 +72,6 @@ async function searcher(conditions, userInfo) {
     .skip(firstRow)
     .limit(10)
     .toArray();
-  console.log(houses, "未篩選過捷運的 houses");
   if (houses.length === 0) {
     houses.push({ id_591: null });
     return houses;
@@ -141,7 +138,6 @@ async function searcher(conditions, userInfo) {
       contain_MRT_Houses.push(house);
     }
   }
-  console.log(contain_MRT_Houses, "contain_MRT_Houses");
   return contain_MRT_Houses;
 }
 

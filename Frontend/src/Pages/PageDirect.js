@@ -51,7 +51,7 @@ export default function PageDirect() {
           onClick={() => {
             if (userId === "") alert("麻煩再按一次！");
             else {
-              window.location.href = `https://notify-bot.line.me/oauth/authorize?response_type=code&scope=notify&response_mode=form_post&client_id=DhQfj4nguPyCOcJpG9posj&redirect_uri=${REACT_APP_BASE_URL}notify&state=${userId}`;
+              window.location.href = `https://notify-bot.line.me/oauth/authorize?response_type=code&scope=notify&response_mode=form_post&client_id=DhQfj4nguPyCOcJpG9posj&redirect_uri=${REACT_APP_BASE_URL}/notify&state=${userId}`;
             }
           }}
         >
@@ -76,7 +76,7 @@ export default function PageDirect() {
               alert("麻煩再按一次！");
               return;
             }
-            fetch(REACT_APP_BASE_URL + "notify/cancel", {
+            fetch(REACT_APP_BASE_URL + "/notify/cancel", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",

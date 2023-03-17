@@ -42,16 +42,13 @@ async function tracker(conditions, userInfo) {
   };
 
   const userResult = await user.find(findUser).toArray();
-  console.log(userResult, "============ user Result ===============");
   if (userResult.length === 0) {
-    console.log("insert at new user");
     user.insertOne({
       userId: userId,
       userName: displayName,
       trackHistory: [trackRecord],
     });
   } else {
-    console.log("insert at existed user");
     user.updateOne(
       { userId: userId },
       { $set: { userName: displayName }, $push: { trackHistory: trackRecord } }
@@ -73,7 +70,6 @@ async function getAllTrackerConditions() {
   const latestTrackConditions = [];
   for (let i = 0; i < results.length; i++) {
     const r = results[i];
-    console.log(r, "user info ");
     if (r.notify === true && r.userId !== "" && r.latestTrackCondition !== null)
       latestTrackConditions.push(r);
   }
@@ -106,14 +102,12 @@ async function checkNewHouses(c) {
     batch: batch[0].batch,
     converted_time: { $gte: new Date(releaseTime) || new Date("2000-01-31") },
   };
-  console.log(findHouse, "02 findHouse");
 
   const houses = await collection
     .find(findHouse)
     .sort({ converted_time: -1 })
     .limit(100)
     .toArray();
-  console.log(houses, "未篩選過捷運的 houses");
   if (houses.length === 0) {
     houses.push({ id_591: null });
     return houses;
@@ -180,7 +174,6 @@ async function checkNewHouses(c) {
     }
   }
   contain_MRT_Houses.userId = userId;
-  console.log(contain_MRT_Houses, "contain_MRT_Houses");
 
   return contain_MRT_Houses;
 }

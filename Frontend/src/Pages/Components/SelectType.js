@@ -50,7 +50,7 @@ export default function SelectType(props) {
 
   return (
     <div>
-      <FormControl sx={{ width: 200, mt: 1 }}>
+      <FormControl sx={{ width: "40%", mt: 1 }}>
         <InputLabel id="demo-multiple-name-label">房型（預設全選）</InputLabel>
         <Select
           labelId="demo-multiple-name-label"
