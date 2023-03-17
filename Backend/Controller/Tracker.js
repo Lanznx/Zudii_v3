@@ -7,14 +7,14 @@ const {
 function track(req, res) {
   const conditions = {
     text: req.body.text || "",
-    price1: req.body.price1 || 0,
-    price2: req.body.price2 || 100000000,
+    price1: parseInt(req.body.price1) || 0,
+    price2: parseInt(req.body.price2) || 100000000,
     regionCode: req.body.regionCode,
     sectionCodes: req.body.sectionCodes,
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
     releaseTime: req.body.releaseTime,
-    distanceMRT: req.body.distanceMRT,
+    distanceMRT: parseInt(req.body.distanceMRT),
   };
   const userInfo = {
     userId: req.body.userId,
@@ -51,7 +51,14 @@ async function check() {
 
       if (house.size === "Nan") house.size = "沒有資料";
       else house.size = house.size + " 坪";
+      
+	
 
+
+	console.log(house)
+
+
+	
       let unit_message = `
       ${index_2 + 1}.\n${house.title}\n租金：${house.price} 元\n地址：${
         house.location

@@ -3,14 +3,14 @@ const { searcher } = require("../Model/FinderModel");
 async function search(req, res) {
   const conditions = {
     text: req.body.text || "",
-    price1: req.body.price1 || 0,
-    price2: req.body.price2 || 100000000,
+    price1: parseInt(req.body.price1) || 0,
+    price2: parseInt(req.body.price2) || 100000000,
     regionCode: req.body.regionCode,
     sectionCodes: req.body.sectionCodes,
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
     releaseTime: req.body.releaseTime,
-    distanceMRT: req.body.distanceMRT,
+    distanceMRT: parseInt(req.body.distanceMRT),
   };
   const userInfo = {
     userId: req.body.userId,
