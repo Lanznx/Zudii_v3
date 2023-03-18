@@ -10,7 +10,7 @@ async function search(req, res) {
     types: req.body.types,
     firstRow: req.body.firstRow || 0,
     releaseTime: req.body.releaseTime,
-    distanceMRT: parseInt(req.body.distanceMRT),
+    distanceMRT: parseInt(req.body.distanceMRT) || 1000,
   };
   const userInfo = {
     userId: req.body.userId,
