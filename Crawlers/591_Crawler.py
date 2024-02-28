@@ -14,7 +14,7 @@ from datetime import datetime, timedelta, date
 load_dotenv()
 
 
-ENV_PATH = "../.env"
+ENV_PATH = "./.env"
 MONGO_CONNECTION = dotenv_values(ENV_PATH)["MONGO_CONNECTION"]
 CHROME_PATH = dotenv_values(ENV_PATH)["CHROME_PATH"]
 options = Options()
@@ -24,7 +24,7 @@ options.add_argument("--disable-notifications")
 options.add_argument("--disable-popups")
 options.add_argument("--headless")
 options.add_argument("--disable-gpu")
-chrome = webdriver.Chrome(service=Service(CHROME_PATH), options=options)
+chrome = webdriver.Chrome(CHROME_PATH, options=options)
 
 # ============= 連 mongoDB =============
 client = pymongo.MongoClient(MONGO_CONNECTION)
