@@ -31,8 +31,7 @@ services:
         condition: service_healthy
       cache:
         condition: service_healthy
-      mongo:
-        condition: service_healthy
+
   washer-1:
     &worker
     container_name: zudii_washer-1
@@ -45,8 +44,7 @@ services:
         condition: service_healthy
       cache:
         condition: service_healthy
-      mongo:
-        condition: service_healthy
+
       # url-shortener:
       #   condition: service_healthy
     command: python3 DetailedPostWasher.py
@@ -60,8 +58,7 @@ services:
         condition: service_healthy
       cache:
         condition: service_healthy
-      mongo:
-        condition: service_healthy
+
       # url-shortener:
       #   condition: service_healthy
     command: python3 DetailedPostWasher.py
@@ -76,8 +73,7 @@ services:
         condition: service_healthy
       cache:
         condition: service_healthy
-      mongo:
-        condition: service_healthy
+
     command: python3 SurroundingSeparater.py
   separator-2:
     <<: *worker
@@ -89,8 +85,7 @@ services:
         condition: service_healthy
       cache:
         condition: service_healthy
-      mongo:
-        condition: service_healthy
+
     command: python3 SurroundingSeparater.py
   cache:
     restart: always
@@ -121,8 +116,7 @@ services:
     depends_on:
       cache:
         condition: service_healthy
-      mongo:
-        condition: service_healthy
+
       
   mongo:
     image: mongo
@@ -130,12 +124,6 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongo localhost:27017/test --quiet
-      interval: 2s
-      timeout: 3s
-      retries: 3
-      start_period: 3s
 
 volumes:
   mongo-data:
