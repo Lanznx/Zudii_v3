@@ -136,3 +136,6 @@ services:
       timeout: 3s
       retries: 3
       start_period: 3s
+
+volumes:
+  mongo-data:
