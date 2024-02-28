@@ -21,7 +21,7 @@ USER_AGENT_8 = dotenv_values(ENV_PATH)['USER_AGENT_8']
 USER_AGENTS = [USER_AGENT_1, USER_AGENT_2, USER_AGENT_3, USER_AGENT_4,
                USER_AGENT_5, USER_AGENT_6, USER_AGENT_7, USER_AGENT_8]
 
-client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
+client = pymongo.MongoClient(MONGO_CONNECTION)
 headers = {
     'User-Agent': random.choice(USER_AGENTS),
 }

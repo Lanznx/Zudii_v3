@@ -18,7 +18,7 @@ channel.exchange_declare(
 channel.queue_declare("SurroundingSeparater", durable=True)
 channel.queue_bind(exchange='ex', queue='SurroundingSeparater')
 
-client = pymongo.MongoClient(MONGO_CONNECTION, tlsCAFile=certifi.where())
+client = pymongo.MongoClient(MONGO_CONNECTION)
 db = client.test
 collection_restaurant = db.restaurant
 collection_shop = db.shop
